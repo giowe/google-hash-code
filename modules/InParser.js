@@ -2,15 +2,18 @@
 const fs = require('fs');
 const expect = require('expect');
 const u = require('./utils');
+const inFileLoader = require('./inFileLoader');
 
 class InParser {
-  constructor(inputPath, options) {
+  constructor(options) {
     this.options = Object.assign({
       rowSeparator: '\n',
       colSeparator: ' ',
       autoCastInt: true
     }, options);
 
+    const inputPath = inFileLoader.importFile();
+    u.logColor('yellow', 'Parsing', inputPath);
     this.input = fs.readFileSync(inputPath).toString().split(this.options.rowSeparator);
     this.input.forEach((row, i) => this.input[i] = row.split(this.options.colSeparator));
 
@@ -63,7 +66,5 @@ class InParser {
     }
   }
 }
-
-
 
 module.exports = InParser;

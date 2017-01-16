@@ -4,7 +4,7 @@
   const initialState = {};
   return initialState;
 };*/
-const initialState = {
+/*const initialState = {
   turns: 10,
   output: [],
   game: {
@@ -67,3 +67,4 @@ const act = (state, action) => {
 const validate_state = (state) => {
   return true || false;
 };
+*/

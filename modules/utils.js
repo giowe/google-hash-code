@@ -11,11 +11,19 @@ const logJson = (json, color) => {
 };
 
 const logSuccess = (...args) => {
-  console.log(colors.fg.Green, ...args, colors.Reset);
+  console.log(colors.fg.green, ...args, colors.reset);
 };
 
 const logFail = (...args) => {
-  console.log(colors.fg.Red, ...args, colors.Reset);
+  console.log(colors.fg.red, ...args, colors.reset);
+};
+
+const logColor = (color, ...args) => {
+  console.log(colors.fg[color], ...args, colors.reset);
+};
+
+const log = (...args) => {
+  console.log(...args);
 };
 
 const isEmptyObject = function(obj) {
@@ -43,6 +51,8 @@ module.exports = {
   logJson,
   logSuccess,
   logFail,
+  logColor,
+  log,
   isEmptyObject,
   diff
 };

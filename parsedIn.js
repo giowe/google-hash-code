@@ -1,6 +1,6 @@
 'use strict';
 const Parser = require('./modules/inParser');
-const p = new Parser('./inFiles/busy_day.in');
+const p = new Parser();
 const u = require('./modules/utils');
 
 const parsedInput = {
@@ -65,6 +65,6 @@ const model = {
   }]
 };
 
-//Parser.validateOverModel(model, parsedInput);
-//u.logJson(parsedInput);
+Parser.validateOverModel(model, parsedInput);
+u.logJson(parsedInput);
 module.exports = parsedInput;
