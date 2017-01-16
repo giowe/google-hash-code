@@ -1,4 +1,5 @@
 'use strict';
+const initialState = require('./parsedIn');
 
 /*const getInitialState = (inputFile) => {
   const initialState = {};
