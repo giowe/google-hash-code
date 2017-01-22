@@ -35,13 +35,15 @@ const _sampleOutput = {
 }
 
 //VALIDATION:
-//- Format of the output file matches description above
 //- All commands are valid
-
 
 const generateTests = (parsedInput, output) => {
 
   let tests = []
+
+// All commands are valid
+  u.logFail(`Test "All commands are valid" has not yet been written`)
+// 
 
 // All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
   const getTurnsPerDrone = (drone) => {
@@ -56,7 +58,7 @@ const generateTests = (parsedInput, output) => {
 //
 
 // No order receives more products of any type than the number of products of this type specified in the order
-  //const get
+  u.logFail(`Test "Input products >= output products" has not yet been written`)
 //
 
   return tests 
