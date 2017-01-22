@@ -1,71 +1,122 @@
 'use strict';
+const u = require('./modules/utils');
+const m = require('mathjs');
 const initialState = require('./parsedIn');
 
-/*const getInitialState = (inputFile) => {
-  const initialState = {};
-  return initialState;
-};*/
-/*const initialState = {
-  turns: 10,
-  output: [],
-  game: {
-    currentTurn: 0,
-    field: {},
-    actors: []
-  }
+const {
+  field,
+  turns,
+  dronesCount,
+  maxPayload,
+  productTypes,
+  warehouses,
+  orders
+} = initialState;
+
+const getProductsWeight = (products) => {
+  let w = 0;
+  products.forEach(product => {
+    w += productTypes.weight[product];
+  });
+  return w;
 };
-//getInitialState('./input');
 
-let state = initialState;
+const getNearestWarehouse = (order) => {
+  let min = 10000;
+  let minWare = null;
+  warehouses.forEach((warehouse) => {
+    let tmp = m.norm([order.x - warehouse.x, order.y - warehouse.y], 2);
+    if (tmp < min) {
+      min = tmp;
+      minWare = warehouse;
+    }
+  });
 
-for (let i = 0; i < state.turni; i++) {
-  state = process(state);
-}
+  return minWare;
+};
 
-printOutput(state.output);
+//**************************************PRE SPLIT ORDERS ENRICHMENT
+const ordersWithWeights = orders.map((order, i) => {
+  order.w = getProductsWeight(order.products);
+  order.id = i;
+  order.warehouse = getNearestWarehouse(order);
+
+  return order;
+}).sort((a, b) => a.w - b.w);
 
 
-const exampleState = {
-  turns: 10,
-  output: [
-    //turno 1
-    [
-      { load: [0, 0, 0, 1] }
-    ],
+const splitOrder = (order) => {
+  const products = order.products;
+  const newOrders = [];
+  const newProducts = [];
+  const l = products.length;
 
-    //turno 2
-    [
-      { load: [0, 0, 0, 1] }
-    ],
-  ],
-  game: {
-    currentTurn: 0,
-    field: {},
-    actors: {
-      drone1: {}, //state
-      drone2: {} //state
+  function createOrder() {
+    const newOrder = Object.assign({}, order);
+    newOrder.products = [...newProducts];
+    newOrder.w = getProductsWeight(newOrder.products);
+    newOrders.push(newOrder);
+  }
+
+  for(let i=0; i<l; i++) {
+    const product = order.products[i];
+    if (getProductsWeight(newProducts) + productTypes.weight[product] <= maxPayload ) {
+      newProducts.push(product);
+    } else {
+      createOrder();
+      newProducts.length = 0;
+      i--;
     }
   }
+  createOrder();
+  return newOrders;
 };
 
-class Drone {
-  static moveUp(state, speed) {
-    const newState = Object.assign(state,  );
-    return newState;
-  };
-}
+const splittedOrders = [];
+ordersWithWeights.forEach((order, o) => {
+  order.w > maxPayload ? splittedOrders.push(...splitOrder(order)) : splittedOrders.push(order);
+});
 
-const act = (state, action) => {
-  switch (action.name) {
-    case 'moveup': {
 
-    }
+//**************************************PRE SPLIT ORDERS ENRICHMENT
+splittedOrders.forEach((order, i) => {
+  order.warehouse.associatedOrdersCount = order.warehouse.associatedOrdersCount? order.warehouse.associatedOrdersCount + 1 : 1;
+});
+
+warehouses.forEach((warehouse, i) => {
+  warehouse.dronesToAssociate = m.round(warehouse.associatedOrdersCount * dronesCount / splittedOrders.length);
+  warehouse.associatedDrones = 0;
+  warehouse.id = i
+});
+
+//**************************************DRONE ASSOCIATIONS
+const drones = [];
+let wareIndex = 0;
+for (let i = 0; i < dronesCount; i++) {
+  const wareToAssociate = warehouses[wareIndex];
+  if ( wareToAssociate.dronesToAssociate === wareToAssociate.associatedDrones ) {
+    wareIndex++;
+    i--;
+    continue;
   }
 
-  return [new_state, move];
-};
+  drones.push({
+    state: 'W',
+    position: {
+      x: warehouses[0].x,
+      y: warehouses[0].y
+    },
+    destination: {
+      x: 0,
+      y: 0
+    },
+    distance: 0,
+    products: [],
+    travelTime: 0,
+    associatedWarehouse: wareToAssociate
+  });
 
-const validate_state = (state) => {
-  return true || false;
-};
-*/
+  wareToAssociate.associatedDrones++;
+}
+
+u.logJson(drones, 'yellow');
