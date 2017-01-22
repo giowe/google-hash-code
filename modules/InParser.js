@@ -9,7 +9,7 @@ class InParser {
     this.options = Object.assign({
       rowSeparator: '\n',
       colSeparator: ' ',
-      autoCastInt: true
+      autoCast: 'parseInt'
     }, options);
 
     const inputPath = inFileLoader.importFile();
@@ -24,7 +24,9 @@ class InParser {
 
   consumeCol(variableName) {
     let out = this.input[0].shift();
-    if (this.options.autoCastInt) out = Number.parseInt(out);
+    if (this.options.autoCast) {
+      out = Number[this.options.autoCast](out);
+    }
 
     if (!this.input[0].length) this.consumeRow();
     this.variables[variableName] = out;
@@ -33,9 +35,11 @@ class InParser {
 
   consumeRow() {
     let out = this.input.shift();
-    if (this.options.autoCastInt) {
+    if (this.options.autoCast) {
       const l = out.length;
-      for (let i = 0; i < l; i++) out[i] = Number.parseInt(out[i]);
+      for (let i = 0; i < l; i++) {
+        out[i] = Number[this.options.autoCast](out[i]);
+      }
     }
     return out;
   };
