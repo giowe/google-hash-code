@@ -10,33 +10,6 @@ const test = ({n, t}) => {
   }
 }
 
-
-const _sampleOutput = {
-  droneCommands: [
-    [
-      { type: 'load', target: 0, productType: 0, amount: 1, turns: 2 },
-      { type: 'load', target: 0, productType: 1, amount: 1, turns: 3 },
-      { type: 'deliver', target: 0, productType: 0, amount: 1, turns: 2 },
-      { type: 'load', target: 1, productType: 2, amount: 1, turns: 3 },
-      { type: 'deliver', target: 0, productType: 2, amount: 1, turns: 1 },
-    ],
-    [
-      { type: 'load', target: 1, productType: 2, amount: 1, turns: 2 },
-      { type: 'deliver', target: 2, productType: 2, amount: 1, turns: 3 },
-      { type: 'load', target: 0, productType: 0, amount: 1, turns: 4 },
-      { type: 'deliver', target: 1, productType: 0, amount: 1, turns: 1 }
-    ]
-  ],
-  deliveredOrders: [
-    [ 1, 0, 1 ],
-    [ 1, 0, 0 ],
-    [ 0, 0, 1 ]
-  ]
-}
-
-//VALIDATION:
-//- All commands are valid
-
 const generateTests = (parsedInput, output) => {
 
   let tests = []
@@ -59,6 +32,9 @@ const generateTests = (parsedInput, output) => {
 
 // No order receives more products of any type than the number of products of this type specified in the order
   u.logFail(`Test "Input products >= output products" has not yet been written`)
+  //(output.deliveredOrders).forEach((order, oi) => order.map((amount, pi) => {
+  //  tests.push({ n: `Order ${oi} product ${pi} total ${amount} must be less than 5`, t: () => expect(amount).toBeLessThan(5) })
+  //}))
 //
 
   return tests 
