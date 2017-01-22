@@ -40,6 +40,7 @@ const ordersWithWeights = orders.map((order, i) => {
   order.w = getProductsWeight(order.products);
   order.id = i;
   order.warehouse = getNearestWarehouse(order);
+  order.warehouse.orders = [];
 
   return order;
 }).sort((a, b) => a.w - b.w);
@@ -81,12 +82,13 @@ ordersWithWeights.forEach((order, o) => {
 //**************************************PRE SPLIT ORDERS ENRICHMENT
 splittedOrders.forEach((order, i) => {
   order.warehouse.associatedOrdersCount = order.warehouse.associatedOrdersCount? order.warehouse.associatedOrdersCount + 1 : 1;
+  order.warehouse.orders.push(i);
 });
 
 warehouses.forEach((warehouse, i) => {
   warehouse.dronesToAssociate = m.round(warehouse.associatedOrdersCount * dronesCount / splittedOrders.length);
   warehouse.associatedDrones = 0;
-  warehouse.id = i
+  warehouse.id = i;
 });
 
 //**************************************DRONE ASSOCIATIONS
@@ -101,8 +103,9 @@ for (let i = 0; i < dronesCount; i++) {
   }
 
   drones.push({
+    id: i,
     state: 'W',
-    position: {
+    origin: {
       x: warehouses[0].x,
       y: warehouses[0].y
     },
@@ -119,4 +122,20 @@ for (let i = 0; i < dronesCount; i++) {
   wareToAssociate.associatedDrones++;
 }
 
+function getNearestFreeDrone(position) {
+  return drones
+    .filter(drone => drone.travelTime === 0)
+    .sort((a, b) => m.ceil(m.norm([a.destination.x - position.x, a.destination.y - position.y])) - m.ceil(m.norm([b.destination.x - position.x, b.destination.y - position.y])) )[0];
+}
+
+for(let t = 0; t < turns; t++) {
+  //trovo i droni a travel 0
+  //associo ai droni a travel 0 una mansione in funzione del loro precedente stato
+  //devo programmare i side effects di ogni nuova azione che impongo e devo salvarla nell'out
+  //devo risolvere tutte le azioni di tutti i droni.
+}
+
 u.logJson(drones, 'yellow');
+u.logJson(splittedOrders, 'blue');
+u.logJson(drones, 'cyan');
+u.log(getNearestFreeDrone({x:1, y:1}));
