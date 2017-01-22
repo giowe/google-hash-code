@@ -37,22 +37,27 @@ const _sampleOutput = {
 //VALIDATION:
 //- Format of the output file matches description above
 //- All commands are valid
-//- No order receives more products of any type than the number of products of this type specified in the order
-//- All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
+
 
 const generateTests = (parsedInput, output) => {
 
   let tests = []
 
+// All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
   const getTurnsPerDrone = (drone) => {
     let turns = drone.map(command => command.turns)
     return turns.reduce( (acc, cur) => acc + cur, 0 )
-  } 
+  }
 
   output.droneCommands.map((drone, i) => {
     let turnsSum = getTurnsPerDrone(drone)
     tests.push({ n: `Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`, t: () => expect(turnsSum).toBeLessThan(parsedInput.turns) })
   })
+//
+
+// No order receives more products of any type than the number of products of this type specified in the order
+  //const get
+//
 
   return tests 
 }
