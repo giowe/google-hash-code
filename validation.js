@@ -10,17 +10,14 @@ const test = ({n, t}) => {
   }
 }
 
-const output = {
-  totalTurns: 1,
-  maxTurns: 10,
-  currentProducts: 10,
-  totalProducts: 5
-}
-
-const generateTests = (output) => [
-  { n: 'totalTurns < maxTurns', t: () => expect(output.totalTurns).toBeLessThan(output.maxTurns) },
-  { n: 'currentProducts < totalProducts', t: () => expect(output.currentProducts).toBeLessThan(output.totalProducts) }
+const generateTests = (parsedInput, output) => [
+  { n: 'totalTurns < maxTurns', t: () => expect(output.totalTurns).toBeLessThan(parsedInput.maxTurns) },
+  { n: 'currentProducts < totalProducts', t: () => expect(output.currentProducts).toBeLessThan(parsedInput.totalProducts) }
 ]
 
-u.log("Begin tests...")
-generateTests(output).map(t => test(t))
+const runTests = (parsedInput, output) => {
+  u.log("Begin tests...")
+  generateTests(parsedInput, output).map(t => test(t))
+}
+
+module.exports = { runTests }
