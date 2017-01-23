@@ -24,7 +24,7 @@ const generateTests = (parsedInput, output) => {
     return turns.reduce( (acc, cur) => acc + cur, 0 )
   }
 
-  output.droneCommands.map((drone, i) => {
+  (output.droneCommands).map( (drone, i) => {
     let turnsSum = getTurnsPerDrone(drone)
     let m = new Map()
     m.set ('n', `Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`)
