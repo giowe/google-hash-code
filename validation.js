@@ -1,18 +1,18 @@
 const expect = require('expect')
 const u = require('./modules/utils')
 
-const test = ({n, t}) => {
+const test = (map) => {
   try {
-    t()
-    u.logSuccess(`Test "${n}" succeded`)
+    map.get('t')()
+    u.logSuccess(`Test "${map.get('n')}" succeded`)
   } catch(e) {
-    u.logFail(`Test "${n}" failed. ${e}`)
+    u.logFail(`Test "${map.get('n')}" failed. ${e}`)
   }
 }
 
 const generateTests = (parsedInput, output) => {
 
-  let tests = []
+  let tests = new Set()
 
 // All commands are valid
   u.logFail(`Test "All commands are valid" has not yet been written`)
@@ -26,7 +26,10 @@ const generateTests = (parsedInput, output) => {
 
   output.droneCommands.map((drone, i) => {
     let turnsSum = getTurnsPerDrone(drone)
-    tests.push({ n: `Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`, t: () => expect(turnsSum).toBeLessThan(parsedInput.turns) })
+    let m = new Map()
+    m.set ('n', `Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`)
+    m.set ('t', () => expect(turnsSum).toBeLessThan(parsedInput.turns))
+    tests.add(m)
   })
 //
 
@@ -36,13 +39,12 @@ const generateTests = (parsedInput, output) => {
   //  tests.push({ n: `Order ${oi} product ${pi} total ${amount} must be less than 5`, t: () => expect(amount).toBeLessThan(5) })
   //}))
 //
-
   return tests 
 }
 
 const runTests = (parsedInput, output) => {
   u.log("Begin tests...")
-  generateTests(parsedInput, output).map(t => test(t))
+  generateTests(parsedInput, output).forEach(t => test(t))
 }
 
 module.exports = { runTests }
