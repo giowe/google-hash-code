@@ -1,6 +1,7 @@
 'use strict';
 const prettyjson = require('prettyjson');
 const colors = require('./colors');
+const m = require('mathjs');
 
 const logJson = (json, color) => {
   console.log(prettyjson.render(json, {
@@ -24,6 +25,10 @@ const logColor = (color, ...args) => {
 
 const log = (...args) => {
   console.log(...args);
+};
+
+const getDistance = (p1, p2) => {
+  return m.ceil(m.norm([p1.x - p2.x, p1.y - p2.y]));
 };
 
 const isEmptyObject = function(obj) {
@@ -56,5 +61,6 @@ module.exports = {
   logColor,
   log,
   isEmptyObject,
-  diff
+  diff,
+  getDistance
 };
