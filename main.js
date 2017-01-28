@@ -85,16 +85,20 @@ splittedOrders.forEach((order, i) => {
   order.warehouse.orders.push(i);
 });
 
+let totalDronesToAssociate = 0;
 warehouses.forEach((warehouse, i) => {
   warehouse.dronesToAssociate = m.round(warehouse.associatedOrdersCount * dronesCount / splittedOrders.length);
   warehouse.associatedDrones = 0;
   warehouse.id = i;
+
+  totalDronesToAssociate += warehouse.dronesToAssociate;
 });
 
 //**************************************DRONE ASSOCIATIONS
 const drones = [];
 let wareIndex = 0;
-for (let i = 0; i < dronesCount; i++) {
+
+for (let i = 0; i < dronesCount && i < totalDronesToAssociate; i++) {
   const wareToAssociate = warehouses[wareIndex];
   if ( wareToAssociate.dronesToAssociate === wareToAssociate.associatedDrones ) {
     wareIndex++;
@@ -114,9 +118,11 @@ for (let i = 0; i < dronesCount; i++) {
       y: 0
     },
     distance: 0,
-    products: [],
+    orders: [],
     travelTime: 0,
-    associatedWarehouse: wareToAssociate
+    actionTime: 0,
+    associatedWarehouse: wareToAssociate,
+    actions: []
   });
 
   wareToAssociate.associatedDrones++;
@@ -128,14 +134,76 @@ function getNearestFreeDrone(position) {
     .sort((a, b) => m.ceil(m.norm([a.destination.x - position.x, a.destination.y - position.y])) - m.ceil(m.norm([b.destination.x - position.x, b.destination.y - position.y])) )[0];
 }
 
-for(let t = 0; t < turns; t++) {
-  //trovo i droni a travel 0
-  //associo ai droni a travel 0 una mansione in funzione del loro precedente stato
-  //devo programmare i side effects di ogni nuova azione che impongo e devo salvarla nell'out
-  //devo risolvere tutte le azioni di tutti i droni.
+function getProductTypesFromOrder(order) {
+
 }
 
-u.logJson(drones, 'yellow');
+function getProductNumberFromOrder(order) {
+
+}
+
+for(let t = 0; t < turns; t++) {
+  //console.log('TURNO', t);
+
+  //Scorro tutti i droni con travel time a 0 e gli assegno nuove mansioni
+  drones.filter(drone => drone.travelTime === 0 ).forEach(drone => {
+    switch (drone.state) {
+      case 'D':
+        if (!drone.products.length) {
+          drone.products.pop();
+        }
+        break;
+
+      case 'L':
+
+        break;
+
+      case 'W':
+
+        break;
+
+      case 'U':
+
+        break;
+
+      default:
+        throw new Error(`Drone ${drone.id} has an unknown state: ${drone.state}`);
+    }
+  });
+
+  //Risolvo le azioni del turno per ogni drone;
+  drones.filter(d => {
+    if (d.travelTime !== 0) d.travelTime --;
+
+    /*switch (d.state) {
+      case 'D':
+
+        break;
+
+      case 'L':
+
+        break;
+
+      case 'W':
+
+        break;
+
+      case 'U':
+
+        break;
+
+      default:
+        throw new Error(`Drone ${drone.id} has an unknown state: ${drone.state}`);
+    }*/
+  });
+}
+
+/*u.logJson(drones, 'yellow');
 u.logJson(splittedOrders, 'blue');
-u.logJson(drones, 'cyan');
-u.log(getNearestFreeDrone({x:1, y:1}));
+*/
+
+drones.forEach((drone, i) => {
+  u.log('DRONE', i);
+  u.logJson(drone.actions);
+  u.log('-----------------------\n');
+});
