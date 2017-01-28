@@ -42,8 +42,22 @@ const generateTests = (parsedInput, output) => {
     return productsAmounts
   })
 
+  samplestruct = {
+    droneCommands: [
+      [
+        { type: 'D', target: 0, productType: 0, amount: 1, turns: 2 },
+      ]
+    ]
+  }
+
+  const deliveredOrders = [
+    [ 1, 0, 1 ],
+    [ 1, 0, 0 ],
+    [ 0, 0, 1 ]
+  ]
+
   const outputProducts = []
-  output.deliveredOrders.forEach( (order, orderIndex) => {
+  deliveredOrders.forEach( (order, orderIndex) => {
     const productsPerOrder = []
     order.forEach( (productAmount, productIndex) => {
       if (productAmount) {

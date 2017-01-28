@@ -13,11 +13,6 @@ const sampleOutput = {
       { type: 'L', target: 0, productType: 0, amount: 1, turns: 4 },
       { type: 'D', target: 1, productType: 0, amount: 1, turns: 1 }
     ]
-  ],
-  deliveredOrders: [
-    [ 1, 0, 1 ],
-    [ 1, 0, 0 ],
-    [ 0, 0, 1 ]
   ]
 }
 
