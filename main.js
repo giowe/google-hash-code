@@ -2,6 +2,7 @@
 const u = require('./modules/utils');
 const m = require('mathjs');
 const initialState = require('./parsedIn');
+const validation = require('./validation');
 
 const {
   field,
@@ -145,6 +146,7 @@ for (let i = 0; i < dronesCount && i < totalDronesToAssociate; i++) {
   wareToAssociate.associatedDrones++;
 }
 
+
 function getNearestFreeDrone(position) {
   return drones
     .filter(drone => drone.travelTime === 0)
@@ -191,7 +193,7 @@ for(let t = 0; t < turns; t++) {
           for (let i = 0; i < d.actionTime; i++) {
             d.actions.push({
               type: 'D',
-              target: splittedgit pullOrders[d.ordersId[0]].id,
+              target: splittedOrders[d.ordersId[0]].id,
               productType: productTypes.uniqueProducts[i],
               amount: productTypes.productsQuantities[i],
               turns: i === 0 ? d.travelTime + 1 : 1
@@ -329,5 +331,6 @@ drones.forEach((drone, i) => {
   u.log('-----------------------\n');
 });
 
-
-module.exports = { droneCommands: drones.map(drone => drone.actions) };
+const out =  { droneCommands: drones.map(drone => drone.actions) };
+validation.runTests(initialState, out);
+module.exports = out;
