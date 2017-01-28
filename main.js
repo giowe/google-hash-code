@@ -164,6 +164,7 @@ function getProductTypesFromOrder(order) {
   const productsQuantities = Object.keys(productsObj).map(key => {
     return productsObj[key];
   });
+
   return {
     uniqueProducts,
     productsQuantities
@@ -178,6 +179,7 @@ for(let t = 0; t < turns; t++) {
   u.debug(1, '--------------------\n');
 
 
+  // ASSEGNAZIONE
   //Scorro tutti i droni con travel time a 0 e gli assegno nuove mansioni
   drones.filter(drone => drone.travelTime === 0 && drone.actionTime === 0).forEach(d => {
     switch (d.state) {
@@ -192,18 +194,13 @@ for(let t = 0; t < turns; t++) {
               target: splittedOrders[d.ordersId[0]].id,
               productType: productTypes.uniqueProducts[i],
               amount: productTypes.productsQuantities[i],
-              turns: i === 0 ? d.actionTime + d.travelTime : 0
+              turns: i === 0 ? d.travelTime + 1 : 1
             })
           }
           d.position.x = d.associatedWarehouse.x;
           d.position.y = d.associatedWarehouse.y;
           d.actionAssigned = true;
         }
-        else {
-          d.actionAssigned = false;
-          d.state = 'L';
-        }
-
         break;
 
       case 'L':
@@ -225,7 +222,7 @@ for(let t = 0; t < turns; t++) {
                 target: d.associatedWarehouse.id,
                 productType: productTypes.uniqueProducts[i],
                 amount: productTypes.productsQuantities[i],
-                turns: i === 0 ? d.actionTime + d.travelTime : 0
+                turns: i === 0 ? d.travelTime +1 : 1
               })
             }
 
@@ -238,11 +235,6 @@ for(let t = 0; t < turns; t++) {
             d.actions.push( { type: 'W', turns: 1 } );
           }
         }
-        else{
-          d.actionAssigned = false;
-          d.state = 'D';
-        }
-
         break;
 
       case 'W':
@@ -276,6 +268,39 @@ for(let t = 0; t < turns; t++) {
 
   });
 
+
+
+  drones.filter(drone => drone.travelTime === 1 && drone.actionTime === 0).forEach(d => {
+    switch (d.state) {
+      case 'D':
+        if( d.actionAssigned === true) {
+          d.actionAssigned = false;
+          d.state = 'L';
+        }
+
+        break;
+
+      case 'L':
+        if (d.actionAssigned === true) {
+          d.actionAssigned = false;
+          d.state = 'D';
+        }
+
+        break;
+
+      case 'W':
+        break;
+
+      case 'U':
+        break;
+
+      default:
+        throw new Error(`Drone ${d.id} has an unknown state: ${d.state}`);
+    }
+
+  });
+
+
   //Risolvo le azioni del turno per ogni drone;
   drones.filter(d => {
     if (d.actionTime !== 0) {
@@ -303,6 +328,7 @@ drones.forEach((drone, i) => {
   u.logJson(drone.actions);
   u.log('-----------------------\n');
 });
+
 
 
 module.exports = drones.map(drone => drone.actions);
