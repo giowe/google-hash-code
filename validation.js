@@ -24,7 +24,7 @@ const generateTests = (parsedInput, output) => {
     let turnsSum = getTurnsPerDrone(drone)
     let m = new Map()
     m.set('n', `Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`)
-    m.set('t', () => expect(turnsSum).toBeLessThan(parsedInput.turns))
+    m.set('t', () => expect(turnsSum).toBeLessThanOrEqualTo(parsedInput.turns))
     tests.add(m)
   })
 
