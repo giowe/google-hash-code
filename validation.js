@@ -17,7 +17,7 @@ const runTest = (test) => {
   }
 }
 
-const generateTests = (parsedInput, output) => {
+const generateTests = (input, output) => {
   
   let tests = new Set()
 
@@ -29,22 +29,27 @@ const generateTests = (parsedInput, output) => {
 
   output.forEach( (drone, i) => {
     let turnsSum = getTurnsPerDrone(drone)
-    tests.add(createTest(`Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`, () => expect(turnsSum).toBeLessThanOrEqualTo(parsedInput.turns)))
+    tests.add(createTest(`Drone ${i} total turns (${turnsSum}) < max turns (${input.turns})`, () => expect(turnsSum).toBeLessThanOrEqualTo(input.turns)))
   })
 
 
   // No order receives more products of any type than the number of products of this type specified in the order
-  //output.forEach( (drone, i) =>{
+  const deliveries = output.map(drone => {
+    return drone.filter(action => action.type === 'D' )
+  }).reduce((a, b) => a.concat(b)).map(command => {
+    return { orderId: command.target, productType: command.productType, amount: command.amount }
+  })
 
-  //}
+  console.log(deliveries)
 
 
+  //Return
   return tests
 }
 
-const runTests = (parsedInput, output) => {
+const runTests = (input, output) => {
   u.log("Begin tests...")
-  generateTests(parsedInput, output).forEach(test => runTest(test))
+  generateTests(input, output).forEach(test => runTest(test))
 }
 
 module.exports = { runTests }
