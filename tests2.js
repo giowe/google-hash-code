@@ -1,6 +1,5 @@
 const validation = require('./validation')
+const input = require('./parsedIn')
 const actions = require('./main')
 
-console.log(actions)
-
-//validation.runTests(sampleInput, sampleOutput)
+validation.runTests(input, actions)

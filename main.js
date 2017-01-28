@@ -330,5 +330,4 @@ drones.forEach((drone, i) => {
 });
 
 
-
-module.exports = drones.map(drone => drone.actions);
+module.exports = { droneCommands: drones.map(drone => drone.actions) };
