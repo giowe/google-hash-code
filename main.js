@@ -171,56 +171,102 @@ function getProductTypesFromOrder(order) {
 }
 
 for(let t = 0; t < turns; t++) {
-  console.log('INIZIO TURNO', t);
+  u.debug(1, 'INIZIO TURNO', t);
   drones.forEach(d => {
-    u.log(d.id, d.state, d.travelTime, d.actionTime, d.actionAssigned);
+    u.debug(1, d.id, d.state, d.travelTime, d.actionTime, d.actionAssigned);
   });
-  console.log('--------------------\n')
+  u.debug(1, '--------------------\n');
 
 
   //Scorro tutti i droni con travel time a 0 e gli assegno nuove mansioni
   drones.filter(drone => drone.travelTime === 0 && drone.actionTime === 0).forEach(d => {
     switch (d.state) {
       case 'D':
-       /* if (!d.orders.length) {
-          d.products.pop();
-        }*/
+        if (d.actionAssigned === false) {
+          const productTypes = getProductTypesFromOrder(splittedOrders[d.ordersId[0]]);
+          d.actionTime = productTypes.uniqueProducts.length;
+          d.travelTime = u.getDistance(d.position, {x: d.associatedWarehouse.x, y: d.associatedWarehouse.y});
+          for (let i = 0; i < d.actionTime; i++) {
+            d.actions.push({
+              type: 'D',
+              target: splittedOrders[d.ordersId[0]].id,
+              productType: productTypes.uniqueProducts[i],
+              amount: productTypes.productsQuantities[i],
+              turns: i === 0 ? d.actionTime + d.travelTime : 0
+            })
+          }
+          d.position.x = d.associatedWarehouse.x;
+          d.position.y = d.associatedWarehouse.y;
+          d.actionAssigned = true;
+        }
+        else {
+          d.actionAssigned = false;
+          d.state = 'L';
+        }
+
         break;
 
       case 'L':
         if (d.actionAssigned === false) {
-          const currentOrder = d.associatedWarehouse.ordersId.pop();
-          d.ordersId.push(currentOrder);
-          u.logColor('red', 'd.id = ', d.id, '| d.orderId = ', d.ordersId, '| d.assWare.id =', d.associatedWarehouse.id, d.actionAssigned);
-          const productTypes = getProductTypesFromOrder(splittedOrders[currentOrder]);
-          d.actionTime = productTypes.uniqueProducts.length;
-          for (let i = 0; i < d.actionTime; i++) {
-            d.actions.push({
-              type: 'L',
-              target: d.associatedWarehouse.id,
-              productType: productTypes.uniqueProducts[i],
-              amount: productTypes.productsQuantities[i],
-              turns: 1
-            })
+
+          if (d.associatedWarehouse.ordersId.length) {
+            const currentOrder = d.associatedWarehouse.ordersId.pop();
+            d.ordersId.push(currentOrder);
+
+            const productTypes = getProductTypesFromOrder(splittedOrders[currentOrder]);
+            d.actionTime = productTypes.uniqueProducts.length;
+
+            const order = splittedOrders[d.ordersId[0]];
+            d.travelTime = u.getDistance(d.position, {x: order.x, y: order.y});
+
+            for (let i = 0; i < d.actionTime; i++) {
+              d.actions.push({
+                type: 'L',
+                target: d.associatedWarehouse.id,
+                productType: productTypes.uniqueProducts[i],
+                amount: productTypes.productsQuantities[i],
+                turns: i === 0 ? d.actionTime + d.travelTime : 0
+              })
+            }
+
+            d.position.x = order.x;
+            d.position.y = order.y;
+            d.actionAssigned = true;
+          } else {
+            d.actionAssigned = false;
+            d.state = 'W';
+            d.actions.push( { type: 'W', turns: 1 } );
           }
-          const order = splittedOrders[d.ordersId[0]];
-          d.travelTime = u.getDistance(d.position, {x: order.x, y: order.y});
-          d.actionAssigned = true;
         }
         else{
           d.actionAssigned = false;
           d.state = 'D';
         }
 
-
-
         break;
 
       case 'W':
+        if (d.actionAssigned === false) {
+          /*if (!d.actions.length || d.actions[d.actions.length-1].type !== 'W') {
+            d.actions.push( { type: 'W', turns: 1 } );
+          } else if (d.actions[d.actions.length-1].type === 'W') {
+            d.actions[d.actions.length-1].turns ++;
+          }*/
+          d.actions[d.actions.length-1].turns++;
+        }
+        else {
+
+        }
 
         break;
 
       case 'U':
+        if (d.actionAssigned === false) {
+
+        }
+        else {
+
+        }
 
         break;
 
@@ -241,20 +287,22 @@ for(let t = 0; t < turns; t++) {
 
 
 
-  console.log('FINE TURNO', t);
+  u.debug(1, 'FINE TURNO', t);
   drones.forEach(d => {
-    u.log(d.id, d.state, d.travelTime, d.actionTime, d.actionAssigned);
+    u.debug(1, d.id, d.state, d.travelTime, d.actionTime, d.actionAssigned);
   });
-  console.log('--------------------\n')
-
+  u.debug(1, '--------------------\n');
 }
 
 //u.logJson(drones, 'yellow');
 //u.logJson(splittedOrders, 'blue');
 
-
+console.log(drones.length)
 drones.forEach((drone, i) => {
   u.log('DRONE', i);
   u.logJson(drone.actions);
   u.log('-----------------------\n');
 });
+
+
+module.exports = drones.map(drone => drone.actions);
