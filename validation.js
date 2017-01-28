@@ -34,30 +34,60 @@ const generateTests = (parsedInput, output) => {
 
 
 // No order receives more products of any type than the number of products of this type specified in the order
-
-  const compareProduct = (inputProduct, outputProduct) => {
-    let m = new Map()
-    m.set('n', `Input order ${inputProduct.orderIndex} product ${inputProduct.productTypeAmount} amount requested greater than or equal to 
-      delivered order ${outputProduct.orderIndex} product ${outputProduct.productTypeAmount} amount delivered`)
-    m.set('t', () => expect([inputProduct.orderIndex][inputProduct.productTypeAmount]).toBeGreaterThanOrEqualTo([outputProduct.orderIndex][outputProduct.productTypeAmount]))
-    tests.add(m)
-  }
-
-  parsedInput.orders.map( (order, orderIndex) => {
+  const inputProducts = parsedInput.orders.map( (order, orderIndex) => {
     let uniqueProducts = new Set(order.products)
 
     let productsAmounts = Array.from(uniqueProducts).map( (product) => {
       let m = new Map()
-      return m.set([ orderIndex, product ], (order.products.reduce(function(n, val) { return n + (val === product)}, 0) ))
+      m.set([ orderIndex, product ], (order.products.reduce(function(n, val) { return n + (val === product)}, 0) ))
+      return m
     })
 
-    console.log(productsAmounts)
-
+    return productsAmounts
   })
 
-// Return tests
+  const outputProducts = []
+  output.deliveredOrders.forEach( (order, orderIndex) => {
+    const productsPerOrder = []
+    order.forEach( (productAmount, productIndex) => {
+      if (productAmount) {
+        let m = new Map()
+        m.set([ orderIndex, productIndex], productAmount)
+        productsPerOrder.push(m)
+      }
+    })
+    if (outputProducts) {
+      outputProducts.push(productsPerOrder)
+    }
+  })
 
-  return tests 
+  outputProducts.forEach( ( outputOrder ) => {
+    outputOrder.forEach( ( outputProduct ) => {
+      
+      inputProducts.forEach( ( inputOrder ) => {
+        inputOrder.forEach( ( inputProduct ) => {
+        
+          if ( JSON.stringify(Array.from(outputProduct.keys())) === JSON.stringify(Array.from(inputProduct.keys())) ) {
+            let m = new Map()
+            const testo = [
+              `Order ${outputProduct.keys().next().value[0]}, Product Type ${outputProduct.keys().next().value[1]} Amount ${outputProduct.values().next().value} from Output`,
+              `expected to be less than or equal to`,
+              `Order ${inputProduct.keys().next().value[0]}, Product Type ${inputProduct.keys().next().value[1]} Amount ${inputProduct.values().next().value} from Input`
+            ].join(' ')
+            m.set('n', testo)
+            m.set('t', () => expect(outputProduct.values().next().value).toBeLessThanOrEqualTo(inputProduct.values().next().value) )
+            tests.add(m)
+          } 
+
+        })
+      })
+
+    })
+  })
+
+
+// Return tests
+  return tests
 }
 
 const runTests = (parsedInput, output) => {
