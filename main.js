@@ -213,8 +213,6 @@ for(let t = 0; t < turns; t++) {
             const currentOrder = d.associatedWarehouse.ordersId.pop();
             d.ordersId.push(currentOrder);
 
-            u.log( d.ordersId )
-
             const productTypes = getProductTypesFromOrder(splittedOrders[currentOrder]);
             d.actionTime = productTypes.uniqueProducts.length;
 
@@ -326,10 +324,6 @@ for(let t = 0; t < turns; t++) {
   u.debug(1, '--------------------\n');
 }
 
-//u.logJson(drones, 'yellow');
-//u.logJson(splittedOrders, 'blue');
-
-console.log(drones.length)
 drones.forEach((drone, i) => {
   u.log('DRONE', i);
   u.logJson(drone.actions);
