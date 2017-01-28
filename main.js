@@ -85,14 +85,31 @@ splittedOrders.forEach((order, i) => {
   order.warehouse.ordersId.push(i);
 });
 
-let totalDronesToAssociate = 0;
 warehouses.forEach((warehouse, i) => {
-  warehouse.dronesToAssociate = m.round(warehouse.associatedOrdersCount * dronesCount / splittedOrders.length);
+  warehouse.dronesToAssociate = warehouse.associatedOrdersCount * dronesCount / splittedOrders.length;
   warehouse.associatedDrones = 0;
   warehouse.id = i;
-
-  totalDronesToAssociate += warehouse.dronesToAssociate;
 });
+
+let totalDronesToAssociate = 0;
+let dronesSurplus = 0;
+warehouses.forEach((warehouse, i) => {
+    let integerPart = m.floor(warehouse.dronesToAssociate);
+    let fractionalPart = warehouse.dronesToAssociate - integerPart;
+    if ( fractionalPart !== 0 ) {
+	if ( dronesSurplus < 1) {
+	    warehouse.dronesToAssociate = integerPart;
+	    dronesSurplus = dronesSurplus + fractionalPart;
+	}
+	else {
+	    warehouse.dronesToAssociate = integerPart + 1;
+	    dronesSurplus--;
+	}
+    }
+
+    totalDronesToAssociate += warehouse.dronesToAssociate;
+});
+
 
 //**************************************DRONE ASSOCIATIONS
 const drones = [];
@@ -102,6 +119,9 @@ for (let i = 0; i < dronesCount && i < totalDronesToAssociate; i++) {
   const wareToAssociate = warehouses[wareIndex];
   if ( wareToAssociate.dronesToAssociate === wareToAssociate.associatedDrones ) {
     wareIndex++;
+      if (wareIndex >= Object.keys(warehouses).length) {
+	  break;
+      }
     i--;
     continue;
   }
