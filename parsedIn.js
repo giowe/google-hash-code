@@ -66,5 +66,5 @@ const model = {
 };
 
 //Parser.validateOverModel(model, parsedInput);
-u.logJson(parsedInput);
+//u.logJson(parsedInput);
 module.exports = parsedInput;
