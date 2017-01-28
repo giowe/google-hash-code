@@ -40,7 +40,7 @@ const ordersWithWeights = orders.map((order, i) => {
   order.w = getProductsWeight(order.products);
   order.id = i;
   order.warehouse = getNearestWarehouse(order);
-  order.warehouse.orders = [];
+  order.warehouse.ordersId = [];
 
   return order;
 }).sort((a, b) => a.w - b.w);
@@ -82,7 +82,7 @@ ordersWithWeights.forEach((order, o) => {
 //**************************************PRE SPLIT ORDERS ENRICHMENT
 splittedOrders.forEach((order, i) => {
   order.warehouse.associatedOrdersCount = order.warehouse.associatedOrdersCount? order.warehouse.associatedOrdersCount + 1 : 1;
-  order.warehouse.orders.push(i);
+  order.warehouse.ordersId.push(i);
 });
 
 let totalDronesToAssociate = 0;
@@ -108,7 +108,7 @@ for (let i = 0; i < dronesCount && i < totalDronesToAssociate; i++) {
 
   drones.push({
     id: i,
-    state: 'W',
+    state: 'L',
     origin: {
       x: warehouses[0].x,
       y: warehouses[0].y
@@ -118,7 +118,7 @@ for (let i = 0; i < dronesCount && i < totalDronesToAssociate; i++) {
       y: 0
     },
     distance: 0,
-    orders: [],
+    ordersId: [],
     travelTime: 0,
     actionTime: 0,
     associatedWarehouse: wareToAssociate,
@@ -135,26 +135,54 @@ function getNearestFreeDrone(position) {
 }
 
 function getProductTypesFromOrder(order) {
+  const uniqueProducts = Array.from(new Set(order.products));
+  const productsObj = {};
+  uniqueProducts.forEach(product => {
+    productsObj[product] = 0;
+  });
+  order.products.forEach(product => {
+    productsObj[product]++;
+  });
 
-}
-
-function getProductNumberFromOrder(order) {
-
+  const productsQuantities = Object.keys(productsObj).map(key => {
+    return productsObj[key];
+  });
+  return {
+    uniqueProducts,
+    productsQuantities
+  }
 }
 
 for(let t = 0; t < turns; t++) {
   //console.log('TURNO', t);
 
   //Scorro tutti i droni con travel time a 0 e gli assegno nuove mansioni
-  drones.filter(drone => drone.travelTime === 0 ).forEach(drone => {
-    switch (drone.state) {
+  drones.filter(drone => drone.travelTime === 0 ).forEach(d => {
+    switch (d.state) {
       case 'D':
-        if (!drone.products.length) {
-          drone.products.pop();
-        }
+       /* if (!d.orders.length) {
+          d.products.pop();
+        }*/
         break;
 
       case 'L':
+        if (d.actionTime === 0) {
+          const currentOrder = d.associatedWarehouse.ordersId.pop();
+          d.ordersId.push(currentOrder);
+          const productTypes = getProductTypesFromOrder(splittedOrders[currentOrder]);
+          d.actionTime = productTypes.uniqueProducts.length;
+          for (let i = 0; i < d.actionTime; i ++) {
+            d.actions.push({ type: 'L', target: d.associatedWarehouse.id, productType: productTypes.uniqueProducts[i], amount: productTypes.productsQuantities[i], turns: 1 })
+          }
+
+        }
+
+        d.actionTime--;
+        if (d.actionTime === 0) {
+          d.state = 'D';
+
+          //d.travelTime =
+        }
 
         break;
 
@@ -167,40 +195,19 @@ for(let t = 0; t < turns; t++) {
         break;
 
       default:
-        throw new Error(`Drone ${drone.id} has an unknown state: ${drone.state}`);
+        throw new Error(`Drone ${d.id} has an unknown state: ${d.state}`);
     }
   });
 
   //Risolvo le azioni del turno per ogni drone;
   drones.filter(d => {
     if (d.travelTime !== 0) d.travelTime --;
-
-    /*switch (d.state) {
-      case 'D':
-
-        break;
-
-      case 'L':
-
-        break;
-
-      case 'W':
-
-        break;
-
-      case 'U':
-
-        break;
-
-      default:
-        throw new Error(`Drone ${drone.id} has an unknown state: ${drone.state}`);
-    }*/
   });
 }
 
-/*u.logJson(drones, 'yellow');
-u.logJson(splittedOrders, 'blue');
-*/
+//u.logJson(drones, 'yellow');
+//u.logJson(splittedOrders, 'blue');
+
 
 drones.forEach((drone, i) => {
   u.log('DRONE', i);
