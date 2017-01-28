@@ -109,15 +109,12 @@ for (let i = 0; i < dronesCount && i < totalDronesToAssociate; i++) {
   drones.push({
     id: i,
     state: 'L',
-    origin: {
+    position: {
       x: warehouses[0].x,
       y: warehouses[0].y
     },
-    destination: {
-      x: 0,
-      y: 0
-    },
     distance: 0,
+    actionAssigned: false,
     ordersId: [],
     travelTime: 0,
     actionTime: 0,
@@ -154,10 +151,15 @@ function getProductTypesFromOrder(order) {
 }
 
 for(let t = 0; t < turns; t++) {
-  //console.log('TURNO', t);
+  console.log('INIZIO TURNO', t);
+  drones.forEach(d => {
+    u.log(d.id, d.state, d.travelTime, d.actionTime, d.actionAssigned);
+  });
+  console.log('--------------------\n')
+
 
   //Scorro tutti i droni con travel time a 0 e gli assegno nuove mansioni
-  drones.filter(drone => drone.travelTime === 0 ).forEach(d => {
+  drones.filter(drone => drone.travelTime === 0 && drone.actionTime === 0).forEach(d => {
     switch (d.state) {
       case 'D':
        /* if (!d.orders.length) {
@@ -166,23 +168,31 @@ for(let t = 0; t < turns; t++) {
         break;
 
       case 'L':
-        if (d.actionTime === 0) {
+        if (d.actionAssigned === false) {
           const currentOrder = d.associatedWarehouse.ordersId.pop();
           d.ordersId.push(currentOrder);
+          u.logColor('red', 'd.id = ', d.id, '| d.orderId = ', d.ordersId, '| d.assWare.id =', d.associatedWarehouse.id, d.actionAssigned);
           const productTypes = getProductTypesFromOrder(splittedOrders[currentOrder]);
           d.actionTime = productTypes.uniqueProducts.length;
-          for (let i = 0; i < d.actionTime; i ++) {
-            d.actions.push({ type: 'L', target: d.associatedWarehouse.id, productType: productTypes.uniqueProducts[i], amount: productTypes.productsQuantities[i], turns: 1 })
+          for (let i = 0; i < d.actionTime; i++) {
+            d.actions.push({
+              type: 'L',
+              target: d.associatedWarehouse.id,
+              productType: productTypes.uniqueProducts[i],
+              amount: productTypes.productsQuantities[i],
+              turns: 1
+            })
           }
-
+          const order = splittedOrders[d.ordersId[0]];
+          d.travelTime = u.getDistance(d.position, {x: order.x, y: order.y});
+          d.actionAssigned = true;
         }
-
-        d.actionTime--;
-        if (d.actionTime === 0) {
+        else{
+          d.actionAssigned = false;
           d.state = 'D';
-
-          //d.travelTime =
         }
+
+
 
         break;
 
@@ -197,12 +207,26 @@ for(let t = 0; t < turns; t++) {
       default:
         throw new Error(`Drone ${d.id} has an unknown state: ${d.state}`);
     }
+
   });
 
   //Risolvo le azioni del turno per ogni drone;
   drones.filter(d => {
-    if (d.travelTime !== 0) d.travelTime --;
+    if (d.actionTime !== 0) {
+      d.actionTime--;
+    } else {
+      if (d.travelTime !== 0) d.travelTime --;
+    }
   });
+
+
+
+  console.log('FINE TURNO', t);
+  drones.forEach(d => {
+    u.log(d.id, d.state, d.travelTime, d.actionTime, d.actionAssigned);
+  });
+  console.log('--------------------\n')
+
 }
 
 //u.logJson(drones, 'yellow');
