@@ -42,22 +42,40 @@ const generateTests = (parsedInput, output) => {
     return productsAmounts
   })
 
-  samplestruct = {
-    droneCommands: [
-      [
-        { type: 'D', target: 0, productType: 0, amount: 1, turns: 2 },
-      ]
-    ]
+  let outputDeliveredOrders = []
+
+  let uniqueOrders = 0
+  let uniqueProductTypes = 0
+  output.droneCommands.forEach(drone => {
+    drone.forEach(command => {
+      if (command.type === 'D') {
+        if (command.target > uniqueOrders) uniqueOrders = command.target
+        if (command.productType > uniqueProductTypes) uniqueProductTypes = command.productType
+      }
+    })
+  })
+  uniqueOrders += 1
+  uniqueProductTypes += 1
+
+  for (let i = 0; i < uniqueOrders; i++) {
+    let order = []
+    for (let l = 0; l < uniqueProductTypes; l++) {
+      let productAmount = 0
+      output.droneCommands.forEach(drone => {
+        drone.forEach(command => {
+          if (command.type === 'D' && command.target === i && command.productType === l) {
+            productAmount += command.amount
+          }
+        })
+      })
+      order.push(productAmount)
+    }
+    outputDeliveredOrders.push(order)
   }
 
-  const deliveredOrders = [
-    [ 1, 0, 1 ],
-    [ 1, 0, 0 ],
-    [ 0, 0, 1 ]
-  ]
 
   const outputProducts = []
-  deliveredOrders.forEach( (order, orderIndex) => {
+  outputDeliveredOrders.forEach( (order, orderIndex) => {
     const productsPerOrder = []
     order.forEach( (productAmount, productIndex) => {
       if (productAmount) {
