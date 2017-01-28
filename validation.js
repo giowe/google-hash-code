@@ -1,6 +1,13 @@
 const expect = require('expect')
 const u = require('./modules/utils')
 
+const createTest = (text, test) => {
+  let m = new Map()
+  m.set('text', text)
+  m.set('function', test)
+  return m
+}
+
 const runTest = (test) => {
   try {
     test.get('function')()
@@ -13,14 +20,6 @@ const runTest = (test) => {
 const generateTests = (parsedInput, output) => {
   
   let tests = new Set()
-
-  const createTest = (text, test) => {
-    let m = new Map()
-    m.set('text', text)
-    m.set('function', test)
-    return m
-  }
-
 
   // All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
   const getTurnsPerDrone = (drone) => {
