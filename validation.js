@@ -14,10 +14,6 @@ const generateTests = (parsedInput, output) => {
 
   let tests = new Set()
 
-// All commands are valid
-  u.logFail(`Test "All commands are valid" has not yet been written`)
-
-
 // All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
   const getTurnsPerDrone = (drone) => {
     let turns = drone.map(command => command.turns)
