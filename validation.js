@@ -16,7 +16,7 @@ const generateTests = (parsedInput, output) => {
 
 // All commands are valid
   u.logFail(`Test "All commands are valid" has not yet been written`)
-// 
+
 
 // All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
   const getTurnsPerDrone = (drone) => {
@@ -24,21 +24,39 @@ const generateTests = (parsedInput, output) => {
     return turns.reduce( (acc, cur) => acc + cur, 0 )
   }
 
-  (output.droneCommands).map( (drone, i) => {
+  output.droneCommands.map( (drone, i) => {
     let turnsSum = getTurnsPerDrone(drone)
     let m = new Map()
-    m.set ('n', `Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`)
-    m.set ('t', () => expect(turnsSum).toBeLessThan(parsedInput.turns))
+    m.set('n', `Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`)
+    m.set('t', () => expect(turnsSum).toBeLessThan(parsedInput.turns))
     tests.add(m)
   })
-//
+
 
 // No order receives more products of any type than the number of products of this type specified in the order
-  u.logFail(`Test "Input products >= output products" has not yet been written`)
-  //(output.deliveredOrders).forEach((order, oi) => order.map((amount, pi) => {
-  //  tests.push({ n: `Order ${oi} product ${pi} total ${amount} must be less than 5`, t: () => expect(amount).toBeLessThan(5) })
-  //}))
-//
+
+  const compareProduct = (inputProduct, outputProduct) => {
+    let m = new Map()
+    m.set('n', `Input order ${inputProduct.orderIndex} product ${inputProduct.productTypeAmount} amount requested greater than or equal to 
+      delivered order ${outputProduct.orderIndex} product ${outputProduct.productTypeAmount} amount delivered`)
+    m.set('t', () => expect([inputProduct.orderIndex][inputProduct.productTypeAmount]).toBeGreaterThanOrEqualTo([outputProduct.orderIndex][outputProduct.productTypeAmount]))
+    tests.add(m)
+  }
+
+  parsedInput.orders.map( (order, orderIndex) => {
+    let uniqueProducts = new Set(order.products)
+
+    let productsAmounts = Array.from(uniqueProducts).map( (product) => {
+      let m = new Map()
+      return m.set([ orderIndex, product ], (order.products.reduce(function(n, val) { return n + (val === product)}, 0) ))
+    })
+
+    console.log(productsAmounts)
+
+  })
+
+// Return tests
+
   return tests 
 }
 
