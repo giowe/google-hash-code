@@ -27,15 +27,14 @@ const generateTests = (parsedInput, output) => {
     return turns.reduce( (acc, cur) => acc + cur, 0 )
   }
 
-  output.droneCommands.forEach( (drone, i) => {
+  output.forEach( (drone, i) => {
     let turnsSum = getTurnsPerDrone(drone)
     tests.add(createTest(`Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`, () => expect(turnsSum).toBeLessThanOrEqualTo(parsedInput.turns)))
   })
 
 
   // No order receives more products of any type than the number of products of this type specified in the order
-
-  //output.droneCommands.forEach( (drone, i) => {
+  //output.forEach( (drone, i) =>{
 
   //}
 

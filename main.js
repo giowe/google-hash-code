@@ -330,6 +330,6 @@ drones.forEach((drone, i) => {
   u.log('-----------------------\n');
 });
 
-const out =  { droneCommands: drones.map(drone => drone.actions) };
+const out = drones.map(drone => drone.actions);
 validation.runTests(initialState, out);
 module.exports = out;
