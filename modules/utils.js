@@ -2,6 +2,7 @@
 const prettyjson = require('prettyjson');
 const colors = require('./colors');
 const m = require('mathjs');
+const argv = require('yargs').argv;
 
 const logJson = (json, color) => {
   console.log(prettyjson.render(json, {
@@ -25,6 +26,11 @@ const logColor = (color, ...args) => {
 
 const log = (...args) => {
   console.log(...args);
+};
+
+const debug = (level, ...args) => {
+  const debugLevel = argv.debug || argv.d;
+  if (debugLevel >= level) console.log(...args);
 };
 
 const getDistance = (p1, p2) => {
@@ -60,6 +66,7 @@ module.exports = {
   logFail,
   logColor,
   log,
+  debug,
   isEmptyObject,
   diff,
   getDistance
