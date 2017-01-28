@@ -191,7 +191,7 @@ for(let t = 0; t < turns; t++) {
           for (let i = 0; i < d.actionTime; i++) {
             d.actions.push({
               type: 'D',
-              target: splittedOrders[d.ordersId[0]].id,
+              target: splittedgit pullOrders[d.ordersId[0]].id,
               productType: productTypes.uniqueProducts[i],
               amount: productTypes.productsQuantities[i],
               turns: i === 0 ? d.travelTime + 1 : 1
