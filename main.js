@@ -202,6 +202,7 @@ for(let t = 0; t < turns; t++) {
           d.position.x = d.associatedWarehouse.x;
           d.position.y = d.associatedWarehouse.y;
           d.actionAssigned = true;
+          d.ordersId.pop();
         }
         break;
 
@@ -211,6 +212,8 @@ for(let t = 0; t < turns; t++) {
           if (d.associatedWarehouse.ordersId.length) {
             const currentOrder = d.associatedWarehouse.ordersId.pop();
             d.ordersId.push(currentOrder);
+
+            u.log( d.ordersId )
 
             const productTypes = getProductTypesFromOrder(splittedOrders[currentOrder]);
             d.actionTime = productTypes.uniqueProducts.length;
@@ -311,6 +314,8 @@ for(let t = 0; t < turns; t++) {
       if (d.travelTime !== 0) d.travelTime --;
     }
   });
+
+
 
 
 
