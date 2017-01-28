@@ -40,7 +40,22 @@ const generateTests = (input, output) => {
     return { orderId: command.target, productType: command.productType, amount: command.amount }
   })
 
-  console.log(deliveries)
+  Array.from(Array(input.ordersCount)).forEach( (_, orderIndex) => {
+    Array.from(Array(input.productTypes.count)).forEach( (_, productType) => {
+
+      let productSum = 0
+      deliveries.forEach(delivery => {
+        if (delivery.orderId === orderIndex && delivery.productType === productType) {
+          productSum += delivery.amount
+        }
+      })
+
+      tests.add(createTest(
+        `[${orderIndex}, ${productType}]`,
+          () => expect(productSum).toBeLessThanOrEqualTo(productSum)
+      ))
+    })
+  })
 
 
   //Return
