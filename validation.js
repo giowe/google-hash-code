@@ -3,12 +3,7 @@
 const expect = require('expect')
 const u = require('./modules/utils')
 
-const createTest = (text, test) => {
-  let m = new Map()
-  m.set('text', text)
-  m.set('function', test)
-  return m
-}
+const createTest = (text, test) => { return new Map().set('text', text).set('function', test) }
 
 const runTest = (test) => {
   try {
@@ -21,26 +16,22 @@ const runTest = (test) => {
 
 const generateTests = (input, output) => {
   
-  let tests = new Set()
+  const tests = new Set()
 
   // All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
-  const getTurnsPerDrone = (drone) => {
-    let turns = drone.map(command => command.turns)
-    return turns.reduce( (acc, cur) => acc + cur, 0 )
-  }
+  const getTurnsPerDrone = (drone) => drone.map(command => command.turns).reduce( (acc, cur) => acc + cur, 0 )
 
   output.forEach( (drone, i) => {
-    let turnsSum = getTurnsPerDrone(drone)
-    tests.add(createTest(`Drone ${i} total turns (${turnsSum}) < max turns (${input.turns})`, () => expect(turnsSum).toBeLessThanOrEqualTo(input.turns)))
+    tests.add(createTest(
+      `Drone ${i} total turns (${getTurnsPerDrone(drone)}) < max turns (${input.turns})`,
+      () => expect(getTurnsPerDrone(drone)).toBeLessThanOrEqualTo(input.turns))
+    )
   })
 
 
   // No order receives more products of any type than the number of products of this type specified in the order
-  const deliveries = output.map(drone => {
-    return drone.filter(action => action.type === 'D' )
-  }).reduce((a, b) => a.concat(b)).map(command => {
-    return { orderId: command.target, productType: command.productType, amount: command.amount }
-  })
+  const deliveries = output.map( drone => drone.filter(action => action.type === 'D') )
+    .reduce((a, b) => a.concat(b)).map( command => ({ orderId: command.target, productType: command.productType, amount: command.amount }) )
 
   Array.from(Array(input.ordersCount)).forEach( (_, orderIndex) => {
     Array.from(Array(input.productTypes.count)).forEach( (_, productType) => {
