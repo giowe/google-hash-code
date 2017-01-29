@@ -3,7 +3,7 @@
 const expect = require('expect')
 const u = require('./modules/utils')
 
-const createTest = (text, test) => { return new Map().set('text', text).set('function', test) }
+const createTest = (text, test) => new Map().set('text', text).set('function', test)
 
 const runTest = (test) => {
   try {
