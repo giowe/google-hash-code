@@ -19,7 +19,7 @@ const generateTests = (input, output) => {
   const tests = new Set()
 
   // All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
-  const getTurnsPerDrone = (drone) => drone.map(command => command.turns).reduce( (acc, cur) => acc + cur, 0 )
+  const getTurnsPerDrone = (drone) => drone.map(command => command.turns).reduce( (acc, turns) => acc + turns, 0 )
 
   output.forEach( (drone, i) => {
     tests.add(createTest(
