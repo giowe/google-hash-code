@@ -36,8 +36,8 @@ const generateTests = (input, output) => {
   Array.from(Array(input.ordersCount)).forEach( (_, orderIndex) => {
     Array.from(Array(input.productTypes.count)).forEach( (_, productType) => {
 
-      const deliveredProductSum = deliveries.filter(delivery => delivery.orderId === orderIndex && delivery.productType === productType).reduce( acc => acc += 1, 0 )
-      const inputProductSum = input.orders[orderIndex].products.filter( product => product === productType).reduce( acc => acc += 1, 0 )
+      const deliveredProductSum = deliveries.filter( delivery => delivery.orderId === orderIndex && delivery.productType === productType ).reduce( acc => acc += 1, 0 )
+      const inputProductSum = input.orders[orderIndex].products.filter( product => product === productType ).reduce( acc => acc += 1, 0 )
 
       deliveredProductSum && tests.add(createTest(
         [
