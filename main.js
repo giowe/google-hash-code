@@ -3,6 +3,7 @@ const u = require('./modules/utils');
 const m = require('mathjs');
 const initialState = require('./parsedIn');
 const validation = require('./validation');
+const outParser = require('./outParser')
 
 const {
   field,
@@ -331,5 +332,12 @@ drones.forEach((drone, i) => {
 });
 
 const out = drones.map(drone => drone.actions);
+
+u.log('VALIDATION\n')
 validation.runTests(initialState, out);
+u.log('---------------------\n')
+u.log('PARSED OUTPUT\n')
+outParser.produceOutput(out)
+console.log('Parsed output printed to file ./testOutput.log')
+
 module.exports = out;
