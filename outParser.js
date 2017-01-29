@@ -16,7 +16,6 @@ const produceOutput = (output) => {
     }
   })).reduce( (a, b) => a.concat(b))
 
-
   logger.write(`${commands.length}\n`)
   commands.forEach(command => {
     logger.write(command)
