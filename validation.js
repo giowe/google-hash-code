@@ -35,11 +35,9 @@ const generateTests = (input, output) => {
 
   Array.from(Array(input.ordersCount)).forEach( (_, orderIndex) => {
     Array.from(Array(input.productTypes.count)).forEach( (_, productType) => {
-
       const deliveredProductSum = deliveries.filter( delivery => delivery.orderId === orderIndex && delivery.productType === productType )
         .reduce( (acc, delivery) => acc += delivery.amount, 0 )
       const inputProductSum = input.orders[orderIndex].products.filter( product => product === productType ).reduce( acc => acc += 1, 0 )
-
       deliveredProductSum && tests.add(createTest(
         [
           `(Order: ${orderIndex}, Product: ${productType}) Amount: ${deliveredProductSum} from output`,
@@ -56,8 +54,16 @@ const generateTests = (input, output) => {
 }
 
 const runTests = (input, output) => {
-  u.log("Begin tests...")
-  generateTests(input, output).forEach(test => runTest(test))
+  u.log('Generating tests...')
+  console.time('\nTotal running time')
+  console.time('Tests generated in')
+  const tests = generateTests(input, output)
+  console.timeEnd('Tests generated in')
+  console.log('\nRunning tests...')
+  console.time('Tests completed in')
+  tests.forEach(test => runTest(test))
+  console.timeEnd('Tests completed in')
+  console.timeEnd('\nTotal running time')
 }
 
 module.exports = { runTests }
