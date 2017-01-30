@@ -164,7 +164,7 @@ function getProductTypesFromOrder(order) {
     productsObj[product]++;
   });
 
-  const productsQuantities = Object.keys(productsObj).map(key => {
+  const productsQuantities = uniqueProducts.map(key => {
     return productsObj[key];
   });
 
@@ -174,6 +174,8 @@ function getProductTypesFromOrder(order) {
   }
 }
 
+
+// BEGIN OF LOOP ---------------
 for(let t = 0; t < turns; t++) {
   u.debug(1, 'INIZIO TURNO', t);
   drones.forEach(d => {
