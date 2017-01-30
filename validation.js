@@ -1,126 +1,69 @@
+'use strict'
+
 const expect = require('expect')
 const u = require('./modules/utils')
 
-const test = (map) => {
+const createTest = (text, test) => new Map().set('text', text).set('function', test)
+
+const runTest = (test) => {
   try {
-    map.get('t')()
-    u.logSuccess(`Test "${map.get('n')}" succeded`)
+    test.get('function')()
+    u.logSuccess(`Test "${test.get('text')}" succeded`)
   } catch(e) {
-    u.logFail(`Test "${map.get('n')}" failed. ${e}`)
+    u.logFail(`Test "${test.get('text')}" failed. ${e}`)
   }
 }
 
-const generateTests = (parsedInput, output) => {
+const generateTests = (input, output) => {
+  
+  const tests = new Set()
 
-  let tests = new Set()
+  // All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
+  const getTurnsPerDrone = (drone) => drone.map(command => command.turns).reduce( (acc, turns) => acc + turns, 0 )
 
-// All commands for any given drone take at most T turns in total, where T is the number of tuns of the simulation
-  const getTurnsPerDrone = (drone) => {
-    let turns = drone.map(command => command.turns)
-    return turns.reduce( (acc, cur) => acc + cur, 0 )
-  }
-
-  output.droneCommands.map( (drone, i) => {
-    let turnsSum = getTurnsPerDrone(drone)
-    let m = new Map()
-    m.set('n', `Drone ${i} total turns (${turnsSum}) < max turns (${parsedInput.turns})`)
-    m.set('t', () => expect(turnsSum).toBeLessThanOrEqualTo(parsedInput.turns))
-    tests.add(m)
+  output.forEach( (drone, i) => {
+    tests.add(createTest(
+      `Drone ${i} total turns (${getTurnsPerDrone(drone)}) < max turns (${input.turns})`,
+      () => expect(getTurnsPerDrone(drone)).toBeLessThanOrEqualTo(input.turns))
+    )
   })
 
 
-// No order receives more products of any type than the number of products of this type specified in the order
-  const inputProducts = parsedInput.orders.map( (order, orderIndex) => {
-    let uniqueProducts = new Set(order.products)
+  // No order receives more products of any type than the number of products of this type specified in the order
+  const deliveries = output.map( drone => drone.filter(action => action.type === 'D') )
+    .reduce((a, b) => a.concat(b)).map( command => ({ orderId: command.target, productType: command.productType, amount: command.amount }) )
 
-    let productsAmounts = Array.from(uniqueProducts).map( (product) => {
-      let m = new Map()
-      m.set([ orderIndex, product ], (order.products.reduce(function(n, val) { return n + (val === product)}, 0) ))
-      return m
-    })
-
-    return productsAmounts
-  })
-
-  let outputDeliveredOrders = []
-
-  let uniqueOrders = 0
-  let uniqueProductTypes = 0
-  output.droneCommands.forEach(drone => {
-    drone.forEach(command => {
-      if (command.type === 'D') {
-        if (command.target > uniqueOrders) uniqueOrders = command.target
-        if (command.productType > uniqueProductTypes) uniqueProductTypes = command.productType
-      }
-    })
-  })
-  uniqueOrders += 1
-  uniqueProductTypes += 1
-
-  for (let i = 0; i < uniqueOrders; i++) {
-    let order = []
-    for (let l = 0; l < uniqueProductTypes; l++) {
-      let productAmount = 0
-      output.droneCommands.forEach(drone => {
-        drone.forEach(command => {
-          if (command.type === 'D' && command.target === i && command.productType === l) {
-            productAmount += command.amount
-          }
-        })
-      })
-      order.push(productAmount)
-    }
-    outputDeliveredOrders.push(order)
-  }
-
-
-  const outputProducts = []
-  outputDeliveredOrders.forEach( (order, orderIndex) => {
-    const productsPerOrder = []
-    order.forEach( (productAmount, productIndex) => {
-      if (productAmount) {
-        let m = new Map()
-        m.set([ orderIndex, productIndex], productAmount)
-        productsPerOrder.push(m)
-      }
-    })
-    if (outputProducts) {
-      outputProducts.push(productsPerOrder)
-    }
-  })
-
-  outputProducts.forEach( ( outputOrder ) => {
-    outputOrder.forEach( ( outputProduct ) => {
-      
-      inputProducts.forEach( ( inputOrder ) => {
-        inputOrder.forEach( ( inputProduct ) => {
-        
-          if ( JSON.stringify(Array.from(outputProduct.keys())) === JSON.stringify(Array.from(inputProduct.keys())) ) {
-            let m = new Map()
-            const testo = [
-              `Order ${outputProduct.keys().next().value[0]}, Product Type ${outputProduct.keys().next().value[1]} Amount ${outputProduct.values().next().value} from Output`,
-              `expected to be less than or equal to`,
-              `Order ${inputProduct.keys().next().value[0]}, Product Type ${inputProduct.keys().next().value[1]} Amount ${inputProduct.values().next().value} from Input`
-            ].join(' ')
-            m.set('n', testo)
-            m.set('t', () => expect(outputProduct.values().next().value).toBeLessThanOrEqualTo(inputProduct.values().next().value) )
-            tests.add(m)
-          } 
-
-        })
-      })
-
+  Array.from(Array(input.ordersCount)).forEach( (_, orderIndex) => {
+    Array.from(Array(input.productTypes.count)).forEach( (_, productType) => {
+      const deliveredProductSum = deliveries.filter( delivery => delivery.orderId === orderIndex && delivery.productType === productType )
+        .reduce( (acc, delivery) => acc += delivery.amount, 0 )
+      const inputProductSum = input.orders[orderIndex].products.filter( product => product === productType ).reduce( acc => acc += 1, 0 )
+      deliveredProductSum && tests.add(createTest(
+        [
+          `(Order: ${orderIndex}, Product: ${productType}) Amount: ${deliveredProductSum} from output`,
+          `=< Amount: ${inputProductSum} from input (Order: ${orderIndex}, Product: ${productType})`
+        ].join(' '),
+        () => expect(deliveredProductSum).toBeLessThanOrEqualTo(inputProductSum)
+      ))
     })
   })
 
 
-// Return tests
+  //Return
   return tests
 }
 
-const runTests = (parsedInput, output) => {
-  u.log("Begin tests...")
-  generateTests(parsedInput, output).forEach(t => test(t))
+const runTests = (input, output) => {
+  u.log('Generating tests...')
+  console.time('\nTotal running time')
+  console.time('Tests generated in')
+  const tests = generateTests(input, output)
+  console.timeEnd('Tests generated in')
+  console.log('\nRunning tests...')
+  console.time('Tests completed in')
+  tests.forEach(test => runTest(test))
+  console.timeEnd('Tests completed in')
+  console.timeEnd('\nTotal running time')
 }
 
 module.exports = { runTests }

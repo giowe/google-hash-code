@@ -3,6 +3,7 @@ const u = require('./modules/utils');
 const m = require('mathjs');
 const initialState = require('./parsedIn');
 const validation = require('./validation');
+const outParser = require('./outParser')
 
 const {
   field,
@@ -163,7 +164,7 @@ function getProductTypesFromOrder(order) {
     productsObj[product]++;
   });
 
-  const productsQuantities = Object.keys(productsObj).map(key => {
+  const productsQuantities = uniqueProducts.map(key => {
     return productsObj[key];
   });
 
@@ -173,6 +174,8 @@ function getProductTypesFromOrder(order) {
   }
 }
 
+
+// BEGIN OF LOOP ---------------
 for(let t = 0; t < turns; t++) {
   u.debug(1, 'INIZIO TURNO', t);
   drones.forEach(d => {
@@ -212,8 +215,6 @@ for(let t = 0; t < turns; t++) {
           if (d.associatedWarehouse.ordersId.length) {
             const currentOrder = d.associatedWarehouse.ordersId.pop();
             d.ordersId.push(currentOrder);
-
-            u.log( d.ordersId )
 
             const productTypes = getProductTypesFromOrder(splittedOrders[currentOrder]);
             d.actionTime = productTypes.uniqueProducts.length;
@@ -326,16 +327,19 @@ for(let t = 0; t < turns; t++) {
   u.debug(1, '--------------------\n');
 }
 
-//u.logJson(drones, 'yellow');
-//u.logJson(splittedOrders, 'blue');
-
-console.log(drones.length)
 drones.forEach((drone, i) => {
   u.log('DRONE', i);
   u.logJson(drone.actions);
   u.log('-----------------------\n');
 });
 
-const out =  { droneCommands: drones.map(drone => drone.actions) };
+const out = drones.map(drone => drone.actions);
+
+u.log('VALIDATION\n')
 validation.runTests(initialState, out);
+u.log('---------------------\n')
+u.log('PARSED OUTPUT\n')
+outParser.produceOutput(out)
+console.log('Parsed output printed to file ./testOutput.log')
+
 module.exports = out;
