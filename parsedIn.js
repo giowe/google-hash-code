@@ -1,5 +1,5 @@
 'use strict';
-const Parser = require('./modules/inParser');
+const Parser = require('./modules/InParser');
 const p = new Parser();
 const u = require('./modules/utils');
 
