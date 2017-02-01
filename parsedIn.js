@@ -1,23 +1,24 @@
 'use strict';
 const Parser = require('./modules/InParser');
-const p = new Parser({autoCast: false});
+const p = new Parser({autoCast: false, colSeparator: ''} );
 const u = require('./modules/utils');
 
+const dimension = p.consumeRow().join('').split(' ');
+const N = Number.parseInt(dimension[0]);
+const M = Number.parseInt(dimension[1]);
+
 const parsedInput = {
-  N: Number.parseInt(p.consumeCol('N')),
-  M: Number.parseInt(p.consumeCol('M')),
-  pic: [
-    p.reiteratedStruct('N', () => {
-      const M = p.variables.M;
-      console.log(M);
-      const riga = [];
-      for (let i = 0; i < M; i++) {
-        const element = p.consumeCol();
-        console.log(element);
-        riga.push(element === '.' ? 0 : 1);
-      }
-    })
-  ]
+  N,
+  M,
+  pic: p.reiteratedStruct(N, () => {
+    const riga = [];
+    for (let i = 0; i < M; i++) {
+      const element = p.consumeCol();
+      riga.push(element === '.' ? 0 : 1);
+    }
+
+    return riga;
+  })
 };
 
 const model = {
