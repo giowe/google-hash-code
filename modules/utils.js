@@ -58,8 +58,6 @@ const diff = function(obj1, obj2) {
   return result;
 };
 
-
-
 module.exports = {
   logJson,
   logSuccess,
