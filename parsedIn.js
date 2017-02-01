@@ -4,11 +4,18 @@ const p = new Parser({autoCast: false});
 const u = require('./modules/utils');
 
 const parsedInput = {
-  N: p.consumeCol('N'),
-  M: p.consumeCol('M'),
+  N: Number.parseInt(p.consumeCol('N')),
+  M: Number.parseInt(p.consumeCol('M')),
   pic: [
-    p.reiteratedStruct('M', () => {
-
+    p.reiteratedStruct('N', () => {
+      const M = p.variables.M;
+      console.log(M);
+      const riga = [];
+      for (let i = 0; i < M; i++) {
+        const element = p.consumeCol();
+        console.log(element);
+        riga.push(element === '.' ? 0 : 1);
+      }
     })
   ]
 };
@@ -26,6 +33,6 @@ const model = {
   ],
 };
 
-//Parser.validateOverModel(model, parsedInput);
-u.logJson(parsedInput);
+Parser.validateOverModel(model, parsedInput);
+//u.logJson(parsedInput);
 module.exports = parsedInput;
