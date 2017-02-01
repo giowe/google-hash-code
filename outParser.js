@@ -24,7 +24,7 @@ const produceOutput = (filename, output) => {
   outArray.forEach(line => {
     logger.write(line.toString())
   })
- 
+
   logger.end()
 }
 
