@@ -11,9 +11,9 @@ const produceOutput = (filename, output) => {
   const outArray = output.map(instruction => {
     switch (instruction.name) {
       case 'PAINTSQ':
-        return 'PAINTSQ'
+        return 'PAINTSQ ' + instruction.x + ' ' + instruction.y + ' ' + instruction.s
       case 'ERASECELL':
-        return 'ERASECELL'
+        return 'ERASECELL' + instruction.x + ' ' + instruction.y
     }
   })
 
