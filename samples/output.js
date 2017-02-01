@@ -22,4 +22,4 @@ const sampleOutput = [{
     y: 3
   }];
 
-module.exports = sampleOutput;
+module.exports = sampleOutput
