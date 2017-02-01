@@ -11,15 +11,15 @@ const produceOutput = (filename, output) => {
   const outArray = output.map(instruction => {
     switch (instruction.name) {
       case 'PAINTSQ':
-        return 'PAINTSQ ' + instruction.x + ' ' + instruction.y + ' ' + instruction.s
+        return 'PAINTSQ ' + instruction.x + ' ' + instruction.y + ' ' + instruction.s + '\n'
       case 'ERASECELL':
-        return 'ERASECELL' + instruction.x + ' ' + instruction.y
+        return 'ERASECELL ' + instruction.x + ' ' + instruction.y + '\n'
     }
   })
 
   console.log(outArray)
 
-  logger.write((outArray.length).toString())
+  logger.write((outArray.length).toString() + '\n')
 
   outArray.forEach(line => {
     logger.write(line.toString())
