@@ -8,6 +8,8 @@ const u = require('./modules/utils');
 const produceOutput = (filename, output) => {
   const logger = fs.createWriteStream(path.join(__dirname, 'outFiles', argv._[0], filename));
 
+  console.log(output)
+
   logger.end()
 };
 

@@ -18,6 +18,8 @@ const generateTests = (input, output) => {
 
   const tests = new Set()
 
+  tests.add(createTest('prova', () => console.log('prova')))
+
   //Return
   return tests
 }
