@@ -15,6 +15,8 @@ const {
   pic
 } = initialState;
 
+
+//eseguire il programma scrivendo -v per avviare la validation
 if (argv.v || argv.validation) {
   validation.runTests(initialState, out);
 }
