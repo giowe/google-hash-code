@@ -9,11 +9,11 @@
 
 ## Installazione
 
-  npm install 
+  `npm install`
 
 ## Applicazione
 
-  node .
+  `node .`
 
 ## Appunti
 
