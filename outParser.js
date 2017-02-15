@@ -8,23 +8,17 @@ const leftpad = require('left-pad');
 
 const inputFolderPath = path.join(__dirname, './inFiles');
 const files = fs.readdirSync(inputFolderPath);
+const inputFileName = path.parse(files[argv._[0]]).name;
+const outFolderPath = path.join(__dirname, 'outFiles', inputFileName);
+try { fs.mkdirSync('./outFiles'); } catch(e) {}
+try { fs.mkdirSync(outFolderPath); } catch(e) {}
 
 const produceOutput = (filename, output) => {
   filename = leftpad(filename, 20, '0');
-  const inputFileName = path.parse(files[argv._[0]]).name;
-  const outFolderPath = path.join(__dirname, 'outFiles', inputFileName);
-  try { fs.mkdirSync(outFolderPath); } catch(e) {}
 
   const logger = fs.createWriteStream(path.join(outFolderPath, filename.toString() + '.out'));
 
-  const outArray = output.map(instruction => {
-    switch (instruction.name) {
-      case 'PAINTSQ':
-        return 'PAINTSQ ' + instruction.x + ' ' + instruction.y + ' ' + instruction.s + '\n';
-      case 'ERASECELL':
-        return 'ERASECELL ' + instruction.x + ' ' + instruction.y + '\n';
-    }
-  });
+  const outArray = []; //todo!!!
 
   logger.write((outArray.length).toString() + '\n');
 

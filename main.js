@@ -10,9 +10,7 @@ const outParser = require('./outParser');
 const out = [];
 
 const {
-  M,
-  N,
-  pic
+
 } = initialState;
 
 

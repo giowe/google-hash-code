@@ -1,40 +1,40 @@
-'use strict'
+'use strict';
 
-const expect = require('expect')
-const u = require('./modules/utils')
+const expect = require('expect');
+const u = require('./modules/utils');
 
-const createTest = (text, test) => new Map().set('text', text).set('function', test)
+const createTest = (text, test) => new Map().set('text', text).set('function', test);
 
 const runTest = (test) => {
   try {
-    test.get('function')()
+    test.get('function')();
     u.logSuccess(`Test "${test.get('text')}" succeded`)
   } catch(e) {
     u.logFail(`Test "${test.get('text')}" failed. ${e}`)
   }
-}
+};
 
 const generateTests = (input, output) => {
 
-  const tests = new Set()
+  const tests = new Set(); //TODO!!!
 
-  tests.add(createTest('prova', () => console.log('prova')))
+  tests.add(createTest('prova', () => console.log('prova')));
 
   //Return
   return tests
-}
+};
 
 const runTests = (input, output) => {
-  u.log('Generating tests...')
-  console.time('\nTotal running time')
-  console.time('Tests generated in')
-  const tests = generateTests(input, output)
-  console.timeEnd('Tests generated in')
-  console.log('\nRunning tests...')
-  console.time('Tests completed in')
-  tests.forEach(test => runTest(test))
-  console.timeEnd('Tests completed in')
-  console.timeEnd('\nTotal running time')
-}
+  u.log('Generating tests...');
+  console.time('\nTotal running time');
+  console.time('Tests generated in');
+  const tests = generateTests(input, output);
+  console.timeEnd('Tests generated in');
+  console.log('\nRunning tests...');
+  console.time('Tests completed in');
+  tests.forEach(test => runTest(test));
+  console.timeEnd('Tests completed in');
+  console.timeEnd('\nTotal running time');
+};
 
-module.exports = { runTests }
+module.exports = { runTests };
