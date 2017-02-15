@@ -1,3 +1,5 @@
+'use strict'
+
 const argv = require('yargs').argv;
 const sampleInput = require('./samples/input.js')
 const sampleOutput = require('./samples/output.js')
