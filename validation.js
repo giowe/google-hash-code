@@ -10,7 +10,9 @@ const runTest = (test) => {
     test.get('function')()
     u.logSuccess(`Test "${test.get('text')}" succeded`)
   } catch(e) {
-    u.logFail(`Test "${test.get('text')}" failed. ${e}`)
+    const error = `Test "${test.get('text')}" failed. ${e}`
+    u.logFail(error)
+    return error
   }
 }
 
@@ -84,6 +86,7 @@ const generateTests = (input, output) => {
 }
 
 const runTests = (input, output) => {
+  let errors = []
   u.log('Generating tests...')
   console.time('\nTotal running time')
   console.time('Tests generated in')
@@ -91,9 +94,16 @@ const runTests = (input, output) => {
   console.timeEnd('Tests generated in')
   console.log('\nRunning tests...')
   console.time('Tests completed in')
-  tests.forEach(test => runTest(test))
+  tests.forEach(test => {
+    const error = runTest(test)
+    error && errors.push(error)
+  })
   console.timeEnd('Tests completed in')
   console.timeEnd('\nTotal running time')
+  if (errors.length) {
+    u.logFail('\n' + `Validation encountered ${errors.length} errors:`)
+    errors.forEach(error => u.logFail(error))
+  } else { u.logSuccess('Validation encountered 0 errors!') }
 }
 
 module.exports = { runTests }

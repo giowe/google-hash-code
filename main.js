@@ -273,5 +273,5 @@ if (argv.v || argv.validation) {
 }
 
 const finalScore = scorer(initialState, out);
-u.logColor('green', finalScore);
+u.logColor('green', '\nScore: ' + finalScore);
 outParser.produceOutput(finalScore, out);

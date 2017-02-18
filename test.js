@@ -13,5 +13,5 @@ if (argv.v || argv.validation) {
 }
 
 const finalScore = scorer(sampleInput, sampleOutput)
-console.log('score: ', finalScore)
+console.log('\nScore: ', finalScore)
 outParser.produceOutput(finalScore, sampleOutput);
