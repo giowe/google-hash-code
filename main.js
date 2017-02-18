@@ -88,11 +88,11 @@ function getScore(slice){
 }
 
 function isOnPizza(slice) {
-
+  return true;
 }
 
 function getOverlapping(slice) {
-
+  return [-1];
 }
 
 //**************************** SLICE CLASS ****************************
@@ -127,9 +127,14 @@ class Slice {
     return sliceToppings(this.r1, this.c1, this.r2, this.c2);
   }
 
-  onPizza() {
-
+  isOnPizza() {
+    return this.isOnPizza(this);
   }
+
+  getOverlapping() {
+    return this.getOverlapping(this);
+  }
+
 
   enlarge(direction) {
     switch (direction.toUpperCase()) {
