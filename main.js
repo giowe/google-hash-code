@@ -89,7 +89,7 @@ function getScore(slice){
 
 function isOnPizza(slice) {
   if( slice.r1 < 0 || slice.r1 > R) return false;
-  if( slice.r1 < 0 || slice.r1 > R) return false;
+  if( slice.r2 < 0 || slice.r2 > R) return false;
   if( slice.c1 < 0 || slice.c1 > C) return false;
   if( slice.c2 < 0 || slice.c2 > C) return false;
   return true;
@@ -204,10 +204,9 @@ while(moved) {
       const sliceClone = u.clone(slice);
 
       sliceClone.enlarge(d);
-      console.log(sliceClone.area);
-      if (sliceClone.area > H) return;
 
-      const cloneScore = sliceClone.score;
+
+      if (sliceClone.area > H) return;
 
       if (!sliceClone.isOnPizza()) return;
       const overlappingList = sliceClone.getOverlapping();
@@ -216,12 +215,18 @@ while(moved) {
         return;
       }
 
+      const cloneScore = sliceClone.score;
+
       if (maxScore < cloneScore) {
         maxScore = cloneScore;
         maxDir = d;
-        moved = true;
       }
     });
+
+    if (maxDir) {
+      slice.enlarge(maxDir);
+      moved = true;
+    }
 
   });
 
