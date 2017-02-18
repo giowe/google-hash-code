@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/main",
   "scripts": {
-    "multi": "function execute() { for i in `seq 1 100`;\ndo\nnode . $1\ndone }\n execute",
+    "multi": "function execute() { for i in `seq 1 100`;\ndo\nnode . $1\ndone }\n execute"
   },
   "repository": {
     "type": "git",
