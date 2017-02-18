@@ -205,17 +205,17 @@ while(moved) {
 
 
       if (sliceClone.area > H){
-        console.log('Area is too big.')
+        // console.log('Area is too big.')
         return;
       }
 
       if (!sliceClone.isOnPizza()){
-        console.log('is outside pizza.')
+        // console.log('is outside pizza.')
         return;
       }
       
       const overlappingList = sliceClone.getOverlapping();
-      console.log( overlappingList )
+      // console.log( overlappingList )
 
       if (overlappingList.length > 0) {
         //todo conquista
@@ -232,14 +232,14 @@ while(moved) {
       }
     });
 
-    console.log(slice, maxDir);
+    // console.log(slice, maxDir);
 
     if (maxDir) {
       slice.enlarge(maxDir);
       slice.apply();
-      console.log('Applied')
+      /*console.log('Applied')
       console.log(pizzaMap);
-      console.log('')
+      console.log('')*/
       moved = true;
     }
   
