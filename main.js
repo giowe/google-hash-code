@@ -20,8 +20,14 @@ const toppingsCount = {
   M: 0
 };
 
-pizza.forEach((row) => {
-  row.forEach((topping) => toppingsCount[topping]++ );
+const pizzaMap = [];
+
+pizza.forEach((row, r) => {
+  pizzaMap.push([]);
+  row.forEach((topping, c) => {
+    pizzaMap[r].push(0);
+    toppingsCount[topping]++
+  });
 });
 
 const minorTopping = toppingsCount.T < toppingsCount.M ? 'T' : 'M';
@@ -71,13 +77,22 @@ function getUniqueRandoms(min, max, count) {
 }
 
 function getScore(slice){
-  if (this.feasible ) {
-    const area = this.area;
+  if (slice.feasible ) {
+    const area = slice.area;
     if (area > H) return -6666;
     return area;
   }
-  const t = this.toppings;
+  const t = slice.toppings;
+
   return -Math.abs(t.M - L) -Math.abs(t.T - L);
+}
+
+function isOnPizza(slice) {
+
+}
+
+function getOverlapping(slice) {
+
 }
 
 //**************************** SLICE CLASS ****************************
@@ -105,11 +120,15 @@ class Slice {
   }
 
   get score() {
-    getScore(this);
+    return getScore(this);
   }
 
   get toppings() {
     return sliceToppings(this.r1, this.c1, this.r2, this.c2);
+  }
+
+  onPizza() {
+
   }
 
   enlarge(direction) {
@@ -143,6 +162,7 @@ pizza.forEach((row, r) => {
 });
 
 const slices = [];
+const dir = ['U', 'D', 'L', 'R'];
 
 getUniqueRandoms(0, minToppingCoords.length, maxSlices).forEach((rnd, i) => {
   const coords = minToppingCoords[rnd];
@@ -150,7 +170,28 @@ getUniqueRandoms(0, minToppingCoords.length, maxSlices).forEach((rnd, i) => {
 });
 
 while(true) {
-  
+  slices.forEach((slice) => {
+    const score = slice.score;
+    let maxDir = '';
+    let maxScore = score;
+
+    dir.forEach( (d) => {
+      const sliceClone = u.clone(slice);
+
+      sliceClone.enlarge(d);
+
+      const cloneScore = sliceClone.score;
+
+      //todo non devo overlappare
+      //todo non devo overlappare
+      if (maxScore < cloneScore) {
+        maxScore = cloneScore;
+        maxDir = d;
+      }
+
+    });
+
+  });
   break;
 }
 

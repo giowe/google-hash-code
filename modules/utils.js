@@ -3,6 +3,7 @@ const prettyjson = require('prettyjson');
 const colors = require('./colors');
 const m = require('mathjs');
 const argv = require('yargs').argv;
+const clone = require('clone');
 
 const logJson = (json, color) => {
   console.log(prettyjson.render(json, {
@@ -67,5 +68,6 @@ module.exports = {
   debug,
   isEmptyObject,
   diff,
-  getDistance
+  getDistance,
+  clone
 };
