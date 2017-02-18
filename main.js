@@ -128,11 +128,11 @@ class Slice {
   }
 
   isOnPizza() {
-    return this.isOnPizza(this);
+    return isOnPizza(this);
   }
 
   getOverlapping() {
-    return this.getOverlapping(this);
+    return getOverlapping(this);
   }
 
 
@@ -174,7 +174,13 @@ getUniqueRandoms(0, minToppingCoords.length, maxSlices).forEach((rnd, i) => {
   slices.push(new Slice(i, coords[0], coords[1]))
 });
 
-while(true) {
+
+let moved = true;
+let turnsCount = 0;
+while(moved) {
+  turnsCount++;
+  moved = false;
+
   slices.forEach((slice) => {
     const score = slice.score;
     let maxDir = '';
@@ -184,20 +190,28 @@ while(true) {
       const sliceClone = u.clone(slice);
 
       sliceClone.enlarge(d);
+      console.log(sliceClone.area);
+      if (sliceClone.area > H) return;
 
       const cloneScore = sliceClone.score;
 
-      //todo non devo overlappare
-      //todo non devo overlappare
+      if (!sliceClone.isOnPizza()) return;
+      const overlappingList = sliceClone.getOverlapping();
+      if (overlappingList.length > 1) {
+        //todo conquista
+        return;
+      }
+
       if (maxScore < cloneScore) {
         maxScore = cloneScore;
         maxDir = d;
+        moved = true;
       }
-
     });
 
   });
-  break;
+
 }
 
+console.log('TURNS:', turnsCount);
 //u.logJson(slices);
