@@ -22,5 +22,5 @@ const parsedInput = {
 };
 
 //Parser.validateOverModel(sampleInput, parsedInput);
-console.log(parsedInput);
+
 module.exports = parsedInput;
