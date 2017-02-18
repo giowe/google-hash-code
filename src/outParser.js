@@ -18,7 +18,7 @@ const produceOutput = (filename, output) => {
 
   const logger = fs.createWriteStream(path.join(outFolderPath, filename.toString() + '.out'));
 
-  const outArray = output.map(row => `${row.r1}${row.c1}${row.r2}${row.c2}\n`)
+  const outArray = output.map(row => `${row.r1} ${row.c1} ${row.r2} ${row.c2}\n`)
 
   logger.write((outArray.length).toString() + '\n');
 
