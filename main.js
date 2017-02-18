@@ -44,8 +44,6 @@ const finalScore = scorer(initialState, out);
 u.logColor('green', finalScore);
 outParser.produceOutput(finalScore, out);
 
-module.exports = out;
-
 //**************************** HELPER FUNCTIONS ****************************
 function sliceArea(r1, c1, r2, c2) {
   const r = 1 + r2 - r1;
@@ -248,4 +246,15 @@ while(moved) {
 
 console.log('TURNS:', turnsCount);
 //u.logJson(slices);
-slices.forEach((s) => console.log(s, s.score))
+slices.forEach((s) => console.log(s, s.score));
+
+module.exports = slices.filter((s) => {
+  if (s.feasible) {
+    return {
+      r1: s.r1,
+      c1: s.c1,
+      r2: s.r2,
+      c2: s.c2
+    };
+  }
+});
