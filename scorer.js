@@ -1,5 +1,7 @@
 'use strict';
 
 module.exports = (parsedIn, out) => {
-  return 'NOT A SCORE';
+  console.log(out)
+
+  return 'NOT_A_SCORE';
 };

@@ -5,6 +5,7 @@ const sampleInput = require('./samples/input.js');
 const sampleOutput = require('./samples/output.js');
 const validation = require('./validation');
 const outParser = require('./outParser');
+const scorer = require('./scorer')
 
 console.log('sample input', sampleInput);
 console.log('sample output', sampleOutput);
@@ -14,4 +15,6 @@ if (argv.v || argv.validation) {
   validation.runTests(sampleInput, sampleOutput);
 }
 
-outParser.produceOutput('test', sampleOutput);
+const finalScore = scorer(sampleInput, sampleOutput)
+console.log('score: ', finalScore)
+outParser.produceOutput(finalScore, sampleOutput);
