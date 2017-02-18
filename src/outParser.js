@@ -8,8 +8,8 @@ const leftpad = require('left-pad');
 
 const inputFolderPath = path.join(__dirname, './inFiles');
 const files = fs.readdirSync(inputFolderPath);
-const inputFileName = path.parse(files[argv._[0]]).name;
-const outFolderPath = path.join(__dirname, 'outFiles', inputFileName);
+const inputFileName = files[argv._[0]] ? path.parse(files[argv._[0]]).name : 'test';
+const outFolderPath = path.join(__dirname, '../outFiles', inputFileName);
 try { fs.mkdirSync('./outFiles'); } catch(e) {}
 try { fs.mkdirSync(outFolderPath); } catch(e) {}
 
