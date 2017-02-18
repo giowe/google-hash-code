@@ -167,6 +167,15 @@ class Slice {
 
     }
   }
+
+  apply(){
+    for(let r = slice.r1; r <= slice.r2; ++r){
+      for(let c = slice.c1; c <= slice.c2; ++c){
+          pizzaMap[r][c] = this.id;
+      }
+    }
+  }
+
 }
 
 //**************************** PROCESS OPERATIONS ****************************
