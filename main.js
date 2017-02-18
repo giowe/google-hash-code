@@ -25,6 +25,8 @@ pizza.forEach((row) => {
 });
 
 const minorTopping = toppingsCount.T < toppingsCount.M ? 'T' : 'M';
+const maxTopping = minorTopping === 'M' ? 'T' : 'M';
+
 const maxSlices = Math.floor(toppingsCount[minorTopping] / L);
 
 //eseguire il programma scrivendo -v per avviare la validation
@@ -68,13 +70,23 @@ function getUniqueRandoms(min, max, count) {
   return arr;
 }
 
+function getScore(slice){
+  if (this.feasible ) {
+    const area = this.area;
+    if (area > H) return -6666;
+    return area;
+  }
+  const t = this.toppings;
+  return -Math.abs(t.M - L) -Math.abs(t.T - L);
+}
+
 //**************************** SLICE CLASS ****************************
 class Slice {
-  constructor(id, r1, c1, r2, c2) {
+  constructor(id, r1, c1, r2 = r1, c2 = c1) {
     this.id = id;
     this.r1 = r1;
-    this.r2 = r2;
     this.c1 = c1;
+    this.r2 = r2;
     this.c2 = c2;
     this.feasible = false;
     return this;
@@ -93,16 +105,53 @@ class Slice {
   }
 
   get score() {
-    if (this.feasible ) {
-      const area = this.area;
-      if (area > H) return -6666;
-      return area;
-    }
-    const t = this.toppings;
-    return -Math.abs(t.M - L) -Math.abs(t.T - L);
+    getScore(this);
   }
 
   get toppings() {
     return sliceToppings(this.r1, this.c1, this.r2, this.c2);
   }
+
+  enlarge(direction) {
+    switch (direction.toUpperCase()) {
+      case 'U':
+        this.r1--;
+        break;
+      case 'D':
+        this.r2++;
+        break;
+      case 'L':
+        this.c1--;
+        break;
+      case 'R':
+        this.c2++;
+        break;
+
+    }
+  }
 }
+
+//**************************** PROCESS OPERATIONS ****************************
+
+//SEEDS GENERATION
+const minToppingCoords = [];
+pizza.forEach((row, r) => {
+  row.forEach((topping, c) => {
+    if (topping === maxTopping) return;
+    minToppingCoords.push([r, c]);
+  });
+});
+
+const slices = [];
+
+getUniqueRandoms(0, minToppingCoords.length, maxSlices).forEach((rnd, i) => {
+  const coords = minToppingCoords[rnd];
+  slices.push(new Slice(i, coords[0], coords[1]))
+});
+
+while(true) {
+  
+  break;
+}
+
+//u.logJson(slices);
