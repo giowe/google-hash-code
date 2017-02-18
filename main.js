@@ -183,7 +183,7 @@ const dir = ['U', 'D', 'L', 'R'];
 
 getUniqueRandoms(0, minToppingCoords.length, maxSlices).forEach((rnd, i) => {
   const coords = minToppingCoords[rnd];
-  slices.push(new Slice(i, coords[0], coords[1]))
+  slices.push(new Slice(i+1, coords[0], coords[1]))
 });
 
 
@@ -204,11 +204,20 @@ while(moved) {
       sliceClone.enlarge(d);
 
 
-      if (sliceClone.area > H) return;
+      if (sliceClone.area > H){
+        // console.log('Area is too big.')
+        return;
+      }
 
-      if (!sliceClone.isOnPizza()) return;
+      if (!sliceClone.isOnPizza()){
+        // console.log('is outside pizza.')
+        return;
+      }
+      
       const overlappingList = sliceClone.getOverlapping();
-      if (overlappingList.length > 1) {
+      // console.log( overlappingList )
+
+      if (overlappingList.length > 0) {
         //todo conquista
         return;
       }
@@ -223,11 +232,17 @@ while(moved) {
       }
     });
 
+    // console.log(slice, maxDir);
+
     if (maxDir) {
       slice.enlarge(maxDir);
       slice.apply();
+      /*console.log('Applied')
+      console.log(pizzaMap);
+      console.log('')*/
       moved = true;
     }
+  
   });
 
 }
