@@ -88,11 +88,25 @@ function getScore(slice){
 }
 
 function isOnPizza(slice) {
+  if( slice.r1 < 0 || slice.r1 > R) return false;
+  if( slice.r1 < 0 || slice.r1 > R) return false;
+  if( slice.c1 < 0 || slice.c1 > C) return false;
+  if( slice.c2 < 0 || slice.c2 > C) return false;
   return true;
 }
 
 function getOverlapping(slice) {
-  return [-1];
+  const a = [];
+  for(let r = slice.r1; r <= slice.r2; ++r){
+    for(let c = slice.c1; c <= slice.c2; ++c){
+      if( pizzaMap[r][c] !== 0 && pizzaMap[r][c] !== slice.id ){
+        a.push(pizzaMap[r][c]);
+      }
+    }
+  }
+
+  var unique = a.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
+  return unique;
 }
 
 //**************************** SLICE CLASS ****************************
