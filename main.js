@@ -77,21 +77,22 @@ function getUniqueRandoms(min, max, count) {
 }
 
 function getScore(slice){
-  if (slice.feasible ) {
-    const area = slice.area;
-    if (area > H) return -6666;
-    return area;
-  }
   const t = slice.toppings;
+  if( t.T >= L && t.M >= L && slice.area <= H ) slice.feasible = true;
+
+  if ( slice.feasible ) {
+   const area = slice.area;
+   return area;
+  }
 
   return -Math.abs(t.M - L) -Math.abs(t.T - L);
 }
 
 function isOnPizza(slice) {
-  if( slice.r1 < 0 || slice.r1 > R) return false;
-  if( slice.r2 < 0 || slice.r2 > R) return false;
-  if( slice.c1 < 0 || slice.c1 > C) return false;
-  if( slice.c2 < 0 || slice.c2 > C) return false;
+  if( slice.r1 < 0 || slice.r1 > R-1) return false;
+  if( slice.r2 < 0 || slice.r2 > R-1) return false;
+  if( slice.c1 < 0 || slice.c1 > C-1) return false;
+  if( slice.c2 < 0 || slice.c2 > C-1) return false;
   return true;
 }
 
@@ -118,11 +119,12 @@ class Slice {
     this.r2 = r2;
     this.c2 = c2;
     this.feasible = false;
+    this.apply();
     return this;
   }
 
   get h() {
-    return 1 + this.c2 - this.c1;
+    return 1 + this.r2 - this.r1;
   }
 
   get w() {
@@ -169,8 +171,8 @@ class Slice {
   }
 
   apply(){
-    for(let r = slice.r1; r <= slice.r2; ++r){
-      for(let c = slice.c1; c <= slice.c2; ++c){
+    for(let r = this.r1; r <= this.r2; ++r){
+      for(let c = this.c1; c <= this.c2; ++c){
           pizzaMap[r][c] = this.id;
       }
     }
@@ -226,6 +228,8 @@ while(moved) {
 
       const cloneScore = sliceClone.score;
 
+      //console.log(sliceClone, cloneScore, d);
+
       if (maxScore < cloneScore) {
         maxScore = cloneScore;
         maxDir = d;
@@ -233,13 +237,15 @@ while(moved) {
     });
 
     if (maxDir) {
+      console.log(slice, maxDir);
       slice.enlarge(maxDir);
+      slice.apply();
       moved = true;
     }
-
   });
 
 }
 
 console.log('TURNS:', turnsCount);
 //u.logJson(slices);
+slices.forEach((s) => console.log(s, s.score))
