@@ -105,7 +105,7 @@ function getOverlapping(slice) {
     }
   }
 
-  var unique = a.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
+  const unique = a.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
   return unique;
 }
 
