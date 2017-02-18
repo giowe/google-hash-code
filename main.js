@@ -8,8 +8,6 @@ const scorer = require('./scorer');
 const argv = require('yargs').argv;
 const outParser = require('./outParser');
 
-const out = [];
-
 const {
   R, C, L, H, pizza
 } = initialState;
@@ -34,15 +32,6 @@ const minorTopping = toppingsCount.T < toppingsCount.M ? 'T' : 'M';
 const maxTopping = minorTopping === 'M' ? 'T' : 'M';
 
 const maxSlices = Math.floor(toppingsCount[minorTopping] / L);
-
-//eseguire il programma scrivendo -v per avviare la validation
-if (argv.v || argv.validation) {
-  validation.runTests(initialState, out);
-}
-
-const finalScore = scorer(initialState, out);
-u.logColor('green', finalScore);
-outParser.produceOutput(finalScore, out);
 
 //**************************** HELPER FUNCTIONS ****************************
 function sliceArea(r1, c1, r2, c2) {
@@ -260,9 +249,9 @@ while(moved) {
 
 console.log('TURNS:', turnsCount);
 //u.logJson(slices);
-slices.forEach((s) => console.log(s, s.score));
+//slices.forEach((s) => console.log(s, s.score));
 
-module.exports = slices.filter((s) => {
+const out = slices.map((s) => {
   if (s.feasible) {
     return {
       r1: s.r1,
@@ -272,3 +261,16 @@ module.exports = slices.filter((s) => {
     };
   }
 });
+
+console.log(out);
+
+module.exports = out;
+
+//eseguire il programma scrivendo -v per avviare la validation
+if (argv.v || argv.validation) {
+  validation.runTests(initialState, out);
+}
+
+const finalScore = scorer(initialState, out);
+u.logColor('green', finalScore);
+outParser.produceOutput(finalScore, out);
