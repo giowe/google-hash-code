@@ -16,9 +16,9 @@ const runTest = (test) => {
 
 const generateTests = (input, output) => {
 
-  const tests = new Set(); //TODO!!!
+  const tests = new Set();
 
-  tests.add(createTest('prova', () => console.log('prova')));
+  tests.add(createTest('prova', () => expect('prova').toEqual('prova')));
 
   //Return
   return tests
