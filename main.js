@@ -105,11 +105,7 @@ function getOverlapping(slice) {
     }
   }
 
-<<<<<<< HEAD
-  var unique = a.filter( function(item, i, ar){ return ar.indexOf(item) === i; });
-=======
   const unique = a.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
->>>>>>> 23d2bee72d6b3a8f97fe3fbc3d32f5bfbf60d5e8
   return unique;
 }
 
@@ -171,6 +167,15 @@ class Slice {
 
     }
   }
+
+  apply(){
+    for(let r = slice.r1; r <= slice.r2; ++r){
+      for(let c = slice.c1; c <= slice.c2; ++c){
+          pizzaMap[r][c] = this.id;
+      }
+    }
+  }
+
 }
 
 //**************************** PROCESS OPERATIONS ****************************
