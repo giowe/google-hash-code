@@ -4,6 +4,7 @@
   "description": "",
   "main": "main",
   "scripts": {
+    "multi": "function execute() { for i in `seq 1 100`;\ndo\nnode . $1\ndone }\n execute",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
