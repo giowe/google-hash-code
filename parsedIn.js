@@ -15,7 +15,7 @@ const parsedInput = {
   pizza: p.reiteratedStruct(Number(R), (l) => {
     const out = [];
     for (let i = 0; i < C; i++) {
-      out.push(p.consumeCol());
+      out.push(Number(p.consumeCol()));
     }
     return out;
   })
