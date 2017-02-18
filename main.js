@@ -20,8 +20,14 @@ const toppingsCount = {
   M: 0
 };
 
-pizza.forEach((row) => {
-  row.forEach((topping) => toppingsCount[topping]++ );
+const pizzaMap = [];
+
+pizza.forEach((row, r) => {
+  pizzaMap.push([]);
+  row.forEach((topping, c) => {
+    pizzaMap[r].push(0);
+    toppingsCount[topping]++
+  });
 });
 
 const minorTopping = toppingsCount.T < toppingsCount.M ? 'T' : 'M';
@@ -71,13 +77,36 @@ function getUniqueRandoms(min, max, count) {
 }
 
 function getScore(slice){
-  if (this.feasible ) {
-    const area = this.area;
+  if (slice.feasible ) {
+    const area = slice.area;
     if (area > H) return -6666;
     return area;
   }
-  const t = this.toppings;
+  const t = slice.toppings;
+
   return -Math.abs(t.M - L) -Math.abs(t.T - L);
+}
+
+function isOnPizza(slice) {
+  if( slice.r1 < 0 || slice.r1 > R) return false;
+  if( slice.r1 < 0 || slice.r1 > R) return false;
+  if( slice.c1 < 0 || slice.c1 > C) return false;
+  if( slice.c2 < 0 || slice.c2 > C) return false;
+  return true;
+}
+
+function getOverlapping(slice) {
+  const a = [];
+  for(let r = slice.r1; r <= slice.r2; ++r){
+    for(let c = slice.c1; c <= slice.c2; ++c){
+      if( pizzaMap[r][c] !== 0 && pizzaMap[r][c] !== slice.id ){
+        a.push(pizzaMap[r][c]);
+      }
+    }
+  }
+
+  const unique = a.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
+  return unique;
 }
 
 //**************************** SLICE CLASS ****************************
@@ -105,12 +134,21 @@ class Slice {
   }
 
   get score() {
-    getScore(this);
+    return getScore(this);
   }
 
   get toppings() {
     return sliceToppings(this.r1, this.c1, this.r2, this.c2);
   }
+
+  isOnPizza() {
+    return isOnPizza(this);
+  }
+
+  getOverlapping() {
+    return getOverlapping(this);
+  }
+
 
   enlarge(direction) {
     switch (direction.toUpperCase()) {
@@ -129,6 +167,15 @@ class Slice {
 
     }
   }
+
+  apply(){
+    for(let r = slice.r1; r <= slice.r2; ++r){
+      for(let c = slice.c1; c <= slice.c2; ++c){
+          pizzaMap[r][c] = this.id;
+      }
+    }
+  }
+
 }
 
 //**************************** PROCESS OPERATIONS ****************************
@@ -143,15 +190,51 @@ pizza.forEach((row, r) => {
 });
 
 const slices = [];
+const dir = ['U', 'D', 'L', 'R'];
 
 getUniqueRandoms(0, minToppingCoords.length, maxSlices).forEach((rnd, i) => {
   const coords = minToppingCoords[rnd];
   slices.push(new Slice(i, coords[0], coords[1]))
 });
 
-while(true) {
-  
-  break;
+
+let moved = true;
+let turnsCount = 0;
+while(moved) {
+  turnsCount++;
+  moved = false;
+
+  slices.forEach((slice) => {
+    const score = slice.score;
+    let maxDir = '';
+    let maxScore = score;
+
+    dir.forEach( (d) => {
+      const sliceClone = u.clone(slice);
+
+      sliceClone.enlarge(d);
+      console.log(sliceClone.area);
+      if (sliceClone.area > H) return;
+
+      const cloneScore = sliceClone.score;
+
+      if (!sliceClone.isOnPizza()) return;
+      const overlappingList = sliceClone.getOverlapping();
+      if (overlappingList.length > 1) {
+        //todo conquista
+        return;
+      }
+
+      if (maxScore < cloneScore) {
+        maxScore = cloneScore;
+        maxDir = d;
+        moved = true;
+      }
+    });
+
+  });
+
 }
 
+console.log('TURNS:', turnsCount);
 //u.logJson(slices);
