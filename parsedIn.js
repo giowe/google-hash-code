@@ -6,16 +6,16 @@ const p = new Parser({autoCast: false, colSeparator: ''} );
 const u = require('./modules/utils');
 
 const firstRowData = p.consumeRow().join('').split(' ');
-const R = firstRowData[0];
-const C = firstRowData[1];
-const L = firstRowData[2];
-const H = firstRowData[3];
+const R = Number(firstRowData[0]);
+const C = Number(firstRowData[1]);
+const L = Number(firstRowData[2]);
+const H = Number(firstRowData[3]);
 const parsedInput = {
   R, C, L, H,
   pizza: p.reiteratedStruct(Number(R), (l) => {
     const out = [];
     for (let i = 0; i < C; i++) {
-      out.push(Number(p.consumeCol()));
+      out.push(p.consumeCol());
     }
     return out;
   })
