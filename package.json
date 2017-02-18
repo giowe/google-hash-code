@@ -22,5 +22,8 @@
     "mathjs": "^3.8.1",
     "prettyjson": "^1.2.1",
     "yargs": "^6.6.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1"
   }
 }
