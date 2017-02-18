@@ -37,7 +37,7 @@ const generateTests = (input, output) => {
 
   getCellArrayWithCountPerSlice().forEach(column => {
     column.forEach(cell => {
-      const text = `Expect cell count per slice (${cell.count}) <= 1`
+      const text = `Expect cell (${cell.x},${cell.y}) count (${cell.count}) per slice <= 1`
       const test = () => expect(cell.count).toBeLessThanOrEqualTo(1)
       tests.add(createTest(text, test))
     })
