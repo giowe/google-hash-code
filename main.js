@@ -236,14 +236,15 @@ console.log('TURNS:', turnsCount);
 //u.logJson(slices);
 //slices.forEach((s) => console.log(s, s.score));
 
-const out = slices.map((s) => {
+const out = [];
+slices.forEach((s) => {
   if (s.feasible) {
-    return {
+    out.push({
       r1: s.r1,
       c1: s.c1,
       r2: s.r2,
       c2: s.c2
-    };
+    });
   }
 });
 
