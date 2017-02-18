@@ -213,7 +213,7 @@ while(moved) {
         // console.log('is outside pizza.')
         return;
       }
-      
+
       const overlappingList = sliceClone.getOverlapping();
       // console.log( overlappingList )
 
@@ -242,7 +242,7 @@ while(moved) {
       console.log('')*/
       moved = true;
     }
-  
+
   });
 
 }
@@ -263,7 +263,7 @@ slices.forEach((s) => {
   }
 });
 
-console.log(out);
+//console.log(out);
 
 module.exports = out;
 
