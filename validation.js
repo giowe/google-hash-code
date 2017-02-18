@@ -20,7 +20,23 @@ const generateTests = (input, output) => {
 
   tests.add(createTest('prova', () => expect('prova').toEqual('prova')));
 
-  //Return
+  // Each cell of the pizza must be included in at most one slice
+
+  // Each cell must contain at most L cells of mushroom
+
+  // Each cell must contain at most L cells of tomato
+
+  // Total area of each slice must be at most H
+  const getArea = (slice) => ((slice.r2 - slice.r1 + 1) * (slice.c2 - slice.c1 + 1))
+
+  output.forEach((row, i) => {
+    const rowArea = getArea(row)
+    const text = `Expect row ${i} area (${rowArea}) <= H (${input.H})`
+    const test = () => expect(rowArea).toBeLessThanOrEqualTo(input.H)
+    tests.add(createTest(text, test))
+  })
+
+  // Return
   return tests
 };
 
