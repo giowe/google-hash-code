@@ -31,7 +31,7 @@ class InParser {
     if (!this.input[0].length) this.consumeRow();
     this.variables[variableName] = out;
     return out;
-  };
+  }
 
   consumeRow() {
     let out = this.input.shift();
@@ -42,7 +42,7 @@ class InParser {
       }
     }
     return out;
-  };
+  }
 
   reiteratedStruct(iterationNumber, struct) {
     const count = typeof iterationNumber === 'string' ? this.variables[iterationNumber] : iterationNumber;

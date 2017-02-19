@@ -34,9 +34,7 @@ const debug = (level, ...args) => {
   if (debugLevel >= level) console.log(...args);
 };
 
-const getDistance = (p1, p2) => {
-  return m.ceil(m.norm([p1.x - p2.x, p1.y - p2.y]));
-};
+const getDistance = (p1, p2) => m.ceil(m.norm([p1.x - p2.x, p1.y - p2.y]));
 
 const isEmptyObject = function(obj) {
   for (let name in obj) return false;
