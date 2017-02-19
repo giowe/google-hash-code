@@ -7,8 +7,8 @@ const validation = require('./validation');
 const outParser = require('./outParser');
 const scorer = require('./scorer');
 
-//eseguire il programma scrivendo -v per avviare la validation
-if (argv.v || argv.validation) {
+//eseguire il programma scrivendo -V per avviare la validation
+if (argv.V || argv.validation) {
   validation.runTests(sampleInput, sampleOutput);
 }
 
