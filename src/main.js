@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const u = require('./modules/utils');
+const s3Uploader = require('./modules/s3Uploader')
 const m = require('mathjs');
 const leftpad = require('left-pad')
 const initialState = require('./parsedIn');
@@ -393,13 +394,10 @@ slices.forEach((s) => {
 //console.log("minorTopping: " + minorTopping);
 //console.log("L: " + L)
 
-module.exports = out;
 
 //eseguire il programma scrivendo -V per avviare la validation
 let errors = []
-if (argv.V || argv.validation) {
-  errors = validation.runTests(initialState, out);
-}
+if (argv.V || argv.validation) errors = validation.runTests(initialState, out)
 
 const inputFolderPath = u.getInputFilesFolder()
 const files = fs.readdirSync(inputFolderPath)
@@ -413,10 +411,9 @@ try { fs.mkdirSync(outFolderPath) } catch(ignore) {  }
 
 const filenameWithPath = path.join(outFolderPath, filename)
 
-u.logColor('green', '\nScore: ' + finalScore);
+u.logColor('green', '\nScore: ' + finalScore)
 
-const output = outParser.produceOutput(filenameWithPath, out);
-!errors.length && console.log('avrei uppato su s3:', '\n' + output)
+const output = outParser.produceOutput(filenameWithPath, out)
+if (argv.s3) !errors.length ? s3Uploader.uploadScore(filename, output) : u.logFail('Errors detected; refusing to upload')
 
-// console.log( 'Saving pizzamap' );
-// savePizzaMap('pizzaMap', pizzaMap );
+module.exports = out

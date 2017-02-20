@@ -60,8 +60,12 @@ const diff = function(obj1, obj2) {
 };
 
 const getSelectedFileName = (trimExtension = true) => {
-  const fileName = getInFilesList()[argv._[0]];
-  return trimExtension? path.parse(fileName).name : fileName;
+  try {
+    const fileName = getInFilesList()[argv._[0]];
+    return trimExtension? path.parse(fileName).name : fileName;
+  } catch(e) {
+    return null
+  }
 };
 
 const getInFilesList = (trimExtension = false) => {
@@ -74,7 +78,7 @@ const getInputFilesFolder = () => {
   return path.join(__dirname, '../inFiles');
 };
 
-const getOutputFilesFolder = () => path.join(__dirname, './../../outFiles', getSelectedFileName())
+const getOutputFilesFolder = (inputFileName) => path.join(__dirname, './../../outFiles', getSelectedFileName() || inputFileName )
 
 module.exports = {
   logJson,
