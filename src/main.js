@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const u = require('./modules/utils');
+const s3Uploader = require('./modules/s3Uploader')
 const m = require('mathjs');
 const leftpad = require('left-pad')
 const initialState = require('./parsedIn');
@@ -413,10 +414,10 @@ try { fs.mkdirSync(outFolderPath) } catch(ignore) {  }
 
 const filenameWithPath = path.join(outFolderPath, filename)
 
-u.logColor('green', '\nScore: ' + finalScore);
+u.logColor('green', '\nScore: ' + finalScore)
 
-const output = outParser.produceOutput(filenameWithPath, out);
-!errors.length && argv.s3 && console.log('avrei uppato su s3:', '\n' + output)
+const output = outParser.produceOutput(filenameWithPath, out)
+!errors.length && argv.s3 && s3Uploader.uploadScore(filename, output)
 
 // console.log( 'Saving pizzamap' );
 // savePizzaMap('pizzaMap', pizzaMap );
