@@ -8,6 +8,7 @@ AWS.Credentials({
 const s3 = new AWS.S3({region: 'eu-west-1'});
 const u = require('./utils');
 const path = require('path');
+const parallel = require('async').parallel;
 
 const listScores = (testName, cb) => {
   const params = {
@@ -48,6 +49,15 @@ const uploadScore = (title, body) => {
       else     console.log(data);
     });
   });
+};
+
+const downloadTopScores = () => {
+  parallel([
+
+  ], (err, results) => {
+    if (err) throw(err);
+
+  })
 };
 
 module.exports = {
