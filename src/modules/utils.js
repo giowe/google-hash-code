@@ -64,8 +64,10 @@ const getSelectedFileName = (trimExtension = true) => {
   return trimExtension? path.parse(fileName).name : fileName;
 };
 
-const getInFilesList = () => {
-  return fs.readdirSync(getInputFilesFolder());
+const getInFilesList = (trimExtension = false) => {
+  const list = fs.readdirSync(getInputFilesFolder());
+  if (trimExtension) return list.map(e => path.parse(e).name);
+  return list;
 };
 
 const getInputFilesFolder = () => {

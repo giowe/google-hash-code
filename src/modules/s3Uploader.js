@@ -9,6 +9,7 @@ const s3 = new AWS.S3({region: 'eu-west-1'});
 const u = require('./utils');
 const path = require('path');
 const parallel = require('async').parallel;
+const fs = require('fs');
 
 const listScores = (testName, cb) => {
   const params = {
@@ -51,16 +52,59 @@ const uploadScore = (title, body) => {
   });
 };
 
+const getTopScore = (testName, cb) => {
+  listScores(testName, (err, scores) => {
+    if (err) return cb(err);
+    if (!scores.length) return cb();
+
+    const maxScoreKey = scores[0];
+    const params = {
+      Bucket: 'google-hash-code',
+      Key: maxScoreKey,
+    };
+
+    s3.getObject(params, (err, data) => {
+      if (err) return cb(err);
+      const parsed = path.parse(maxScoreKey);
+      u.logSuccess(parsed.dir, parsed.base);
+      const out = {
+        dir: parsed.dir,
+        base: parsed.base,
+        body: data.Body + ''
+      };
+
+      cb(null, out);
+    });
+  });
+};
+
 const downloadTopScores = () => {
-  parallel([
+  console.log('DOWNLOADING TOP SCORES FROM S3...');
+  const functions = u.getInFilesList(true).map(testName => {
+    return (cb) => getTopScore(testName, cb)
+  });
 
-  ], (err, results) => {
+  parallel(functions, (err, results) => {
     if (err) throw(err);
+    try {
+      fs.mkdirSync(path.join(__dirname, './../../outFilesS3'));
+    } catch (ignore) {}
 
+    results.forEach(r => {
+      if (!r) return;
+
+      let finalDir = path.join(__dirname, './../../outFilesS3', r.dir);
+      try {
+        fs.mkdirSync(finalDir);
+      } catch (ignore) {}
+
+      fs.writeFileSync(path.join(finalDir, r.base), r.body);
+    });
   })
 };
 
 module.exports = {
   uploadScore,
-  listScores
+  listScores,
+  downloadTopScores
 };
