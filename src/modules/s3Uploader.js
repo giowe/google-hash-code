@@ -7,6 +7,7 @@ AWS.Credentials({
 });
 const s3 = new AWS.S3({region: 'eu-west-1'});
 const u = require('./utils');
+const path = require('path');
 
 const listScores = (testName, cb) => {
   const params = {
@@ -17,15 +18,39 @@ const listScores = (testName, cb) => {
   s3.listObjectsV2(params, (err, data) => {
     if (err) return cb(err);
     const contents = data.Contents;
-    const sortedData = contents.map( e => e.Key ).sort( (a, b) => {
-      return a.Key < b.Key;
-    });
-    console.log(sortedData);
+    const sortedData = contents.map( e => e.Key ).sort( (a, b) => a < b );
+    cb(null, sortedData);
   });
 };
 
-listScores(u.getSelectedFileName(), (err, data) => {
+const uploadScore = (title, body) => {
+  const testName = u.getSelectedFileName();
+  listScores(testName, (err, data) => {
+    if (err) throw err;
+    if (data.length) {
+      const curScore = Number.parseInt(path.parse(title).name);
+      const maxScore = Number.parseInt(path.parse(data[0]).name);
+      if (curScore <= maxScore) {
+        u.log(`curScore = ${curScore};\ns3MaxScore = ${maxScore};`);
+        u.logFail('DISCARDED.');
+        return;
+      }
+    }
+    u.logSuccess('SAVING CURRENT RESULT ON S3...');
 
-  console.log(err, data);
-});
+    const params = {
+      Bucket: 'google-hash-code',
+      Key: `${testName}/${title}`,
+      Body: body
+    };
+    s3.putObject(params, function(err, data) {
+      if (err) console.log(err, err.stack);
+      else     console.log(data);
+    });
+  });
+};
 
+module.exports = {
+  uploadScore,
+  listScores
+};
