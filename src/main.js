@@ -1,6 +1,9 @@
 'use strict';
+const fs = require('fs');
+const path = require('path');
 const u = require('./modules/utils');
 const m = require('mathjs');
+const leftpad = require('left-pad')
 const initialState = require('./parsedIn');
 const sampleOut = require('./samples/output');
 const validation = require('./validation');
@@ -268,10 +271,24 @@ slices.forEach((s) => {
 module.exports = out;
 
 //eseguire il programma scrivendo -V per avviare la validation
+let errors = []
 if (argv.V || argv.validation) {
-  validation.runTests(initialState, out);
+  errors = validation.runTests(initialState, out);
 }
 
 const finalScore = scorer(initialState, out);
+
+const inputFolderPath = u.getInputFilesFolder();
+const files = fs.readdirSync(inputFolderPath)
+const inputFileName = files[argv._[0]] ? path.parse(files[argv._[0]]).name : 'test'
+const outFolderPath = path.join(__dirname, '../outFiles', inputFileName)
+const filename = leftpad(finalScore, 20, '0').toString() + '.out'
+
+try { fs.mkdirSync('./outFiles') } catch(ignore) {  }
+try { fs.mkdirSync(outFolderPath) } catch(ignore) {  } 
+
+const filenameWithPath = path.join(outFolderPath, filename)
+
 u.logColor('green', '\nScore: ' + finalScore);
-outParser.produceOutput(finalScore, out);
+const output = outParser.produceOutput(filenameWithPath, out);
+!errors.length /* && uploadScore(title, body) */
