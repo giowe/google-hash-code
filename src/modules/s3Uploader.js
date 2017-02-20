@@ -10,6 +10,7 @@ const u = require('./utils');
 const path = require('path');
 const parallel = require('async').parallel;
 const fs = require('fs');
+const leftpad = require('left-pad');
 
 const listScores = (testName, cb) => {
   const params = {
@@ -66,7 +67,7 @@ const getTopScore = (testName, cb) => {
     s3.getObject(params, (err, data) => {
       if (err) return cb(err);
       const parsed = path.parse(maxScoreKey);
-      u.logSuccess(parsed.dir, parsed.base);
+      u.logSuccess(leftpad(parsed.dir, 15), '  ---TOP-SCORE--->  ', Number.parseInt(path.parse(parsed.base).name));
       const out = {
         dir: parsed.dir,
         base: parsed.base,
@@ -86,19 +87,14 @@ const downloadTopScores = () => {
 
   parallel(functions, (err, results) => {
     if (err) throw(err);
+    const finalDir = path.join(__dirname, './../../outFilesS3');
     try {
-      fs.mkdirSync(path.join(__dirname, './../../outFilesS3'));
+      fs.mkdirSync(finalDir);
     } catch (ignore) {}
 
     results.forEach(r => {
       if (!r) return;
-
-      let finalDir = path.join(__dirname, './../../outFilesS3', r.dir);
-      try {
-        fs.mkdirSync(finalDir);
-      } catch (ignore) {}
-
-      fs.writeFileSync(path.join(finalDir, r.base), r.body);
+      fs.writeFileSync(path.join(finalDir, `${r.dir}-${r.base}`), r.body);
     });
   })
 };
