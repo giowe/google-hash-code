@@ -4,6 +4,8 @@ const colors = require('./colors');
 const m = require('mathjs');
 const argv = require('yargs').argv;
 const clone = require('clone');
+const fs = require('fs');
+const path = require('path');
 
 const logJson = (json, color) => {
   console.log(prettyjson.render(json, {
@@ -57,6 +59,19 @@ const diff = function(obj1, obj2) {
   return result;
 };
 
+const getSelectedFileName = (trimExtension = true) => {
+  const fileName = getInFilesList()[argv._[0]];
+  return trimExtension? path.parse(fileName).name : fileName;
+};
+
+const getInFilesList = () => {
+  return fs.readdirSync(getInputFilesFolder());
+};
+
+const getInputFilesFolder = () => {
+  return path.join(__dirname, '../inFiles');
+};
+
 module.exports = {
   logJson,
   logSuccess,
@@ -67,5 +82,8 @@ module.exports = {
   isEmptyObject,
   diff,
   getDistance,
-  clone
+  clone,
+  getSelectedFileName,
+  getInFilesList,
+  getInputFilesFolder
 };

@@ -14,6 +14,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/GioBr1/hash-code-preset#readme",
   "dependencies": {
+    "aws-sdk": "^2.16.0",
     "clone": "^2.1.0",
     "expect": "^1.20.2",
     "express": "^4.14.0",
