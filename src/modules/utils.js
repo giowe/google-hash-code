@@ -72,6 +72,8 @@ const getInputFilesFolder = () => {
   return path.join(__dirname, '../inFiles');
 };
 
+const getOutputFilesFolder = () => path.join(__dirname, './../../outFiles', getSelectedFileName())
+
 module.exports = {
   logJson,
   logSuccess,
@@ -85,5 +87,6 @@ module.exports = {
   clone,
   getSelectedFileName,
   getInFilesList,
-  getInputFilesFolder
+  getInputFilesFolder,
+  getOutputFilesFolder
 };

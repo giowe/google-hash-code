@@ -1,12 +1,14 @@
 'use strict';
+const fs = require('fs');
+const path = require('path');
 const u = require('./modules/utils');
 const m = require('mathjs');
+const leftpad = require('left-pad')
 const initialState = require('./parsedIn');
 const sampleOut = require('./samples/output');
 const validation = require('./validation');
 const scorer = require('./scorer');
 const argv = require('yargs').argv;
-const fs = require('fs');
 const outParser = require('./outParser');
 
 const {
@@ -15,19 +17,19 @@ const {
 
 const minSlices = Math.floor(R*C/H);
 const toppingsCount = {
-    T: 0,
-    M: 0
+  T: 0,
+  M: 0
 };
 
 const pizzaMap = [];
 
 pizza.forEach((row, r) => {
-    pizzaMap.push([]);
-    row.forEach((topping, c) => {
-        pizzaMap[r].push(0);
-        // if( topping == 'M') pizzaMap[r].push(-1);
-        toppingsCount[topping]++
-    });
+  pizzaMap.push([]);
+  row.forEach((topping, c) => {
+    pizzaMap[r].push(0);
+    // if( topping == 'M') pizzaMap[r].push(-1);
+    toppingsCount[topping]++
+  });
 });
 
 const minorTopping = toppingsCount.T < toppingsCount.M ? 'T' : 'M';
@@ -138,12 +140,12 @@ function getOverlapping(slice) {
     return unique;
 }
 
-function printPizzaMap() {
-    for(let r = 0; r < R; ++r) {
-        console.log( pizzaMap[r] );
-    }
-    console.log('')
-}
+//function printPizzaMap() {
+//    for(let r = 0; r < R; ++r) {
+//        console.log( pizzaMap[r] );
+//    }
+//    console.log('')
+//}
 //**************************** SLICE CLASS ****************************
 class Slice {
     constructor(id, r1, c1, r2 = r1, c2 = c1) {
@@ -335,73 +337,86 @@ while(moved && turnsCount < 500 ) {
     */
 
     // Calcolo intersezione
-	minToppingCoords = [];
-    for(let i = 0; i < R; ++i){
-    	for(let j = 0; j < C; ++j){
-    		if( pizza[i][j] === minorTopping && pizzaMap[i][j] === 0) 
-    			minToppingCoords.push( [i, j] );
-    	}
+  minToppingCoords = [];
+  for(let i = 0; i < R; ++i){
+    for(let j = 0; j < C; ++j){
+      if (pizza[i][j] === minorTopping && pizzaMap[i][j] === 0) minToppingCoords.push( [i, j] )
     }
+  }
 
-    dead_slices_count = Math.min(minToppingCoords.length-1, dead_slices_count);
-    let unique_random = getUniqueRandoms(0, minToppingCoords.length, dead_slices_count);
+  dead_slices_count = Math.min(minToppingCoords.length-1, dead_slices_count);
+  let unique_random = getUniqueRandoms(0, minToppingCoords.length, dead_slices_count);
 
-    let count = 0;
-    for(let i = 0; i < slices.length && count < unique_random.length; ++i){
-    	if( slices[i].dead ){
-    		let coords = unique_random[count];
-    		slices[i] = new Slice( i+1, minToppingCoords[coords][0], minToppingCoords[coords][1] );
-    		count++;
-    		if( count > dead_slices_count * 0.1 ) break;
-    	}
+  let count = 0;
+  for(let i = 0; i < slices.length && count < unique_random.length; ++i){
+    if( slices[i].dead ){
+      let coords = unique_random[count];
+      slices[i] = new Slice( i+1, minToppingCoords[coords][0], minToppingCoords[coords][1] );
+      count++;
+      if( count > dead_slices_count * 0.1 ) break;
     }
-    console.log("Restored " + count + " slices");
-    moved = true;
+  }
+  //console.log("Restored " + count + " slices");
+  moved = true;
 
-    console.log("Turn "+ turnsCount);
+  //console.log("Turn "+ turnsCount);
 
-    let turnScore = 0;
-    for(let i = 0; i < slices.length; ++i){
-    	if( slices[i].feasible )
-    		turnScore += slices[i].score;
-    }
+  let turnScore = 0;
+  for(let i = 0; i < slices.length; ++i){
+    if( slices[i].feasible )
+      turnScore += slices[i].score;
+  }
 
-    console.log("Score: " + Math.floor(turnScore) );
+  //console.log("Score: " + Math.floor(turnScore) );
 }
 
-console.log('TURNS:', turnsCount);
+//console.log('TURNS:', turnsCount);
 // u.logJson(slices);
 // slices.forEach((s) => console.log(s, s.feasible, s.score));
 
 const out = [];
 slices.forEach((s) => {
-    if (s.feasible) {
-        out.push({
-			r1: s.r1,
-			c1: s.c1,
-			r2: s.r2,
-			c2: s.c2
-        });
-    }
+  if (s.feasible) {
+    out.push({
+      r1: s.r1,
+      c1: s.c1,
+      r2: s.r2,
+      c2: s.c2
+    });
+  }
 });
 
-console.log("Current number of slices is: " + out.length );
-console.log("Maximum number of slices is: " + maxSlices );
-console.log("Perc: " + out.length / maxSlices * 100  + "%");
-console.log("Killed slices number is: " + killed_slices );
-console.log("minorTopping: " + minorTopping);
-console.log("L: " + L)
+//console.log("Current number of slices is: " + out.length );
+//console.log("Maximum number of slices is: " + maxSlices );
+//console.log("Perc: " + out.length / maxSlices * 100  + "%");
+//console.log("Killed slices number is: " + killed_slices );
+//console.log("minorTopping: " + minorTopping);
+//console.log("L: " + L)
 
 module.exports = out;
 
 //eseguire il programma scrivendo -V per avviare la validation
+let errors = []
 if (argv.V || argv.validation) {
-    validation.runTests(initialState, out);
+  errors = validation.runTests(initialState, out);
 }
 
-const finalScore = scorer(initialState, out);
-u.logColor('green', '\nScore: ' + finalScore);
-outParser.produceOutput(finalScore, out);
+const inputFolderPath = u.getInputFilesFolder()
+const files = fs.readdirSync(inputFolderPath)
+const inputFileName = files[argv._[0]] ? path.parse(files[argv._[0]]).name : 'test'
+const outFolderPath = u.getOutputFilesFolder(inputFileName)
+const finalScore = scorer(initialState, out)
+const filename = leftpad(finalScore, 20, '0').toString() + '.out'
 
-console.log( 'Saving pizzamap' );
-savePizzaMap('pizzaMap', pizzaMap );
+try { fs.mkdirSync('./outFiles') } catch(ignore) {  }
+try { fs.mkdirSync(outFolderPath) } catch(ignore) {  } 
+
+const filenameWithPath = path.join(outFolderPath, filename)
+
+u.logColor('green', '\nScore: ' + finalScore);
+
+const output = outParser.produceOutput(filenameWithPath, out);
+!errors.length && console.log('avrei uppato su s3:', '\n' + output)
+
+// console.log( 'Saving pizzamap' );
+// savePizzaMap('pizzaMap', pizzaMap );

@@ -104,6 +104,7 @@ const runTests = (input, output) => {
     u.logFail('\n' + `Validation encountered ${errors.length} errors:`)
     errors.forEach(error => u.logFail(error))
   } else { u.logSuccess('Validation encountered 0 errors!') }
+  return errors
 }
 
 module.exports = { runTests }
