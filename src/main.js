@@ -416,7 +416,7 @@ const filenameWithPath = path.join(outFolderPath, filename)
 u.logColor('green', '\nScore: ' + finalScore);
 
 const output = outParser.produceOutput(filenameWithPath, out);
-!errors.length && console.log('avrei uppato su s3:', '\n' + output)
+!errors.length && argv.s3 && console.log('avrei uppato su s3:', '\n' + output)
 
 // console.log( 'Saving pizzamap' );
 // savePizzaMap('pizzaMap', pizzaMap );
