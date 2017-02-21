@@ -1,7 +1,7 @@
 'use strict';
 const Parser = require('./modules/InParser');
 const sampleInput = require('./samples/input');
-p = new Parser({
+const p = new Parser({
   rowSeparator: '\n',
   colSeparator: ' ',
   autoCast: 'parseInt'
