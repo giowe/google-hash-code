@@ -37,8 +37,9 @@ function getFreeSpace(r, c, map){
 }
 
 function occupy(r, c, server, map){
-  for(let i = 0; i < server.size; ++i)
+  for(let i = 0; i < server.size; ++i) {
     map[r][c + i] = server.id;
+  }
 }
 
 console.log("R: " + R);
@@ -47,7 +48,7 @@ console.log("P: " + P);
 console.log("M: " + M);
 
 // Set id to servers
-for(let i = 0; i < servers.length; ++i) servers.id = i;
+for(let i = 0; i < servers.length; ++i) servers[i].id = i;
 
 const occupancy = [];
 for(let i = 0; i < R; ++i){
@@ -113,6 +114,7 @@ for (let i = 0; i < P; i++) {
 
 // Looping trought grid
 let currentColumn = Array(R);
+
 for( let r = 0; r < R; ++r) currentColumn[r] = 0;
 
 let currentPoolId = -1;
@@ -132,17 +134,30 @@ for( let r = 0; r < R; ++r){
     }
   }
 
+  if (!targetServer) {  //TODO!
+
+    currentColumn[r] += freeSpace;
+    continue;
+  }
+
   Object.assign(targetServer, {
     r,
     c: currentColumn[r]
   });
 
+  occupy(r, currentColumn[r], targetServer, occupancy);
+  currentColumn[r] += targetServer.size;
   console.log('target', targetServer);
+  console.log(r);
+  if (r + 1 === R) r = 0;
 }
 
 u.saveMatrix( occupancy );
 
-const out = [];
+const out = servers.map(s => {
+  if (!s.r) return 'x';
+  return {row: s.r, slot:s.c, pool:s.pool}
+});
 
 //**************************** FINAL BOILERPLATE ****************************
 
