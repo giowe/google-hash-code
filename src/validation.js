@@ -19,7 +19,19 @@ const runTest = (test) => {
 
 const generateTests = (input, output) => {
   const tests = new Set()
-  tests.add(createTest('Test di prova', () => expect(1).toEqual(1)))
+
+  // Each slot of the data center has to be occupied by at most one server
+
+  // No server occupies any unavailable slot of the data center
+
+  // No server extends beyond the slots of the row
+  output.filter(server => server !== 'x').forEach((allocatedServer, i) => {
+    const reachedX = allocatedServer.x + input.servers[i].size
+    tests.add(createTest(
+      `Server ${i} (${allocatedServer.x},${allocatedServer.y}) with size ${input.servers[i].size} is within bounds (${input.S})`,
+      () => expect(reachedX).toBeLessThanOrEqualTo(input.S)
+    ))
+  })
 
   // Return
   return tests
