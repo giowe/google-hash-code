@@ -10,4 +10,7 @@ ex.helper = () => {
 
 };
 
+ex.getPoolMinCap = (pool) => {
+  return 'NOT_SCORE';
+};
 

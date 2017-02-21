@@ -94,8 +94,6 @@ const saveMatrix = (array) => {
   return matrix;
 };
 
-saveMatrix( [[0,0],[1,1],[2,2]])
-
 module.exports = {
   saveMatrix,
   logJson,
