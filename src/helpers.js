@@ -37,3 +37,11 @@ ex.getServersInPool = (poolId, out) => {
   });
   return pool;
 };
+
+ex.getPoolFromServers = (poolId, servers) => {
+  const out = [];
+  servers.forEach(s => {
+    if (s.pool === poolId) out.push(s);
+  });
+  return out;
+};

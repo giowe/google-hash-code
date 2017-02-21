@@ -14,33 +14,32 @@ const argv = require('yargs').argv;
 const outParser = require('./outParser');
 
 const {
-  R,S,U,P,M, 
-  uSlots, 
+  R,S,U,P,M,
+  uSlots,
   servers
 } = initialState;
 
 //**************************** PROCESS OPERATIONS ****************************
+const OCCUPIED = M;
+const FREE = -1;
 
 function serverWeight( server ){
 	return server.capacity * server.capacity / server.size;
 }
 
 function getFreeSpace(r, c, map){
-	let counter = 0;
-	for(let i = 0; i < server.size; ++i){
-		if( map[r + i, c] != FREE || r < R) return count;
-		count++;	
+	let count = 0;
+	for(let i = 0; i < S - c; ++i){
+		if( map[r][i+c] != FREE || r >= R || c+i >= S) return count;
+		count++;
 	}
+	return count;
 }
 
 function occupy(r, c, server, map){
-	for(let i = 0; i < server.size; ++i)
-		map[r, c + i] = server.id;
+  for(let i = 0; i < server.size; ++i)
+    map[r][c + i] = server.id;
 }
-
-
-const OCCUPIED = M;
-const FREE = -1;
 
 console.log("R: " + R);
 console.log("S: " + S);
@@ -61,7 +60,7 @@ for(let i = 0; i < R; ++i){
 				occupied = true;
 			}
 		}
-		
+
 		if(occupied) tmp.push(OCCUPIED)
 		else tmp.push(FREE);
 
@@ -107,15 +106,38 @@ serversC.sort( function(a, b){
 	return b.capacity - a.capacity;
 });
 
+const pools = [];
+for (let i = 0; i < P; i++) {
+  pools.push(h.getPoolFromServers(i, serversC));
+}
 
 // Looping trought grid
 let currentColumn = Array(R);
 for( let r = 0; r < R; ++r) currentColumn[r] = 0;
 
+let currentPoolId = -1;
 for( let r = 0; r < R; ++r){
+	currentPoolId = ( currentPoolId + 1 ) % P;
+  const freeSpace = getFreeSpace(r,currentColumn[r], occupancy);
 
-		let currentPool = ( currentPool + 1 ) % P; 
+  const currentPool =  pools[currentPoolId];
 
+  let targetServer;
+  const l = currentPool.length;
+  for (let i = 0; i < l; i++ ) {
+    const s = currentPool[i];
+    if (s.size <= freeSpace) {
+      targetServer = currentPool.splice(i, 1)[0];
+      break;
+    }
+  }
+
+  Object.assign(targetServer, {
+    r,
+    c: currentColumn[r]
+  });
+
+  console.log('target', targetServer);
 }
 
 u.saveMatrix( occupancy );
