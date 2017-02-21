@@ -30,7 +30,8 @@ function serverWeight( server ){
 function getOccupiedSpace(r, c, map){
   let count = 0;
   for(let i = 0; i < S - c; ++i){
-    if( map[r][i+c]!= FREE ) count++;
+    const curCell = map[r][i+c];
+    if( curCell !== FREE ) count++;
     else return count;
   }
 
