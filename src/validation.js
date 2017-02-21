@@ -24,23 +24,45 @@ const generateTests = (input, output) => {
 
   const availableServers = output.filter(server => server !== 'x')
 
+  const getServerOccupiedSlots = (server, index) => {
+    let occupiedSlots = []
+    const size = input.servers[index].size
+    for (let i = 0; i < size; i++) {
+      occupiedSlots.push([server.row,server.slot+i])
+    }
+    console.log('server '+index, occupiedSlots)
+    return occupiedSlots
+  }
+
   // Each slot of the data center has to be occupied by at most one server
+  availableServers.forEach((currentServer, curServerIndex) => {
+    availableServers.forEach((matchServer, matchServerIndex) => {
+      if (curServerIndex !== matchServerIndex) {
+        const currentServerOccupiedSlots = getServerOccupiedSlots(currentServer, curServerIndex)
+        const matchServerOccupiedSlots = getServerOccupiedSlots(matchServer, matchServerIndex)
+        currentServerOccupiedSlots.forEach(currentServerSlot => {
+          matchServerOccupiedSlots.forEach(matchServerSlot => {
+            tests.add(createTest(
+              `Slot (${currentServerSlot[0]},${currentServerSlot[1]}) from server ${curServerIndex} overlap check with slot (${matchServerSlot[0]},${matchServerSlot[1]}) from server ${matchServerIndex}`,
+              () => expect(currentServerSlot[0] === matchServerSlot[0] && currentServerSlot[1] === matchServerSlot[1]).toBe(false)
+            ))
+          })
+        })
+      }
+    })
+  })
 
   // No server occupies any unavailable slot of the data center
-  availableServers.forEach((allocatedServer, i) => {
-    let serverUnavailableSlotsOccupied = 0
-    let size = input.servers[i].size
-    for (let l = 0; l < size; l++) {
-      const currentCell = [allocatedServer.row,allocatedServer.slot+l]
+  availableServers.forEach((allocatedServer, index) => {
+    const occupiedSlots = getServerOccupiedSlots(allocatedServer, index)
+    occupiedSlots.forEach(slot => {
       input.uSlots.forEach(uSlot => {
-        if (currentCell[0] === uSlot[0] && currentCell[1] === uSlot[1]) serverUnavailableSlotsOccupied += 1
+        tests.add(createTest(
+          `Slot (${slot[0]},${slot[1]}) from server ${index} unavailable slot check with slot (${uSlot[0]},${uSlot[1]})`,
+          () => expect (slot[0] === uSlot[0] && slot[1] === uSlot[1]).toBe(false)
+        ))
       })
-    }
-
-    tests.add(createTest(
-      `Server ${i} (${allocatedServer.row},${allocatedServer.slot}) does not occupy any unavailable slots`,
-      () => expect(serverUnavailableSlotsOccupied).toBe(0)
-    ))
+    })
   })
 
   // No server extends beyond the slots of the row
