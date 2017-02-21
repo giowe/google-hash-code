@@ -82,7 +82,7 @@ const getOutputFilesFolder = (inputFileName) => path.join(__dirname, './../../ou
 
 const getTempFolder = () => path.join(__dirname, './../../temp');
 
-const saveMatrix = (array) => {
+const saveMatrix = (array, filename = 'matrix') => {
   const tempFolder = getTempFolder();
   try {
     fs.mkdirSync(tempFolder);
@@ -90,7 +90,7 @@ const saveMatrix = (array) => {
 
   const matrix = array.map(a => a.join(' ')).join('\n');
 
-  fs.writeFileSync(path.join(tempFolder, 'matrix'), matrix);
+  fs.writeFileSync(path.join(tempFolder, filename), matrix);
   return matrix;
 };
 

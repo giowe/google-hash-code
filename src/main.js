@@ -81,7 +81,7 @@ for(let i = 0; i < R; ++i){
 	occupancy.push(tmp);
 }
 
-
+u.saveMatrix(occupancy, 'vuoto')
 let serversW = [];
 for (let i = 0; i < servers.length; i++) {
 	serversW.push( servers[i] );
@@ -146,8 +146,8 @@ for( let r = 0; r < R; ++r){
   }
 
   if (!targetServer) {  //TODO!
-
-    currentColumn[r] += freeSpace+2;
+    const o = getOccupiedSpace(r, currentColumn[r] + freeSpace + 1, occupancy);
+    currentColumn[r] += freeSpace+o+1;
     continue;
   }
 
@@ -162,7 +162,6 @@ for( let r = 0; r < R; ++r){
   currentColumn[r] += targetServer.size;
   console.log('target', targetServer);
   console.log(r);
-  if (r + 1 === R) r = 0;
 }
 
 u.saveMatrix( occupancy );
