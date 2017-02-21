@@ -21,7 +21,7 @@ const {
 
 //**************************** PROCESS OPERATIONS ****************************
 const OCCUPIED = M;
-const FREE = -1;
+const FREE = -300;
 
 function serverWeight( server ){
 	return server.capacity * server.capacity / server.size;
@@ -146,7 +146,7 @@ for( let r = 0; r < R; ++r){
 
   if (!targetServer) {  //TODO!
 
-    currentColumn[r] += freeSpace+1;
+    currentColumn[r] += freeSpace+2;
     continue;
   }
 
