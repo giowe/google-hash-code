@@ -44,7 +44,6 @@ function getFreeSpace(r, c, map){
 		if( curCell !== FREE || r >= R || c+i >= S) return count;
 		count++;
 	}
-	console.log(map)
 	return count;
 }
 
@@ -130,38 +129,37 @@ let currentColumn = Array(R);
 for( let r = 0; r < R; ++r) currentColumn[r] = 0;
 
 let currentPoolId = -1;
-for( let r = 0; r < R; ++r){
-	currentPoolId = ( currentPoolId + 1 ) % P;
-  const freeSpace = getFreeSpace(r,currentColumn[r], occupancy);
-  const currentPool =  pools[currentPoolId];
+while ( currentColumn.filter(e => e < S).length ){
+  for( let r = 0; r < R; ++r){
+    currentPoolId = ( currentPoolId + 1 ) % P;
+    const freeSpace = getFreeSpace(r,currentColumn[r], occupancy);
+    const currentPool =  pools[currentPoolId];
 
-  let targetServer;
-  const l = currentPool.length;
-  for (let i = 0; i < l; i++ ) {
-    const s = currentPool[i];
-    if (s.size <= freeSpace) {
-      targetServer = currentPool.splice(i, 1)[0];
-      break;
+    let targetServer;
+    const l = currentPool.length;
+    for (let i = 0; i < l; i++ ) {
+      const s = currentPool[i];
+      if (s.size <= freeSpace) {
+        targetServer = currentPool.splice(i, 1)[0];
+        break;
+      }
     }
+
+    if (!targetServer) {  //TODO!
+      const o = getOccupiedSpace(r, currentColumn[r] + freeSpace + 1, occupancy);
+      currentColumn[r] += freeSpace+o+1;
+      continue;
+    }
+
+
+    Object.assign(targetServer, {
+      r,
+      c: currentColumn[r]
+    });
+
+    occupy(r, currentColumn[r], targetServer, occupancy);
+    currentColumn[r] += targetServer.size;
   }
-
-  if (!targetServer) {  //TODO!
-    const o = getOccupiedSpace(r, currentColumn[r] + freeSpace + 1, occupancy);
-    currentColumn[r] += freeSpace+o+1;
-    continue;
-  }
-
-  console.log('free', freeSpace, targetServer.size, r);
-
-  Object.assign(targetServer, {
-    r,
-    c: currentColumn[r]
-  });
-
-  occupy(r, currentColumn[r], targetServer, occupancy);
-  currentColumn[r] += targetServer.size;
-  console.log('target', targetServer);
-  console.log(r);
 }
 
 u.saveMatrix( occupancy );
