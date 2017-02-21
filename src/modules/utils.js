@@ -80,7 +80,24 @@ const getInputFilesFolder = () => {
 
 const getOutputFilesFolder = (inputFileName) => path.join(__dirname, './../../outFiles', getSelectedFileName() || inputFileName )
 
+const getTempFolder = () => path.join(__dirname, './../../temp');
+
+const saveMatrix = (array) => {
+  const tempFolder = getTempFolder();
+  try {
+    fs.mkdirSync(tempFolder);
+  } catch(ignore) {}
+
+  const matrix = array.map(a => a.join(' ')).join('\n');
+
+  fs.writeFileSync(path.join(tempFolder, 'matrix'), matrix);
+  return matrix;
+};
+
+saveMatrix( [[0,0],[1,1],[2,2]])
+
 module.exports = {
+  saveMatrix,
   logJson,
   logSuccess,
   logFail,
@@ -94,5 +111,6 @@ module.exports = {
   getSelectedFileName,
   getInFilesList,
   getInputFilesFolder,
-  getOutputFilesFolder
+  getOutputFilesFolder,
+  getTempFolder
 };
