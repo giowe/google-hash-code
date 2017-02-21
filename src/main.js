@@ -136,7 +136,7 @@ for( let r = 0; r < R; ++r){
 
   if (!targetServer) {  //TODO!
 
-    currentColumn[r] += freeSpace;
+    currentColumn[r] += freeSpace + 2;
     continue;
   }
 
