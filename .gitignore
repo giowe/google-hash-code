@@ -17,4 +17,5 @@ node_modules
 npm-debug.log
 dist.zip
 dist
+temp
 *.out
