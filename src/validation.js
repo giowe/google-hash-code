@@ -31,12 +31,10 @@ const generateTests = (input, output) => {
     let serverUnavailableSlotsOccupied = 0
     let size = input.servers[i].size
     for (let l = 0; l < size; l++) {
-      let currentCell = [allocatedServer.row+l,allocatedServer.slot]
+      const currentCell = [allocatedServer.row,allocatedServer.slot+l]
       input.uSlots.forEach(uSlot => {
-        if (currentCell === uSlot) serverUnavailableSlotsOccupied +=1
-        console.log('uslots occupied:', serverUnavailableSlotsOccupied)
+        if (currentCell[0] === uSlot[0] && currentCell[1] === uSlot[1]) serverUnavailableSlotsOccupied += 1
       })
-      console.log(`cella corrente, server ${i}`, currentCell)
     }
 
     tests.add(createTest(
@@ -47,7 +45,7 @@ const generateTests = (input, output) => {
 
   // No server extends beyond the slots of the row
   availableServers.forEach((allocatedServer, i) => {tests.add(createTest(
-    `Server ${i} (${allocatedServer.x},${allocatedServer.y}) with size ${input.servers[i].size} is within bounds (${input.S})`,
+    `Server ${i} (${allocatedServer.row},${allocatedServer.slot}) with size ${input.servers[i].size} is within bounds (${input.S})`,
     () => expect(allocatedServer.slot + input.servers[i].size).toBeLessThanOrEqualTo(input.S)
   ))})
 
