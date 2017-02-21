@@ -18,7 +18,7 @@ ex.getPoolMinCap = (pool, servers) => {
 
 ex.getPoolsCount = (out) => {
   let poolCount = 0;
-  out.forEach(s => {
+  out.forEach( s => {
     if (s.pool === poolCount) poolCount++
   });
   return poolCount;
