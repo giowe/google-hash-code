@@ -6,12 +6,22 @@ const argv = require('yargs').argv;
 const ex = {};
 module.exports = ex;
 
-ex.helper = () => {
+ex.getPoolMinCap = (pool, servers) => {
+  const rowsTotCap = {};
+  pool.forEach(s => {
+    if (!rowsTotCap[s.row]) rowsTotCap[s.row] = 0;
+    rowsTotCap[s.row] += servers[s.id].capacity
+  });
 
+  return Math.min(...Object.keys(rowsTotCap).map(key => rowsTotCap[key]));
 };
 
-ex.getPoolMinCap = (pool) => {
-  return 'NOT_SCORE';
+ex.getPoolsCount = (out) => {
+  let poolCount = 0;
+  out.forEach( s => {
+    if (s.pool === poolCount) poolCount++
+  });
+  return poolCount;
 };
 
 ex.getServersInPool = (poolId, out) => {
@@ -20,7 +30,8 @@ ex.getServersInPool = (poolId, out) => {
     if (s.pool === poolId) {
       pool.push ({
         id: i,
-        s
+        row: s.row,
+        slot: s.slot
       })
     }
   });

@@ -3,6 +3,11 @@ const h = require('./helpers');
 const u = require('./modules/utils');
 
 module.exports = (parsedIn, out) => {
-  console.log(h.getServersInPool(0, out));
-  return 'NOT_A_SCORE'
+  const minPoolCap = [];
+  const l = h.getPoolsCount(out);
+  for (let i = 0; i < l; i++) {
+     minPoolCap.push(h.getPoolMinCap(h.getServersInPool(i, out), parsedIn.servers));
+  }
+
+  return Math.min(...minPoolCap);
 };
