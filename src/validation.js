@@ -30,7 +30,6 @@ const generateTests = (input, output) => {
     for (let i = 0; i < size; i++) {
       occupiedSlots.push([server.row,server.slot+i])
     }
-    console.log('server '+index, occupiedSlots)
     return occupiedSlots
   }
 
