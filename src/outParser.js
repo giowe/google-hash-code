@@ -4,7 +4,7 @@ const fs = require('fs')
 
 const produceOutput = (filename, output) => {
   const logger = fs.createWriteStream(filename)
-  const outArray = [output.length.toString() + '\n'].concat(output.map(row => `TODO`))
+  const outArray = output.map(row => row === 'x' ? 'x\n' : `${row.x} ${row.y} ${row.pool}\n`)
   outArray.forEach(line => {
     logger.write(line.toString())
   })
