@@ -27,12 +27,23 @@ function serverWeight( server ){
 	return server.capacity * server.capacity / server.size;
 }
 
+function getOccupiedSpace(r, c, map){
+  let count = 0;
+  for(let i = 0; i < S - c; ++i){
+    if( map[r][i+c]!= FREE ) count++;
+    else return count;
+  }
+
+}
+
 function getFreeSpace(r, c, map){
 	let count = 0;
 	for(let i = 0; i < S - c; ++i){
-		if( map[r][i+c] != FREE || r >= R || c+i >= S) return count;
+	  const curCell = map[r][i+c];
+		if( curCell !== FREE || r >= R || c+i >= S) return count;
 		count++;
 	}
+	console.log(map)
 	return count;
 }
 
@@ -57,7 +68,7 @@ for(let i = 0; i < R; ++i){
 
 		let occupied = false;
 		for(let k = 0; k < U; ++k){
-			if( (uSlots[k][0] - 1) === i && (uSlots[k][1] -1) === j){
+			if( (uSlots[k][0]) === i && (uSlots[k][1]) === j){
 				occupied = true;
 			}
 		}
@@ -121,7 +132,6 @@ let currentPoolId = -1;
 for( let r = 0; r < R; ++r){
 	currentPoolId = ( currentPoolId + 1 ) % P;
   const freeSpace = getFreeSpace(r,currentColumn[r], occupancy);
-
   const currentPool =  pools[currentPoolId];
 
   let targetServer;
@@ -136,9 +146,11 @@ for( let r = 0; r < R; ++r){
 
   if (!targetServer) {  //TODO!
 
-    currentColumn[r] += freeSpace + 2;
+    currentColumn[r] += freeSpace+1;
     continue;
   }
+
+  console.log('free', freeSpace, targetServer.size, r);
 
   Object.assign(targetServer, {
     r,
