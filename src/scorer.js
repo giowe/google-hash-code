@@ -4,28 +4,32 @@ const u = require('./modules/utils');
 
 module.exports = (parsedIn, out) => {
 
-  const availableServers = out.filter(server => server !== 'x')
-
   //const totalCapacityForPool = (pool) => {
   //  pool.reduce()
   //}
 
   const getPoolMinCapacity = (poolIndex) => {
     let maxCapacity = 0
-    availableServers.forEach((server, serverIndex) => {
-      if (server.pool === poolIndex) {
-        const serverCapacity = parsedIn.servers[serverIndex].capacity
-        maxCapacity += serverCapacity
+
+    out.forEach((server, serverIndex) => {
+      if (server !== 'x') {
+        if (server.pool === poolIndex) {
+          const serverCapacity = parsedIn.servers[serverIndex].capacity
+          maxCapacity += serverCapacity
+        }
       }
     })
     const rows = parsedIn.R
     let capacityToSubtract = 0
     for (let i = 0; i < rows; i++) {
       let poolRowCapacity = 0
-      availableServers.forEach((server, serverIndex) => {
-        if (server.pool === poolIndex && server.row === i) {
-          const serverCapacity = parsedIn.servers[serverIndex].capacity
-          poolRowCapacity += serverCapacity
+
+      out.forEach((server2, serverIndex2) => {
+        if (server2 !== 'x') {
+          if (server2.pool === poolIndex && server2.row === i) {
+            const serverCapacity = parsedIn.servers[serverIndex2].capacity
+            poolRowCapacity += serverCapacity
+          }
         }
       })
       if (poolRowCapacity >= capacityToSubtract) capacityToSubtract = poolRowCapacity
@@ -42,13 +46,4 @@ module.exports = (parsedIn, out) => {
   }
 
   return realScore
-
-
-  //const minPoolCap = [];
-  //const l = h.getPoolsCount(out);
-  //for (let i = 0; i < l; i++) {
-  //   minPoolCap.push(h.getPoolMinCap(h.getServersInPool(i, out), parsedIn.servers));
-  //}
-
-  //return Math.min(...minPoolCap);
-};
+}
