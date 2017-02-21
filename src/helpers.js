@@ -6,10 +6,6 @@ const argv = require('yargs').argv;
 const ex = {};
 module.exports = ex;
 
-ex.helper = () => {
-
-};
-
 ex.getPoolMinCap = (pool, servers) => {
   const rowsTotCap = {};
   pool.forEach(s => {
