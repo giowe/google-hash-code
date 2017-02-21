@@ -22,8 +22,6 @@ const generateTests = (input, output) => {
   //console.log(input)
   //console.log(output)
 
-  const availableServers = output.filter(server => server !== 'x')
-
   const getServerOccupiedSlots = (server, index) => {
     let occupiedSlots = []
     const size = input.servers[index].size
@@ -34,34 +32,40 @@ const generateTests = (input, output) => {
   }
 
   // Each slot of the data center has to be occupied by at most one server
-  availableServers.forEach((currentServer, curServerIndex) => {
-    availableServers.forEach((matchServer, matchServerIndex) => {
-      if (curServerIndex !== matchServerIndex) {
-        const currentServerOccupiedSlots = getServerOccupiedSlots(currentServer, curServerIndex)
-        const matchServerOccupiedSlots = getServerOccupiedSlots(matchServer, matchServerIndex)
-        currentServerOccupiedSlots.forEach(currentServerSlot => {
-          matchServerOccupiedSlots.forEach(matchServerSlot => {
-            tests.add(createTest(
-              `Slot (${currentServerSlot[0]},${currentServerSlot[1]}) from server ${curServerIndex} overlap check with slot (${matchServerSlot[0]},${matchServerSlot[1]}) from server ${matchServerIndex}`,
-              () => expect(currentServerSlot[0] === matchServerSlot[0] && currentServerSlot[1] === matchServerSlot[1]).toBe(false)
-            ))
-          })
-        })
-      }
-    })
+  output.forEach((curServer, curServerIndex) => {
+    if (curServer !== 'x') {
+      output.forEach((matchServer, matchServerIndex) => {
+        if (matchServer !== 'x') {
+          if (curServerIndex !== matchServerIndex) {
+            const currentServerOccupiedSlots = getServerOccupiedSlots(curServer, curServerIndex)
+            const matchServerOccupiedSlots = getServerOccupiedSlots(matchServer, matchServerIndex)
+            currentServerOccupiedSlots.forEach(currentServerSlot => {
+              matchServerOccupiedSlots.forEach(matchServerSlot => {
+                tests.add(createTest(
+                  `Slot (${currentServerSlot[0]},${currentServerSlot[1]}) from server ${curServerIndex} overlap check with slot (${matchServerSlot[0]},${matchServerSlot[1]}) from server ${matchServerIndex}`,
+                  () => expect(currentServerSlot[0] === matchServerSlot[0] && currentServerSlot[1] === matchServerSlot[1]).toBe(false)
+                ))
+              })
+            })
+          }
+        }
+      })
+    }
   })
 
   // No server occupies any unavailable slot of the data center
-  availableServers.forEach((allocatedServer, index) => {
-    const occupiedSlots = getServerOccupiedSlots(allocatedServer, index)
-    occupiedSlots.forEach(slot => {
-      input.uSlots.forEach(uSlot => {
-        tests.add(createTest(
-          `Slot (${slot[0]},${slot[1]}) from server ${index} unavailable slot check with slot (${uSlot[0]},${uSlot[1]})`,
-          () => expect (slot[0] === uSlot[0] && slot[1] === uSlot[1]).toBe(false)
-        ))
+  output.forEach((server, index) => {
+    if (server !== 'x') {
+      const occupiedSlots = getServerOccupiedSlots(server, index)
+      occupiedSlots.forEach(slot => {
+        input.uSlots.forEach(uSlot => {
+          tests.add(createTest(
+            `Slot (${slot[0]},${slot[1]}) from server ${index} unavailable slot check with slot (${uSlot[0]},${uSlot[1]})`,
+            () => expect (slot[0] === uSlot[0] && slot[1] === uSlot[1]).toBe(false)
+          ))
+        })
       })
-    })
+    }
   })
 
   // No server extends beyond the slots of the row
