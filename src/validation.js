@@ -65,10 +65,14 @@ const generateTests = (input, output) => {
   })
 
   // No server extends beyond the slots of the row
-  availableServers.forEach((allocatedServer, i) => {tests.add(createTest(
-    `Server ${i} (${allocatedServer.row},${allocatedServer.slot}) with size ${input.servers[i].size} is within bounds (${input.S})`,
-    () => expect(allocatedServer.slot + input.servers[i].size).toBeLessThanOrEqualTo(input.S)
-  ))})
+  output.forEach((server, i) => {
+    if (server !== 'x') {
+      tests.add(createTest(
+        `Server ${i} (${server.row},${server.slot}) with size ${input.servers[i].size} is within bounds (${input.S})`,
+        () => expect(server.slot + input.servers[i].size).toBeLessThanOrEqualTo(input.S)
+      ))
+    }
+  })
 
   // Return
   return tests
