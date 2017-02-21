@@ -1,8 +1,8 @@
 const sampleOutput = [
-  {x: 0, y:1, pool:0},
-  {x: 1, y:0, pool:1},
-  {x: 1, y:3, pool:0},
-  {x: 0, y:4, pool:1},
+  {row: 0, slot:1, pool:0},
+  {row: 1, slot:0, pool:1},
+  {row: 1, slot:3, pool:0},
+  {row: 0, slot:4, pool:1},
   'x'
 ];
 

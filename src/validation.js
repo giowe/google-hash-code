@@ -19,19 +19,37 @@ const runTest = (test) => {
 
 const generateTests = (input, output) => {
   const tests = new Set()
+  console.log(input)
+  console.log(output)
+
+  const availableServers = output.filter(server => server !== 'x')
 
   // Each slot of the data center has to be occupied by at most one server
 
   // No server occupies any unavailable slot of the data center
+  availableServers.forEach((allocatedServer, i) => {
+    let serverUnavailableSlotsOccupied = 0
+    let size = input.servers[i].size
+    for (let l = 0; l < size; l++) {
+      let currentCell = [allocatedServer.row+l,allocatedServer.slot]
+      input.uSlots.forEach(uSlot => {
+        if (currentCell === uSlot) serverUnavailableSlotsOccupied +=1
+        console.log('uslots occupied:', serverUnavailableSlotsOccupied)
+      })
+      console.log(`cella corrente, server ${i}`, currentCell)
+    }
 
-  // No server extends beyond the slots of the row
-  output.filter(server => server !== 'x').forEach((allocatedServer, i) => {
-    const reachedX = allocatedServer.x + input.servers[i].size
     tests.add(createTest(
-      `Server ${i} (${allocatedServer.x},${allocatedServer.y}) with size ${input.servers[i].size} is within bounds (${input.S})`,
-      () => expect(reachedX).toBeLessThanOrEqualTo(input.S)
+      `Server ${i} (${allocatedServer.row},${allocatedServer.slot}) does not occupy any unavailable slots`,
+      () => expect(serverUnavailableSlotsOccupied).toBe(0)
     ))
   })
+
+  // No server extends beyond the slots of the row
+  availableServers.forEach((allocatedServer, i) => {tests.add(createTest(
+    `Server ${i} (${allocatedServer.x},${allocatedServer.y}) with size ${input.servers[i].size} is within bounds (${input.S})`,
+    () => expect(allocatedServer.slot + input.servers[i].size).toBeLessThanOrEqualTo(input.S)
+  ))})
 
   // Return
   return tests
