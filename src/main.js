@@ -133,8 +133,8 @@ const files = fs.readdirSync(inputFolderPath)
 const inputFileName = files[argv._[0]] ? path.parse(files[argv._[0]]).name : 'test'
 const outFolderPath = u.getOutputFilesFolder(inputFileName)
 const finalScore = scorer(initialState, out)
-const filename = leftpad(finalScore, 20, '0').toString() + '.out'
-
+const filename = leftpad(finalScore, 10, '0').toString() + '.out'
+console.log(filename);
 try { fs.mkdirSync('./outFiles') } catch(ignore) {  }
 try { fs.mkdirSync(outFolderPath) } catch(ignore) {  }
 
