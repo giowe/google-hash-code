@@ -18,8 +18,8 @@ const runTest = (test) => {
 }
 
 const generateTests = (input, output) => {
-
   const tests = new Set()
+  tests.add(createTest('Test di prova', () => expect(1).toEqual(1)))
 
   // Return
   return tests
