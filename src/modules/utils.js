@@ -94,6 +94,16 @@ const saveMatrix = (array) => {
   return matrix;
 };
 
+function getUniqueRandoms(min, max, count) {
+  const arr = [];
+  while(arr.length < count) {
+    const randomnumber = min -1 + Math.ceil(Math.random()*(max-min));
+    if(arr.indexOf(randomnumber) > -1) continue;
+    arr[arr.length] = randomnumber;
+  }
+  return arr;
+}
+
 module.exports = {
   saveMatrix,
   logJson,
@@ -110,5 +120,6 @@ module.exports = {
   getInFilesList,
   getInputFilesFolder,
   getOutputFilesFolder,
-  getTempFolder
+  getTempFolder,
+  getUniqueRandoms
 };
