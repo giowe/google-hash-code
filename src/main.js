@@ -93,8 +93,9 @@ serversW.sort( function(a, b){
 
 // Pool association
 let avg = 0;
+let rnd = Math.floor(Math.random()*P);
 for (let i = 0; i < servers.length; i++) {
-	serversW[i].pool = i % P;
+	serversW[i].pool = (i+rnd)% P;
 	avg += serversW[i].size;
 }
 
@@ -107,8 +108,6 @@ for (let i = 0; i < poolCounter.length; i++) poolCounter[i] = 0;
 for (let i = 0; i < servers.length; i++) {
 	poolCounter[ serversW[i].pool ] += serverWeight( serversW[i] );
 }
-
-
 
 let serversC = [];
 for (let i = 0; i < servers.length; i++) {
