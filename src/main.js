@@ -26,22 +26,19 @@ class CacheServer {
     this.id = id;
     this.videos = [];
   }
-
   hasVideo(videoId) {
     return this.videos.indexOf(videoId) !== -1;
   }
-
   addVideo(videoId) {
     this.videos.push(videoId);
   }
-
   getFreeMemory() {
     let usedMemory = 0;
     this.videos.forEach(videoId => {
       usedMemory += videos[videoId];
     });
     if (usedMemory > X) {
-      u.logFail(`HAI ECCEDUTO LA MEMORIA IN QUESTO CACHE SERVER:\n${u.logJson(JSON.stringify(this))}`);
+      u.logFail(`HAI ECCEDUTO LA MEMORIA IN QUESTO CACHE SERVER ID ${this.id}`);
       return 0;
     }
     return X - usedMemory;
@@ -53,16 +50,13 @@ for (let i = 0; i < C; i++) {
   cacheServers.push(new CacheServer(i));
 }
 
-cacheServers.forEach(s => {
-  console.log(s.getFreeMemory());
+endpoints.forEach((e, i) => {
+  e.id = i;
+  e.videos = [];
+  e.addVideo = (videoId) => e.videos.push(videoId);
+  e.hasVideo = (videoId) => e.videos.indexOf(videoId) !== -1;
 });
-/*class endpoint = {
-  id: 2 //sono progressivi per come li leggo dal file 0 based
-  addVideo(videoId, cacheId) {
 
-  }
-}
-*/
 //**************************** PROCESS HELPERS ****************************
 
 //**************************** PROCESS OPERATIONS ****************************
@@ -73,7 +67,7 @@ for(let r = 0; r < R; ++r){
 	let cn = endp.cacheLength;
 	for(let c = 0; c < cn; ++c){
 		let cache = endp.cacheLatencies[c];
-		
+
 		actions.push({
 			video: requests[r].videoId,
 			endpoint: requests[r].endpointId,
