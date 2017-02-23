@@ -71,7 +71,9 @@ const getSelectedFileName = (trimExtension = true) => {
 const getInFilesList = (trimExtension = false) => {
   const list = fs.readdirSync(getInputFilesFolder());
   if (trimExtension) return list.map(e => path.parse(e).name);
-  return list;
+  return list.filter( e => {
+    if (e[0]!=='.') return e 
+  });
 };
 
 const getInputFilesFolder = () => {
