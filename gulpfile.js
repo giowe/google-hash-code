@@ -12,7 +12,7 @@ gulp.task('clean', function () {
 
 gulp.task('dist', ['clean'], () =>
   gulp.src(['src/**/*', './package.json', '.gitignore', '.editorconfig'])
-    .pipe(replace('"main": "src/main",', '"main": "main.js",'))
+    .pipe(replace('src/', ''))
     .pipe(zip('dist.zip'))
     .pipe(gulp.dest('./'))
 );
