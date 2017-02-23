@@ -17,8 +17,24 @@ const {
 //todo initial state vars
 } = initialState;
 
-const out = [];
+const out = [
 
+];
+
+/*class cacheServer = { fare classe
+  id: 0,
+  getfreemem: 100, (somma memorie video)
+  hasVideos = indexof (videos cerco l'id')
+  videos: [id idi di]
+};
+
+class endpoint = {
+  id: 2 //sono progressivi per come li leggo dal file 0 based
+  addVideo(videoId, cacheId) {
+
+  }
+}
+*/
 //**************************** PROCESS HELPERS ****************************
 
 //**************************** PROCESS OPERATIONS ****************************
