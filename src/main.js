@@ -118,10 +118,12 @@ console.log('Chosing actions');
 for(let a = 0; a < actions.length; ++a){
 
 	let ca = actions[a];
+
 	if( !endpoints[ ca.endpoint ].hasVideo( ca.video ) ){
 		if( !cacheServers[ ca.cache ].hasVideo( ca.video ) &&
 			cacheServers[ ca.cache ].getFreeMemory() >= videos[ ca.video ] ){
 
+			// Lo stiamo valutando
 			endpoints[ ca.endpoint ].addVideo( ca.video );
 
 			for(let e = 0; e < cacheServers[ ca.cache ].endpoints.length; ++e){
@@ -137,7 +139,7 @@ for(let a = 0; a < actions.length; ++a){
 
 					console.log('video ' + ca.video + ' added to cache ' + ca.cache );
 				}
-				
+
 			}
 		}
 	}
