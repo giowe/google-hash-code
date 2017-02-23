@@ -23,6 +23,7 @@ class CacheServer {
     this.videos = [];
     this.endpoints = [];
     this.video_request = new Array(V);
+    for(let i = 0; i < V; ++i) this.video_request[i] = 0;
   }
 
   hasVideo(videoId) {
@@ -123,8 +124,6 @@ for(let r = 0; r < (argv.R || R); ++r){
 			score: (endp.latency - cache.latency) * sortedReq[r].requestsCount * 
 					cacheServers[ cache.cacheId ].video_request[ sortedReq[r].videoId ]
 		});
-
-		console.log( cacheServers[ cache.cacheId ].video_request );
 	}
 }
 console.log('Reqest matrix has ', actions.length, ' entries');
