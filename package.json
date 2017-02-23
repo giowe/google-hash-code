@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/main",
   "scripts": {
-    "multi": "function execute() { for i in `seq 1 1000`;\ndo\nnode . $1 --s3\ndone }\n execute"
+    "multi": "node src/runmulti"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "left-pad": "^1.1.3",
     "mathjs": "^3.8.1",
     "prettyjson": "^1.2.1",
+    "shelljs": "^0.7.6",
     "yargs": "^6.6.0"
   },
   "devDependencies": {
