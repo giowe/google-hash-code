@@ -1,4 +1,5 @@
 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const u = require('./modules/utils');
@@ -14,74 +15,20 @@ const argv = require('yargs').argv;
 const outParser = require('./outParser');
 
 const {
-  V, E, R, C, X, videos, endpoints, requests
+//todo initial state vars
 } = initialState;
 
-const out = [
+let out = [
+  { cacheId: 0, videos: [1, 2, 3] },
+  { cacheId: 9, videos: [7, 28, 91] },
+  { cacheId: 7, videos: [9, 12, 37] },
+  { cacheId: 2, videos: [44, 54, 8] },
+  { cacheId: 1, videos: [17, 54, 33] }
+]
 
-];
-
-class CacheServer {
-  constructor(id) {
-    this.id = id;
-    this.videos = [];
-  }
-
-  hasVideo(videoId) {
-    return this.videos.indexOf(videoId) !== -1;
-  }
-
-  addVideo(videoId) {
-    this.videos.push(videoId);
-  }
-
-  getFreeMemory() {
-    let usedMemory = 0;
-    this.videos.forEach(videoId => {
-      usedMemory += videos[videoId];
-    });
-    if (usedMemory > X) {
-      u.logFail(`HAI ECCEDUTO LA MEMORIA IN QUESTO CACHE SERVER:\n${u.logJson(JSON.stringify(this))}`);
-      return 0;
-    }
-    return X - usedMemory;
-  }
-}
-
-const cacheServers = [];
-for (let i = 0; i < C; i++) {
-  cacheServers.push(new CacheServer(i));
-}
-
-cacheServers.forEach(s => {
-  console.log(s.getFreeMemory());
-});
-/*class endpoint = {
-  id: 2 //sono progressivi per come li leggo dal file 0 based
-  addVideo(videoId, cacheId) {
-
-  }
-}
-*/
 //**************************** PROCESS HELPERS ****************************
 
 //**************************** PROCESS OPERATIONS ****************************
-const actions = [];
-
-for(let r = 0; r < R; ++r){
-	let endp = endpoints[ requests[r].endpointId ]
-	let cn = endp.cacheLength;
-	for(let c = 0; c < ; ++c){
-		let cache = endp.cacheLatencies[c];
-		
-		actions.push({
-			video: requests[r].videoId,
-			endpoint: requests[r].endpointId
-			cache: cache.cacheId,
-			score: (endp.latency - cache.latency) * requests[r].requestsCount
-		});
-	}
-}
 
 //**************************** FINAL BOILERPLATE ****************************
 
