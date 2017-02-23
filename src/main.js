@@ -71,12 +71,12 @@ const actions = [];
 for(let r = 0; r < R; ++r){
 	let endp = endpoints[ requests[r].endpointId ]
 	let cn = endp.cacheLength;
-	for(let c = 0; c < ; ++c){
+	for(let c = 0; c < cn; ++c){
 		let cache = endp.cacheLatencies[c];
 		
 		actions.push({
 			video: requests[r].videoId,
-			endpoint: requests[r].endpointId
+			endpoint: requests[r].endpointId,
 			cache: cache.cacheId,
 			score: (endp.latency - cache.latency) * requests[r].requestsCount
 		});
