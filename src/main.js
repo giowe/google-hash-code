@@ -17,10 +17,6 @@ const {
   V, E, R, C, X, videos, endpoints, requests
 } = initialState;
 
-const out = [
-
-];
-
 class CacheServer {
   constructor(id) {
     this.id = id;
@@ -115,6 +111,14 @@ for(let a = 0; a < actions.length; ++a){
 	}
 }
 
+const out = cacheServers.map(s => {
+  return {
+    cacheId: s.id,
+    videos: s.videos
+  }
+});
+
+u.logJson(out);
 
 //**************************** FINAL BOILERPLATE ****************************
 
