@@ -18,7 +18,7 @@ try {
   parsedIn = parse();
 }
 
-const parse = () => {
+function parse() {
   const Parser = require('./modules/InParser');
   const u = require('./modules/utils');
 
@@ -60,10 +60,11 @@ const parse = () => {
 
   fs.writeFile(parsedInFilePath, JSON.stringify(parsedInput), (err) => {
     if (err) return u.fail(err);
+    u.logSuccess('PARSED FILE SAVED')
   });
-  module.exports = parsedInput;
   return parsedInput;
-};
+}
 
+module.exports = parsedIn;
 
 //Parser.validateOverModel(sampleInput, parsedInput);
