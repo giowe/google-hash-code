@@ -58,7 +58,9 @@ const parse = () => {
     })
   };
 
-  fs.writeFile(parsedInFilePath, JSON.stringify(parsedInput), (err));
+  fs.writeFile(parsedInFilePath, JSON.stringify(parsedInput), (err) => {
+    if (err) return u.fail(err);
+  });
   module.exports = parsedInput;
   return parsedInput;
 };
