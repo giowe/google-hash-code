@@ -68,6 +68,7 @@ endpoints.forEach((e, i) => {
     if (index === -1) return;
     videos.splice(index, 1);
   };
+
   e.getCacheServer = (cacheId) => {
     const cacheLatencies = e.cacheLatencies;
     const l = cacheLatencies.length;
@@ -128,16 +129,15 @@ for(let a = 0; a < actions.length; ++a){
 
 			for(let e = 0; e < cacheServers[ ca.cache ].endpoints.length; ++e){
 				let e_id = cacheServers[ ca.cache ].endpoints[e];
+				let latency = endpoints[ e_id ].getCacheServer( ca.cache ).latency;// endpoints[ e_id ].cacheLatencies;
 
-				let cl = endpoints[ e_id ].cacheLatencies;
-				if( endpoints[ e_id ].latency > cl[ ca.cache ] ){
-					
+				if( endpoints[ e_id ].latency > latency){
 					endpoints[ e_id ].addVideo( ca.video );
 
 					if( !cacheServers[ ca.cache ].hasVideo( ca.video ) )
 						cacheServers[ ca.cache ].addVideo( ca.video );
 
-					console.log('video ' + ca.video + ' added to cache ' + ca.cache );
+					// console.log('video ' + ca.video + ' added to cache ' + ca.cache );
 				}
 
 			}
@@ -151,6 +151,8 @@ const out = cacheServers.map(s => {
     videos: s.videos
   }
 });
+
+// console.log( out );
 
 
 //**************************** FINAL BOILERPLATE ****************************
