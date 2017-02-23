@@ -22,10 +22,15 @@ class CacheServer {
     this.id = id;
     this.videos = [];
     this.endpoints = [];
+    this.video_request = new Array(V);
   }
 
   hasVideo(videoId) {
     return this.videos.indexOf(videoId) !== -1;
+  }
+
+  hasEndpoint( endpointId ){  
+  	return this.endpoints.indexOf( endpointId ) !== -1;
   }
 
   addVideo(videoId) {
@@ -90,6 +95,13 @@ for(let i = 0; i < E; ++i){
 	}
 }
 
+for(let i = 0; i < R; ++i){
+	for(let j = 0; j < C; ++j ){
+		if( cacheServers[j].hasEndpoint( requests[i].endpointId ) )
+			cacheServers[j].video_request[ requests[i].videoId ]++;
+	}
+}
+
 console.log('Sorting requests');
 const sortedReq = [];
 for(let i = 0; i < requests.length; ++i) sortedReq.push( requests[i] );
@@ -108,8 +120,11 @@ for(let r = 0; r < (argv.R || R); ++r){
 			video: sortedReq[r].videoId,
 			endpoint: sortedReq[r].endpointId,
 			cache: cache.cacheId,
-			score: (endp.latency - cache.latency) * sortedReq[r].requestsCount
+			score: (endp.latency - cache.latency) * sortedReq[r].requestsCount * 
+					cacheServers[ cache.cacheId ].video_request[ sortedReq[r].videoId ]
 		});
+
+		console.log( cacheServers[ cache.cacheId ].video_request );
 	}
 }
 console.log('Reqest matrix has ', actions.length, ' entries');
