@@ -22,7 +22,7 @@ let out = [
   { cacheId: 0, videos: [1, 2, 3] },
   { cacheId: 9, videos: [7, 28, 91] },
   { cacheId: 7, videos: [9, 12, 37] },
-  { cacheId: 2, videos: [44, 54, 8] },
+  { cacheId: 2, videos: [44] },
   { cacheId: 1, videos: [17, 54, 33] }
 ]
 
