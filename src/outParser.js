@@ -10,7 +10,7 @@ const produceOutput = (filename, output) => {
     .concat(output.map(cache => (cache.cacheId + ' ' + cache.videos.map(video => video + ' ') + '\n')))
 
   outArray.forEach(line => {
-    logger.write(line.toString().replace(/,/g, ''))
+    logger.write(line.toString().replace(new RegExp(/,/g), ''))
   })
   logger.end()
 
