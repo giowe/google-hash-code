@@ -83,6 +83,12 @@ endpoints.forEach((e, i) => {
 
 //**************************** PROCESS OPERATIONS ****************************
 
+for(let i = 0; i < E; ++i){
+	for(let j = 0; j < endpoints[i].cachesLength; ++j){
+		cacheServers[ endpoints[i].cacheLatencies[j]cacheId ].endpoints.push( i );
+	}
+}
+
 console.log('Sorting requests');
 const sortedReq = [];
 for(let i = 0; i < requests.length; ++i) sortedReq.push( requests[i] );
@@ -118,12 +124,19 @@ for(let a = 0; a < actions.length; ++a){
 
 			endpoints[ ca.endpoint ].addVideo( ca.video );
 
-			// Push the video on the cache only if his latency is lower than the data server one
-			let cl = endpoints[ ca.endpoint ].cacheLatencies;
-			if( endpoints[ ca.endpoint ].latency > cl[ ca.cache ] ){
-				cacheServers[ ca.cache ].addVideo( ca.video );
-				cacheServers[ ca.cache ].endpoints.push( ca.endpoint );
-				console.log('video ' + ca.video + ' added to cache ' + ca.cache );
+			for(let e = 0; e < cacheServers[ ca.cache ].endpoints.length; ++e){
+				let e_id = cacheServers[ ca.cache ].endpoints[e];
+
+				let cl = endpoints[ e_id ].cacheLatencies;
+				if( endpoints[ e_id ].latency > cl[ ca.cache ] ){
+					
+					endpoints[ e_id ].addVideo( ca.video );
+					if( !cacheServers[ ca.cache ].hasVideo( ca.video ) )
+						cacheServers[ ca.cache ].addVideo( ca.video );
+
+					console.log('video ' + ca.video + ' added to cache ' + ca.cache );
+				}
+				console.log('updated endpoint')
 			}
 		}
 	}
