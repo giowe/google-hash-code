@@ -66,6 +66,15 @@ endpoints.forEach((e, i) => {
     const index = videos.indexOf(videoId);
     if (index === -1) return;
     videos.splice(index, 1);
+  };
+  e.getCacheServer = (cacheId) => {
+    const cacheLatencies = e.cacheLatencies;
+    const l = cacheLatencies.length;
+    for (let i = 0; i < l; i++) {
+      const c = cacheLatencies[i];
+      if (cacheId === c.cacheId) return c;
+    }
+    return null;
   }
 });
 
