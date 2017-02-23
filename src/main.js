@@ -14,21 +14,49 @@ const argv = require('yargs').argv;
 const outParser = require('./outParser');
 
 const {
-//todo initial state vars
+  V, E, R, C, X, videos, endpoints, requests
 } = initialState;
 
 const out = [
 
 ];
 
-/*class cacheServer = { fare classe
-  id: 0,
-  getfreemem: 100, (somma memorie video)
-  hasVideos = indexof (videos cerco l'id')
-  videos: [id idi di]
-};
+class CacheServer {
+  constructor(id) {
+    this.id = id;
+    this.videos = [];
+  }
 
-class endpoint = {
+  hasVideo(videoId) {
+    return this.videos.indexOf(videoId) !== -1;
+  }
+
+  addVideo(videoId) {
+    this.videos.push(videoId);
+  }
+
+  getFreeMemory() {
+    let usedMemory = 0;
+    this.videos.forEach(videoId => {
+      usedMemory += videos[videoId];
+    });
+    if (usedMemory > X) {
+      u.logFail(`HAI ECCEDUTO LA MEMORIA IN QUESTO CACHE SERVER:\n${u.logJson(JSON.stringify(this))}`);
+      return 0;
+    }
+    return X - usedMemory;
+  }
+}
+
+const cacheServers = [];
+for (let i = 0; i < C; i++) {
+  cacheServers.push(new CacheServer(i));
+}
+
+cacheServers.forEach(s => {
+  console.log(s.getFreeMemory());
+});
+/*class endpoint = {
   id: 2 //sono progressivi per come li leggo dal file 0 based
   addVideo(videoId, cacheId) {
 
