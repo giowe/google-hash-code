@@ -122,7 +122,7 @@ for(let r = 0; r < (argv.R || R); ++r){
 			endpoint: sortedReq[r].endpointId,
 			cache: cache.cacheId,
 			score: (endp.latency - cache.latency) * sortedReq[r].requestsCount * 
-					( cacheServers[ cache.cacheId ].video_request[ sortedReq[r].videoId ] + 1 )
+					( cacheServers[ cache.cacheId ].video_request[ sortedReq[r].videoId ]  )
 		});
 	}
 }
