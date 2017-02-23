@@ -22,9 +22,19 @@ const generateTests = (input, output) => {
   //console.log(input)
   //console.log(output)
 
-  tests.add(createTest('prova', () => expect(0).toBe(1) ))
-
   // The total size of videos stored in each cache server does not exceed the maximum cache server capacity
+  output.forEach(cache => {
+    let sizeOccupied = 0
+    cache.videos.forEach(videoInCache => {
+      input.videos.forEach((videoFromInput, videoIndex) => {
+        if (videoInCache === videoIndex) sizeOccupied += videoFromInput
+      })
+    })
+    tests.add(createTest(
+      `Expect cache ${cache.cacheId} size occupied (${sizeOccupied})<= cache server capacity (${input.X})`,
+      () => expect(sizeOccupied).toBeLessThanOrEqualTo(input.X)
+    ))
+  })
 
   // Return
   return tests
