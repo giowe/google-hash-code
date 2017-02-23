@@ -85,7 +85,7 @@ endpoints.forEach((e, i) => {
 
 for(let i = 0; i < E; ++i){
 	for(let j = 0; j < endpoints[i].cachesLength; ++j){
-		cacheServers[ endpoints[i].cacheLatencies[j]cacheId ].endpoints.push( i );
+		cacheServers[ endpoints[i].cacheLatencies[j].cacheId ].endpoints.push( i );
 	}
 }
 
@@ -131,12 +131,13 @@ for(let a = 0; a < actions.length; ++a){
 				if( endpoints[ e_id ].latency > cl[ ca.cache ] ){
 					
 					endpoints[ e_id ].addVideo( ca.video );
+
 					if( !cacheServers[ ca.cache ].hasVideo( ca.video ) )
 						cacheServers[ ca.cache ].addVideo( ca.video );
 
 					console.log('video ' + ca.video + ' added to cache ' + ca.cache );
 				}
-				console.log('updated endpoint')
+				
 			}
 		}
 	}
