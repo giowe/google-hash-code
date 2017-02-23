@@ -118,7 +118,6 @@ const out = cacheServers.map(s => {
   }
 });
 
-u.logJson(out);
 
 //**************************** FINAL BOILERPLATE ****************************
 
