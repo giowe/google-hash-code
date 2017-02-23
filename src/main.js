@@ -115,17 +115,23 @@ for(let r = 0; r < (argv.R || R); ++r){
 console.log('Reqest matrix has ', actions.length, ' entries');
 actions.sort( (a,b) => b.score - a.score );
 
+let entries_not_served = 0;
+
 console.log('Chosing actions');
 for(let a = 0; a < actions.length; ++a){
 
 	let ca = actions[a];
 
 	if( !endpoints[ ca.endpoint ].hasVideo( ca.video ) ){
+
+		if( cacheServers[ ca.cache ].getFreeMemory() < videos[ ca.video ] )
+			entries_not_served++;
+
 		if( !cacheServers[ ca.cache ].hasVideo( ca.video ) &&
 			cacheServers[ ca.cache ].getFreeMemory() >= videos[ ca.video ] ){
 
 			// Lo stiamo valutando
-			endpoints[ ca.endpoint ].addVideo( ca.video );
+			// endpoints[ ca.endpoint ].addVideo( ca.video );
 
 			for(let e = 0; e < cacheServers[ ca.cache ].endpoints.length; ++e){
 				let e_id = cacheServers[ ca.cache ].endpoints[e];
@@ -136,14 +142,14 @@ for(let a = 0; a < actions.length; ++a){
 
 					if( !cacheServers[ ca.cache ].hasVideo( ca.video ) )
 						cacheServers[ ca.cache ].addVideo( ca.video );
-
-					// console.log('video ' + ca.video + ' added to cache ' + ca.cache );
 				}
 
 			}
 		}
 	}
 }
+
+console.log( 'Not fullfilled ', entries_not_served );
 
 const out = cacheServers.map(s => {
   return {
