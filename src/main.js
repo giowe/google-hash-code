@@ -26,12 +26,22 @@ class CacheServer {
     this.id = id;
     this.videos = [];
   }
+
   hasVideo(videoId) {
     return this.videos.indexOf(videoId) !== -1;
   }
+
   addVideo(videoId) {
     this.videos.push(videoId);
   }
+
+  removeVideo(videoId) {
+    const {videos} = this;
+    const index = videos.indexOf(videoId);
+    if (index === -1) return;
+    videos.splice(index, 1);
+  }
+
   getFreeMemory() {
     let usedMemory = 0;
     this.videos.forEach(videoId => {
@@ -51,10 +61,16 @@ for (let i = 0; i < C; i++) {
 }
 
 endpoints.forEach((e, i) => {
+  const videos = [];
   e.id = i;
-  e.videos = [];
-  e.addVideo = (videoId) => e.videos.push(videoId);
-  e.hasVideo = (videoId) => e.videos.indexOf(videoId) !== -1;
+  e.videos = videos;
+  e.addVideo = (videoId) => videos.push(videoId);
+  e.hasVideo = (videoId) => videos.indexOf(videoId) !== -1;
+  e.removeVideo = (videoId) => {
+    const index = videos.indexOf(videoId);
+    if (index === -1) return;
+    videos.splice(index, 1);
+  }
 });
 
 //**************************** PROCESS HELPERS ****************************
