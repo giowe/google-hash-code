@@ -77,21 +77,17 @@ endpoints.forEach((e, i) => {
 
 //**************************** PROCESS OPERATIONS ****************************
 
-console.log('R', R);
-
 console.log('Sorting requests');
 const sortedReq = [];
 for(let i = 0; i < requests.length; ++i) sortedReq.push( requests[i] );
 sortedReq.sort( (a,b) => b.requestsCount - a.requestsCount );
-console.log(sortedReq);
 
 console.log('Building request matrix');
 let actions = [];
 for(let r = 0; r < (argv.R || R); ++r){
 
 	let endp = endpoints[ sortedReq[r].endpointId ]
-	let cn = endp.cacheLength;
-	// console.log(cn);
+	let cn = endp.cachesLength;
 	for(let c = 0; c < cn; ++c){
 		let cache = endp.cacheLatencies[c];
 
@@ -105,7 +101,23 @@ for(let r = 0; r < (argv.R || R); ++r){
 }
 actions.sort( (a,b) => b.score - a.score );
 
-console.log( actions );
+let cachesC = [];
+let endpointsC = [];
+
+console.log('Chosing actions');
+for(let a = 0; a < actions.length; ++a){
+
+	let ca = actions[a];
+	if( !endpointsC[ ca.endpoint ].hasVideo( ca.video ) ){
+		if( !cachesC[ ca.cache ].hasVideo( ca.video ) && 
+			cachesC[ ca.cache ].getFreeMemory() >= vidoes[ ca.video ] ){
+
+			endpointsC[ ca.endpoint ].addVideo( ca.video );
+			cachesC[ ca.cache ].addVideo( ca.video );
+		}
+	}
+}
+
 
 //**************************** FINAL BOILERPLATE ****************************
 
