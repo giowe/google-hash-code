@@ -101,19 +101,16 @@ for(let r = 0; r < (argv.R || R); ++r){
 }
 actions.sort( (a,b) => b.score - a.score );
 
-let cachesC = [];
-let endpointsC = [];
-
 console.log('Chosing actions');
 for(let a = 0; a < actions.length; ++a){
 
 	let ca = actions[a];
-	if( !endpointsC[ ca.endpoint ].hasVideo( ca.video ) ){
-		if( !cachesC[ ca.cache ].hasVideo( ca.video ) && 
-			cachesC[ ca.cache ].getFreeMemory() >= vidoes[ ca.video ] ){
+	if( !endpoints[ ca.endpoint ].hasVideo( ca.video ) ){
+		if( !cacheServers[ ca.cache ].hasVideo( ca.video ) &&
+			cacheServers[ ca.cache ].getFreeMemory() >= videos[ ca.video ] ){
 
-			endpointsC[ ca.endpoint ].addVideo( ca.video );
-			cachesC[ ca.cache ].addVideo( ca.video );
+			endpoints[ ca.endpoint ].addVideo( ca.video );
+			cacheServers[ ca.cache ].addVideo( ca.video );
 		}
 	}
 }
