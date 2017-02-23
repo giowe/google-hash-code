@@ -21,6 +21,7 @@ class CacheServer {
   constructor(id) {
     this.id = id;
     this.videos = [];
+    this.endpoints = [];
   }
 
   hasVideo(videoId) {
@@ -78,7 +79,7 @@ const sortedReq = [];
 for(let i = 0; i < requests.length; ++i) sortedReq.push( requests[i] );
 sortedReq.sort( (a,b) => b.requestsCount - a.requestsCount );
 
-console.log('Building request matrix');
+console.log('Building request matrix ...');
 let actions = [];
 for(let r = 0; r < (argv.R || R); ++r){
 
@@ -95,6 +96,7 @@ for(let r = 0; r < (argv.R || R); ++r){
 		});
 	}
 }
+console.log('Reqest matrix has ', actions.length, ' entries');
 actions.sort( (a,b) => b.score - a.score );
 
 console.log('Chosing actions');
@@ -106,7 +108,14 @@ for(let a = 0; a < actions.length; ++a){
 			cacheServers[ ca.cache ].getFreeMemory() >= videos[ ca.video ] ){
 
 			endpoints[ ca.endpoint ].addVideo( ca.video );
-			cacheServers[ ca.cache ].addVideo( ca.video );
+
+			// Push the video on the cache only if his latency is lower than the data server one
+			let cl = endpoints[ ca.endpoint ].cacheLatencies;
+			if( endpoints[ ca.endpoint ].latency > cl[ ca.cache ] ){
+				cacheServers[ ca.cache ].addVideo( ca.video );
+				cacheServers[ ca.cache ].endpoints.push( ca.endpoint );
+				console.log('video ' + ca.video + ' added to cache ' + ca.cache );
+			}
 		}
 	}
 }
