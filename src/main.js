@@ -35,13 +35,20 @@ class CacheServer {
     this.videos.push(videoId);
   }
 
+  removeVideo(videoId) {
+    const {videos} = this;
+    const index = videos.indexOf(videoId);
+    if (index === -1) return;
+    videos.splice(index, 1);
+  }
+
   getFreeMemory() {
     let usedMemory = 0;
     this.videos.forEach(videoId => {
       usedMemory += videos[videoId];
     });
     if (usedMemory > X) {
-      u.logFail(`HAI ECCEDUTO LA MEMORIA IN QUESTO CACHE SERVER:\n${u.logJson(JSON.stringify(this))}`);
+      u.logFail(`HAI ECCEDUTO LA MEMORIA IN QUESTO CACHE SERVER ID ${this.id}`);
       return 0;
     }
     return X - usedMemory;
@@ -53,16 +60,19 @@ for (let i = 0; i < C; i++) {
   cacheServers.push(new CacheServer(i));
 }
 
-cacheServers.forEach(s => {
-  console.log(s.getFreeMemory());
-});
-/*class endpoint = {
-  id: 2 //sono progressivi per come li leggo dal file 0 based
-  addVideo(videoId, cacheId) {
-
+endpoints.forEach((e, i) => {
+  const videos = [];
+  e.id = i;
+  e.videos = videos;
+  e.addVideo = (videoId) => videos.push(videoId);
+  e.hasVideo = (videoId) => videos.indexOf(videoId) !== -1;
+  e.removeVideo = (videoId) => {
+    const index = videos.indexOf(videoId);
+    if (index === -1) return;
+    videos.splice(index, 1);
   }
-}
-*/
+});
+
 //**************************** PROCESS HELPERS ****************************
 
 //**************************** PROCESS OPERATIONS ****************************
@@ -80,7 +90,7 @@ for(let r = 0; r < (argv.R || R); ++r){
 	let cn = endp.cachesLength;
 	for(let c = 0; c < cn; ++c){
 		let cache = endp.cacheLatencies[c];
-		
+
 		actions.push({
 			video: sortedReq[r].videoId,
 			endpoint: sortedReq[r].endpointId,
