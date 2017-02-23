@@ -6,7 +6,7 @@ const argv = require('yargs').argv;
 const ex = {};
 module.exports = ex;
 
-ex.getSavedTime = (endpoint) => {
+/*ex.getSavedTime = (endpoint) => {
   const {latency, cacheLatencies} = endpoint;
   if (!cacheLatencies) return null;
 
@@ -28,4 +28,4 @@ ex.getSavedTime = (endpoint) => {
   });
 };
 
-//
+*/
