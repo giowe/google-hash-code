@@ -9,7 +9,7 @@ const createTest = (text, test) => new Map().set('text', text).set('function', t
 const runTest = (test) => {
   try {
     test.get('function')()
-    u.logSuccess(`Test "${test.get('text')}" succeded`)
+    //u.logSuccess(`Test "${test.get('text')}" succeded`)
   } catch(e) {
     const error = `Test "${test.get('text')}" failed. ${e}`
     u.logFail(error)
