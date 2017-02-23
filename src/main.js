@@ -35,13 +35,20 @@ class CacheServer {
     this.videos.push(videoId);
   }
 
+  removeVideo(videoId) {
+    const {videos} = this;
+    const index = videos.indexOf(videoId);
+    if (index === -1) return;
+    videos.splice(index, 1);
+  }
+
   getFreeMemory() {
     let usedMemory = 0;
     this.videos.forEach(videoId => {
       usedMemory += videos[videoId];
     });
     if (usedMemory > X) {
-      u.logFail(`HAI ECCEDUTO LA MEMORIA IN QUESTO CACHE SERVER:\n${u.logJson(JSON.stringify(this))}`);
+      u.logFail(`HAI ECCEDUTO LA MEMORIA IN QUESTO CACHE SERVER ID ${this.id}`);
       return 0;
     }
     return X - usedMemory;
@@ -53,35 +60,52 @@ for (let i = 0; i < C; i++) {
   cacheServers.push(new CacheServer(i));
 }
 
-cacheServers.forEach(s => {
-  console.log(s.getFreeMemory());
-});
-/*class endpoint = {
-  id: 2 //sono progressivi per come li leggo dal file 0 based
-  addVideo(videoId, cacheId) {
-
+endpoints.forEach((e, i) => {
+  const videos = [];
+  e.id = i;
+  e.videos = videos;
+  e.addVideo = (videoId) => videos.push(videoId);
+  e.hasVideo = (videoId) => videos.indexOf(videoId) !== -1;
+  e.removeVideo = (videoId) => {
+    const index = videos.indexOf(videoId);
+    if (index === -1) return;
+    videos.splice(index, 1);
   }
-}
-*/
+});
+
 //**************************** PROCESS HELPERS ****************************
 
 //**************************** PROCESS OPERATIONS ****************************
-const actions = [];
 
-for(let r = 0; r < R; ++r){
-	let endp = endpoints[ requests[r].endpointId ]
+console.log('R', R);
+
+console.log('Sorting requests');
+const sortedReq = [];
+for(let i = 0; i < requests.length; ++i) sortedReq.push( requests[i] );
+sortedReq.sort( (a,b) => b.requestsCount - a.requestsCount );
+console.log(sortedReq);
+
+console.log('Building request matrix');
+let actions = [];
+for(let r = 0; r < (argv.R || R); ++r){
+
+	let endp = endpoints[ sortedReq[r].endpointId ]
 	let cn = endp.cacheLength;
+	// console.log(cn);
 	for(let c = 0; c < cn; ++c){
 		let cache = endp.cacheLatencies[c];
-		
+
 		actions.push({
-			video: requests[r].videoId,
-			endpoint: requests[r].endpointId,
+			video: sortedReq[r].videoId,
+			endpoint: sortedReq[r].endpointId,
 			cache: cache.cacheId,
-			score: (endp.latency - cache.latency) * requests[r].requestsCount
+			score: (endp.latency - cache.latency) * sortedReq[r].requestsCount
 		});
 	}
 }
+actions.sort( (a,b) => b.score - a.score );
+
+console.log( actions );
 
 //**************************** FINAL BOILERPLATE ****************************
 
