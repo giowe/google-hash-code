@@ -22,61 +22,7 @@ const generateTests = (input, output) => {
   //console.log(input)
   //console.log(output)
 
-  const getServerOccupiedSlots = (server, index) => {
-    let occupiedSlots = []
-    const size = input.servers[index].size
-    for (let i = 0; i < size; i++) {
-      occupiedSlots.push([server.row,server.slot+i])
-    }
-    return occupiedSlots
-  }
-
-  // Each slot of the data center has to be occupied by at most one server
-  output.forEach((curServer, curServerIndex) => {
-    if (curServer !== 'x') {
-      output.forEach((matchServer, matchServerIndex) => {
-        if (matchServer !== 'x') {
-          if (curServerIndex !== matchServerIndex) {
-            const currentServerOccupiedSlots = getServerOccupiedSlots(curServer, curServerIndex)
-            const matchServerOccupiedSlots = getServerOccupiedSlots(matchServer, matchServerIndex)
-            currentServerOccupiedSlots.forEach(currentServerSlot => {
-              matchServerOccupiedSlots.forEach(matchServerSlot => {
-                tests.add(createTest(
-                  `Slot (${currentServerSlot[0]},${currentServerSlot[1]}) from server ${curServerIndex} overlap check with slot (${matchServerSlot[0]},${matchServerSlot[1]}) from server ${matchServerIndex}`,
-                  () => expect(currentServerSlot[0] === matchServerSlot[0] && currentServerSlot[1] === matchServerSlot[1]).toBe(false)
-                ))
-              })
-            })
-          }
-        }
-      })
-    }
-  })
-
-  // No server occupies any unavailable slot of the data center
-  output.forEach((server, index) => {
-    if (server !== 'x') {
-      const occupiedSlots = getServerOccupiedSlots(server, index)
-      occupiedSlots.forEach(slot => {
-        input.uSlots.forEach(uSlot => {
-          tests.add(createTest(
-            `Slot (${slot[0]},${slot[1]}) from server ${index} unavailable slot check with slot (${uSlot[0]},${uSlot[1]})`,
-            () => expect (slot[0] === uSlot[0] && slot[1] === uSlot[1]).toBe(false)
-          ))
-        })
-      })
-    }
-  })
-
-  // No server extends beyond the slots of the row
-  output.forEach((server, i) => {
-    if (server !== 'x') {
-      tests.add(createTest(
-        `Server ${i} (${server.row},${server.slot}) with size ${input.servers[i].size} is within bounds (${input.S})`,
-        () => expect(server.slot + input.servers[i].size).toBeLessThanOrEqualTo(input.S)
-      ))
-    }
-  })
+  tests.add(createTest('prova', () => expect(0).toBe(1) ))
 
   // Return
   return tests
