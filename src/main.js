@@ -99,9 +99,12 @@ for(let i = 0; i < E; ++i){
 for(let i = 0; i < R; ++i){
 	for(let j = 0; j < C; ++j ){
 		if( cacheServers[j].hasEndpoint( requests[i].endpointId ) )
-			cacheServers[j].video_request[ requests[i].videoId ]++;
+			cacheServers[j].video_request[ requests[i].videoId ] += 1;
 	}
 }
+
+console.log('R', R);
+console.log('V', V);
 
 console.log('Sorting requests');
 const sortedReq = [];
@@ -121,8 +124,10 @@ for(let r = 0; r < (argv.R || R); ++r){
 			video: sortedReq[r].videoId,
 			endpoint: sortedReq[r].endpointId,
 			cache: cache.cacheId,
-			score: (endp.latency - cache.latency) * sortedReq[r].requestsCount * 
-					( cacheServers[ cache.cacheId ].video_request[ sortedReq[r].videoId ] + 1 ) / videos[ sortedReq[r].videoId ]
+			request: sortedReq[r].requestsCount,
+			latency: (endp.latency - cache.latency),
+			score: (endp.latency - cache.latency) * sortedReq[r].requestsCount /* * 
+					( cacheServers[ cache.cacheId ].video_request[ sortedReq[r].videoId ] ) / 1000.0 */
 		});
 	}
 }
@@ -135,6 +140,8 @@ console.log('Chosing actions');
 for(let a = 0; a < actions.length; ++a){
 
 	let ca = actions[a];
+
+	console.log( 'score: ', ca.score, 'req: ', ca.request , ' delta lat: ',  ca.latency );
 
 	if( !endpoints[ ca.endpoint ].hasVideo( ca.video ) ){
 
@@ -171,6 +178,10 @@ const out = cacheServers.map(s => {
     videos: s.videos
   }
 });
+
+/*for(let j = 0; j < C; ++j ){
+	console.log( cacheServers[j].endpoints  );
+}*/
 
 // console.log( out );
 
