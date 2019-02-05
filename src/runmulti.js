@@ -1,5 +1,3 @@
-"use strict"
-
 require("shelljs/global")
 
 const command = `node . ${process.argv.slice(2).join(" ")} --s3`

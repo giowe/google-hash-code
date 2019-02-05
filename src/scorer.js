@@ -1,4 +1,3 @@
-"use strict"
 const h = require("./helpers")
 const u = require("./modules/utils")
 

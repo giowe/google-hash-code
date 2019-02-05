@@ -1,4 +1,3 @@
-"use strict"
 const fs = require("fs")
 const expect = require("expect")
 const u = require("./utils")

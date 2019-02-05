@@ -1,4 +1,3 @@
-"use strict"
 const prettyjson = require("prettyjson")
 const colors = require("./colors")
 const m = require("mathjs")
