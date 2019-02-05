@@ -20,14 +20,14 @@ const sampleInput = {
       latency: 500,
       cachesLength: 0,
       cacheLatencies: []
-    },
+    }
   ],
   requests: [ //R
     { videoId: 3, endpointId: 0, requestsCount: 1500 },
     { videoId: 0, endpointId: 1, requestsCount: 1000 },
     { videoId: 4, endpointId: 0, requestsCount: 500 },
-    { videoId: 1, endpointId: 0, requestsCount: 1000 },
+    { videoId: 1, endpointId: 0, requestsCount: 1000 }
   ]
-};
+}
 
-module.exports = sampleInput;
+module.exports = sampleInput

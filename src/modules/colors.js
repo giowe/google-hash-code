@@ -28,4 +28,4 @@ module.exports = {
     white: "\x1b[47m",
     crimson: "\x1b[48m"
   }
-};
+}

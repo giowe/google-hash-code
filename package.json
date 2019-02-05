@@ -26,7 +26,9 @@
     "yargs": "^6.6.0"
   },
   "devDependencies": {
+    "@soluzioni-futura/eslint-config-soluzioni-futura": "^1.0.1",
     "del": "^2.2.2",
+    "eslint": "^5.13.0",
     "gulp": "^3.9.1",
     "gulp-filter": "^5.0.0",
     "gulp-rename": "^1.2.2",

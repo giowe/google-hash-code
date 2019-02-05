@@ -1,9 +1,9 @@
-'use strict';
-const h = require('./helpers');
-const u = require('./modules/utils');
+"use strict"
+const h = require("./helpers")
+const u = require("./modules/utils")
 
 module.exports = (parsedIn, out) => {
-  let score = 0;
+  const score = 0
 
-  return 'NOT_A_SCORE'
-};
+  return "NOT_A_SCORE"
+}
