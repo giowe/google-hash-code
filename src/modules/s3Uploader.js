@@ -1,8 +1,6 @@
 const AWS = require("aws-sdk")
 const s3 = new AWS.S3({
-  region: "eu-west-1",
-  accessKeyId: "AKIAJCKIEY3CNIO3T4CQ",
-  secretAccessKey: "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"
+  region: "eu-west-1"
 })
 const u = require("./utils")
 const path = require("path")
