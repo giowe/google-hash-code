@@ -15,7 +15,6 @@
   "homepage": "https://bitbucket.org/GioBr1/hash-code-preset#readme",
   "dependencies": {
     "aws-sdk": "^2.396.0",
-    "clone": "^2.1.2",
     "expect": "^24.1.0",
     "express": "^4.16.4",
     "mathjs": "^5.4.2",
