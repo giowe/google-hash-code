@@ -1,12 +1,12 @@
 const path = require("path")
-const u = require("./utils")
+const { logFail, logJson, getInFilesList, getSelectedFileName, getInputFilesFolder } = require("./utils")
 
 const importFile = () => {
-  const filename =  u.getSelectedFileName(false)
-  if (typeof filename !== "undefined") return path.join(u.getInputFilesFolder(), filename)
+  const filename =  getSelectedFileName(false)
+  if (typeof filename !== "undefined") return path.join(getInputFilesFolder(), filename)
 
-  u.logFail("Input out of range! Select between this range:")
-  u.logJson(u.getInFilesList().map((file, i) => `${i}. ${file}`))
+  logFail("Input out of range! Select between this range:")
+  logJson(getInFilesList().map((file, i) => `${i}. ${file}`))
   process.exit(1)
 }
 

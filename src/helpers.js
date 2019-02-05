@@ -1,6 +1,6 @@
 const u = require("./modules/utils")
 const m = require("mathjs")
-const argv = require("yargs").argv
+const argv = require("simple-argv")
 
 const ex = {}
 module.exports = ex

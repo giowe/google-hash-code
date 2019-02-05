@@ -2,34 +2,34 @@ const gulp = require("gulp")
 const zip = require("gulp-zip")
 const replace = require("gulp-replace")
 const del = require("del")
-const s3Uploader = require("./src/modules/s3Uploader")
+const { downloadTopScores } = require("./src/modules/s3")
 const rename = require("gulp-rename")
 const filter = require("gulp-filter")
+const { join } = require("path")
 
-gulp.task("clean", function () {
-  del.sync("dist.zip", { force:true })
-})
+const e = module.exports
 
-gulp.task("dist", ["clean"], () => {
-  const f = filter("src/**/*", { restore: true })
-  gulp.src(["src/**/*", "./package.json", ".gitignore", ".editorconfig"])
-    .pipe(replace("src/", "app/"))
-    .pipe(f)
-    .pipe(rename((path) => {
-      path.dirname = "app/" + path.dirname
-    }))
-    .pipe(f.restore)
-    .pipe(zip("dist.zip"))
-    .pipe(gulp.dest("./"))
-})
+e.clean = () => del("dist.zip", { force:true })
 
-gulp.task("test", () => {
-  require("./src/test")
-})
+e.dist = () => {
+  return e.clean()
+    .then(() => {
+      const f = filter("src/**/*", { restore: true })
+      return gulp.src(["src/**/*", "./package.json", ".gitignore", ".editorconfig"])
+        .pipe(replace("src/", "app/"))
+        .pipe(f)
+        .pipe(rename(path => path.dirname = join("app", path.dirname)))
+        .pipe(f.restore)
+        .pipe(zip("dist.zip"))
+        .pipe(gulp.dest("./"))
+    })
+}
 
-gulp.task("getScores", () => {
+e.test = () => require("./src/test")
+
+e.getScores = () => {
   del.sync("outFilesS3", { force: true })
-  s3Uploader.downloadTopScores()
-})
+  return downloadTopScores()
+}
 
-gulp.task("default", ["dist"])
+e.default = () => e.dist()

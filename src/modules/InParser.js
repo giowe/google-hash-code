@@ -1,6 +1,6 @@
 const fs = require("fs")
 const expect = require("expect")
-const u = require("./utils")
+const { logColor, log, diff, logJson, logFail, logSuccess } = require("./utils")
 const inFileLoader = require("./inFileLoader")
 
 class InParser {
@@ -12,7 +12,7 @@ class InParser {
     }, options)
 
     const inputPath = inFileLoader.importFile()
-    u.logColor("yellow", "Parsing", inputPath)
+    logColor("yellow", "Parsing", inputPath)
     this.input = fs.readFileSync(inputPath).toString().split(this.options.rowSeparator)
     this.input.forEach((row, i) => this.input[i] = row.split(this.options.colSeparator))
 
@@ -53,19 +53,19 @@ class InParser {
   static validateOverModel(model, candidate) {
     try {
       expect(candidate).toEqual(model)
-      u.logSuccess("TEST PASSED!")
+      logSuccess("TEST PASSED!")
     } catch (e) {
 
-      console.log("\n-------------------------------MODEL-------------------------------\n")
-      u.logJson(e.expected, "green")
-      console.log("\n-----------------------------CANDIDATE-----------------------------\n")
-      u.logJson(e.actual, "red")
+      log("\n-------------------------------MODEL-------------------------------\n")
+      logJson(e.expected, "green")
+      log("\n-----------------------------CANDIDATE-----------------------------\n")
+      logJson(e.actual, "red")
 
-      console.log("\n------------------------------DIFFING------------------------------\n")
-      u.logJson(u.diff(candidate, model), "green")
-      console.log()
-      u.logJson(u.diff(model, candidate), "red")
-      u.logFail("\nTEST FAILED!")
+      log("\n------------------------------DIFFING------------------------------\n")
+      logJson(diff(candidate, model), "green")
+      log()
+      logJson(diff(model, candidate), "red")
+      logFail("\nTEST FAILED!")
     }
   }
 }
