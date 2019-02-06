@@ -6,7 +6,7 @@ const {
 } = require("./modules/utils")
 const m = require("mathjs")
 const h = require("./helpers")
-const s3Uploader = require("./modules/s3Uploader")
+const { uploadScore } = require("./modules/s3")
 const initialState = require("./parsedIn")
 const sampleOut = require("./samples/output")
 const validation = require("./validation")
@@ -45,15 +45,15 @@ const outFolderPath = getOutputFilesFolder(inputFileName)
 const finalScore = scorer(initialState, out)
 const filename = `${finalScore.padStart("0")}.out`
 
-console.log(filename)
+log(filename)
 try { fs.mkdirSync("./outFiles") } catch(ignore) {  }
 try { fs.mkdirSync(outFolderPath) } catch(ignore) {  }
 
 const filenameWithPath = path.join(outFolderPath, filename)
 
-logColor("green", "\nScore: " + finalScore)
+logSuccess(`\nScore: ${finalScore}`)
 
 const output = outParser.produceOutput(filenameWithPath, out)
-if (s3) !errors.length ? s3Uploader.uploadScore(filename, output) : logFail("Errors detected; refusing to upload")
+if (s3) !errors.length ? uploadScore(filename, output) : logFail("Errors detected; refusing to upload")
 
 module.exports = out
