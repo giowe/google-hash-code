@@ -6,7 +6,6 @@ const { downloadTopScores } = require("./src/modules/s3")
 const rename = require("gulp-rename")
 const filter = require("gulp-filter")
 const { join } = require("path")
-
 const e = module.exports
 
 e.clean = () => del("dist.zip", { force:true })

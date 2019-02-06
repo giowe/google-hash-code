@@ -1,26 +1,13 @@
-const fs = require("fs")
+const { writeFileSync, mkdirSync } = require("fs")
 const path = require("path")
-const u = require("./modules/utils")
+const { logSuccess, getSelectedFileName } = require("./modules/utils")
 const parsedInDirPath = path.join(__dirname, "./../parsedInFiles/")
-const parsedInFilePath = path.join(parsedInDirPath, `${u.getSelectedFileName()}.json`)
+const parsedInFilePath = path.join(parsedInDirPath, `${getSelectedFileName()}.json`)
+const Parser = require("./modules/InParser")
 
-let parsedIn
-try {
+const e = module.exports
 
-  try {
-    fs.mkdirSync(parsedInDirPath)
-  } catch(ignore) {}
-
-  parsedIn = require(parsedInFilePath)
-  u.logSuccess("LOADED FROM PARSED!")
-} catch(ignore) {
-  parsedIn = parse()
-}
-
-function parse() {
-  const Parser = require("./modules/InParser")
-  const u = require("./modules/utils")
-
+const parse = () => {
   const sampleInput = require("./samples/input")
 
   const p = new Parser({
@@ -29,6 +16,9 @@ function parse() {
     autoCast: "parseInt"
   })
 
+  //const parsedInput = {}
+
+  //SAMPLE
   const parsedInput = {
     V: p.consumeCol(),
     E: p.consumeCol("E"),
@@ -57,13 +47,20 @@ function parse() {
     })
   }
 
-  fs.writeFile(parsedInFilePath, JSON.stringify(parsedInput), (err) => {
-    if (err) return u.fail(err)
-    u.logSuccess("PARSED FILE SAVED")
-  })
+  writeFileSync(parsedInFilePath, JSON.stringify(parsedInput))
+  logSuccess("PARSED FILE SAVED")
+
   return parsedInput
 }
 
-module.exports = parsedIn
+try {
+  try {
+    mkdirSync(parsedInDirPath)
+  } catch(ignore) {}
 
+  e.parsedIn = require(parsedInFilePath)
+  logSuccess("LOADED FROM CACHE")
+} catch(ignore) {
+  e.parsedIn = parse()
+}
 //Parser.validateOverModel(sampleInput, parsedInput);
