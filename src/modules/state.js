@@ -1,5 +1,11 @@
 const AWS = require("aws-sdk")
-const s3 = new AWS.S3()
+
+let credentials = {}
+try {
+  credentials = require("../../credentials.json")
+} catch (_) {}
+
+const s3 = new AWS.S3(credentials)
 const { log, logFail, logSuccess, getSelectedFileName, getInFilesList } = require("./utils")
 const { parse, join } = require("path")
 const { mkdirSync, writeFileSync } = require("fs")

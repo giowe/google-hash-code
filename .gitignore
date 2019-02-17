@@ -20,3 +20,4 @@ dist
 temp
 *.out
 !robaDaInviare/*.out
+credentials.json
