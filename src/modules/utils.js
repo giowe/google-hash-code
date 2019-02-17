@@ -68,7 +68,7 @@ e.debug = (level, ...args) => {
   if (debugLevel >= level) console.log(...args)
 }
 
-e.getDistance = (p1, p2) => m.ceil(m.norm([p1.x - p2.x, p1.y - p2.y]))
+e.getDistance = (p1, p2) => Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y)
 
 e.getSelectedFileName = (trimExtension = true) => {
   try {

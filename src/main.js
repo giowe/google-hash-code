@@ -19,40 +19,71 @@ const jsgraphs = require("js-graph-algorithms")
 const {
   parsedIn: {
     rides,
-    N
+    N,
+    F
   }
 } = initialState
 
 const out = mock ? require("./samples/output.js") : []
 
 //**************************** PROCESS HELPERS ****************************
-const graph = new jsgraphs.WeightedDiGraph(N + 1)
+const g = new jsgraphs.WeightedDiGraph(N + 1)
 const magia = 100
+log({ N })
+
 //**************************** PROCESS OPERATIONS ****************************
 rides.forEach((rideA, a) => {
   rides.forEach((rideB, b) => {
-    const distFinalAStartB = getDistance(rideA.finish, rideB.start)
-    if (rideA.earliestStart + rideA.dist + distFinalAStartB < rideB.earliestStart && Math.abs(rideA.earliestStart + rideA.dist + distFinalAStartB - rideB.earliestStart) < magia) {
-      graph.addEdge(new jsgraphs.Edge(a, b, 1 / rideB.dist))
+    const travelAB = getDistance(rideA.finish, rideB.start)
+    if (rideA.latestStart + rideA.dist + travelAB <= rideB.latestStart) {// && Math.abs(rideA.earliestStart + rideA.dist + distFinalAStartB - rideB.earliestStart) < magia) {
+      log("test", { a, b })
+      g.addEdge(new jsgraphs.Edge(a, b, 1 / rideB.dist))
     }
   })
 })
 
 rides.forEach((ride, i) => {
   const distOrigRide = getDistance({ x: 0, y:0 }, ride.start)
-  if (distOrigRide < ride.earliestStart && Math.abs(distOrigRide - ride.earliestStart) < magia) {
-    graph.addEdge(new jsgraphs.Edge(N, i, 1 / ride.dist))
+  if (distOrigRide <= ride.latestStart) { //&& Math.abs(distOrigRide - ride.earliestStart) < magia) {
+    g.addEdge(new jsgraphs.Edge(N, i, 1 / ride.dist))
   }
 })
 
-const kruskal = new jsgraphs.KruskalMST(graph)
-const mst = kruskal.mst
-for(let i = 0; i < mst.length; ++i) {
-  const e = mst[i]
-  const v = e.either()
-  const w = e.other(v)
-  console.log("(" + v + ", " + w + "): " + 1 / e.weight)
+
+const dijkstra = new jsgraphs.Dijkstra(g, N)
+
+for (let f = 0; f < F; f++) {
+  let minScore = 999999999
+  let minSolution
+
+  for (let v = 0; v < N; ++v) {
+    if (dijkstra.hasPathTo(v)) {
+      const path = dijkstra.pathTo(v)
+      for (let i = 0; i < path.length; ++i) {
+        const e = path[i]
+      }
+
+      const distanceTo = dijkstra.distanceTo(v)
+      log("=====distance: " + distanceTo + "=========")
+      if (minScore > distanceTo) {
+        minScore = distanceTo
+        minSolution = dijkstra.pathTo(v)
+      }
+    }
+  }
+
+  const data = []
+  out.push(data)
+  let l = 0
+  for (let s = 0; s < minSolution.length; s++) {
+    l += 1/minSolution[s].weight +
+    data.push({
+      rideId: minSolution[s],
+      started: ""
+    })
+  }
 }
+
 
 //**************************** FINAL BOILERPLATE ****************************
 
