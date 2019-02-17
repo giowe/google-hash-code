@@ -27,7 +27,7 @@ const {
 const out = mock ? require("./samples/output.js") : []
 
 //**************************** PROCESS HELPERS ****************************
-const magia = 100
+const magia = 50
 log({ N })
 
 //**************************** PROCESS OPERATIONS ****************************
@@ -37,38 +37,44 @@ for (let f = 0; f < F; f++) {
   const g = new jsgraphs.WeightedDiGraph(N + 1)
   console.log(`${f}/${F}`)
 
-  rides.forEach((rideA, a) => {
-    if (exploredRides[a]) {
-      return
-    }
+  console.time("sgrufolo")
 
-    rides.forEach((rideB, b) => {
-      const travelAB = getDistance(rideA.finish, rideB.start)
+  let travelAB
+  const ridesLen = rides.length
+  for (let a = 0; a < ridesLen; a++) {
+    const rideA = rides[a]
+    if (exploredRides[a]) {
+      continue
+    }
+    for (let b = 0; b < ridesLen; b++) {
+      const rideB = rides[b]
+      travelAB = getDistance(rideA.finish, rideB.start)
       if (!exploredRides[b] && rideA.latestStart + rideA.dist + travelAB <= rideB.latestStart) {// && Math.abs(rideA.earliestStart + rideA.dist + distFinalAStartB - rideB.earliestStart) < magia) {
         g.addEdge(new jsgraphs.Edge(a, b, 1 / rideB.dist))
       }
-    })
-  })
-
-  rides.forEach((ride, i) => {
-    if (exploredRides[i]) {
-      return
     }
+  }
 
+  for (let i = 0; i < ridesLen; i++) {
+    const ride = rides[i]
+    if (exploredRides[i]) {
+      continue
+    }
     const distOrigRide = getDistance({ x: 0, y:0 }, ride.start)
     if (distOrigRide <= ride.latestStart) { //&& Math.abs(distOrigRide - ride.earliestStart) < magia) {
       g.addEdge(new jsgraphs.Edge(N, i, ride.dist !== 0 ? 1 / ride.dist : 0))
     }
-  })
-
+  }
+  
+  console.timeEnd("sgrufolo")
 
   const dijkstra = new jsgraphs.Dijkstra(g, N)
-
 
   let minScore = 999999999
   let minSolution
 
-  for (let v = 0; v < N; ++v) {
+  console.time("daedra")
+  for (let v = 0; v < N / 2; ++v) {
     if (dijkstra.hasPathTo(v)) {
       const path = dijkstra.pathTo(v)
       for (let i = 0; i < path.length; ++i) {
@@ -83,6 +89,7 @@ for (let f = 0; f < F; f++) {
       }
     }
   }
+  console.timeEnd("daedra")
 
   const data = []
   out.push(data)
