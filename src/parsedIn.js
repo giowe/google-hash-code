@@ -18,13 +18,14 @@ const parse = () => {
   })
 
   const parsedInput = {
-    R: p.consumeCol("R"),
+    R: p.consumeCol(),
     C: p.consumeCol(),
     F: p.consumeCol(),
-    N: p.consumeCol(),
+    N: p.consumeCol("R"),
     B: p.consumeCol(),
     T: p.consumeCol(),
-    ridesx: p.reiteratedStruct("R", () => {
+
+    rides: p.reiteratedStruct("R", () => {
       const data = {
         start: { x: p.consumeCol(), y: p.consumeCol() },
         finish: { x: p.consumeCol(), y: p.consumeCol() },
