@@ -27,32 +27,42 @@ const {
 const out = mock ? require("./samples/output.js") : []
 
 //**************************** PROCESS HELPERS ****************************
-const g = new jsgraphs.WeightedDiGraph(N + 1)
 const magia = 100
 log({ N })
 
 //**************************** PROCESS OPERATIONS ****************************
-rides.forEach((rideA, a) => {
-  rides.forEach((rideB, b) => {
-    const travelAB = getDistance(rideA.finish, rideB.start)
-    if (rideA.latestStart + rideA.dist + travelAB <= rideB.latestStart) {// && Math.abs(rideA.earliestStart + rideA.dist + distFinalAStartB - rideB.earliestStart) < magia) {
-      log("test", { a, b })
-      g.addEdge(new jsgraphs.Edge(a, b, 1 / rideB.dist))
-    }
-  })
-})
-
-rides.forEach((ride, i) => {
-  const distOrigRide = getDistance({ x: 0, y:0 }, ride.start)
-  if (distOrigRide <= ride.latestStart) { //&& Math.abs(distOrigRide - ride.earliestStart) < magia) {
-    g.addEdge(new jsgraphs.Edge(N, i, ride.dist !== 0 ? 1 / ride.dist : 0))
-  }
-})
-
-
-const dijkstra = new jsgraphs.Dijkstra(g, N)
+const exploredRides = {}
 
 for (let f = 0; f < F; f++) {
+  const g = new jsgraphs.WeightedDiGraph(N + 1)
+  rides.forEach((rideA, a) => {
+    if (exploredRides[a]) {
+      return
+    }
+
+    rides.forEach((rideB, b) => {
+      const travelAB = getDistance(rideA.finish, rideB.start)
+      if (!exploredRides[b] && rideA.latestStart + rideA.dist + travelAB <= rideB.latestStart) {// && Math.abs(rideA.earliestStart + rideA.dist + distFinalAStartB - rideB.earliestStart) < magia) {
+        g.addEdge(new jsgraphs.Edge(a, b, 1 / rideB.dist))
+      }
+    })
+  })
+
+  rides.forEach((ride, i) => {
+    if (exploredRides[i]) {
+      return
+    }
+
+    const distOrigRide = getDistance({ x: 0, y:0 }, ride.start)
+    if (distOrigRide <= ride.latestStart) { //&& Math.abs(distOrigRide - ride.earliestStart) < magia) {
+      g.addEdge(new jsgraphs.Edge(N, i, ride.dist !== 0 ? 1 / ride.dist : 0))
+    }
+  })
+
+
+  const dijkstra = new jsgraphs.Dijkstra(g, N)
+
+
   let minScore = 999999999
   let minSolution
 
@@ -75,15 +85,22 @@ for (let f = 0; f < F; f++) {
   const data = []
   out.push(data)
   let l = 0
+
   for (let s = 0; s < minSolution.length; s++) {
-    l += (minSolution[s].weight !== 0 ? (1 / minSolution[s].weight) : 0) + Math.max(getDistance(rides[minSolution[s].from].finish, rides[minSolution[s].to].start), rides[minSolution[s].to].earliestStart)
+    const point = s === 0 ? { x: 0, y: 0 } : rides[minSolution[s].from()].finish
+
+    l += (minSolution[s].weight !== 0 ? (1 / minSolution[s].weight) : 0) + Math.max(getDistance(point, rides[minSolution[s].to()].start), rides[minSolution[s].to()].earliestStart)
+    log("dist", getDistance(point, rides[minSolution[s].to()].start))
+    exploredRides[minSolution[s].to()] = true
+    log(exploredRides)
     data.push({
-      rideId: minSolution[s],
+      rideId: minSolution[s].to(),
       started: l
     })
   }
 }
 
+logJson(out)
 
 //**************************** FINAL BOILERPLATE ****************************
 
