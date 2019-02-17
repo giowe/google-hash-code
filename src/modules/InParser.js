@@ -51,6 +51,7 @@ class InParser {
   }
 
   static validateOverModel(model, candidate) {
+    console.log({model, candidate})
     try {
       expect(candidate).toEqual(model)
       logSuccess("TEST PASSED!")
