@@ -1,6 +1,6 @@
 const sampleOutput = [
-  [ 0 ],
-  [ 2, 1 ]
+  [ { "rideId": 0, "started": 2  } ],
+  [ { "rideId": 2, "started": 2 }, { "rideId": 1, "started": 5 } ]
 ]
 
 module.exports = sampleOutput
