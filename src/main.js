@@ -1,3 +1,4 @@
+const { V, s3, _, mock } = require("simple-argv")
 const fs = require("fs")
 const path = require("path")
 const {
@@ -7,24 +8,17 @@ const {
 const m = require("mathjs")
 const h = require("./helpers")
 const { uploadScore } = require("./modules/state")
-const initialState = require("./parsedIn")
+const initialState = mock ? require("./samples/input.js") : require("./parsedIn")
 const sampleOut = require("./samples/output")
 const validation = require("./validation")
 const scorer = require("./scorer")
-const { V, s3, _ } = require("simple-argv")
 const outParser = require("./outParser")
 
 const {
 //todo initial state vars
 } = initialState
 
-const out = [
-  { cacheId: 0, videos: [1] },
-  { cacheId: 9, videos: [7] },
-  { cacheId: 7, videos: [9, 12] },
-  { cacheId: 2, videos: [44] },
-  { cacheId: 1, videos: [17] }
-]
+const out = mock ? require("./samples/output.js") : {} //todo
 
 //**************************** PROCESS HELPERS ****************************
 
