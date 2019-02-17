@@ -17,8 +17,8 @@
       },
       "earliestStart": 2,
       "latestFinish": 9,
-      "dist": {},
-      "latestStart": {}
+      "dist": 4,
+      "latestStart": 4
     },
     {
       "start": {
@@ -31,8 +31,8 @@
       },
       "earliestStart": 0,
       "latestFinish": 9,
-      "dist": {},
-      "latestStart": {}
+      "dist": 2,
+      "latestStart": 6
     },
     {
       "start": {
@@ -45,8 +45,8 @@
       },
       "earliestStart": 0,
       "latestFinish": 9,
-      "dist": {},
-      "latestStart": {}
+      "dist": 2,
+      "latestStart": 6
     }
   ]
 }

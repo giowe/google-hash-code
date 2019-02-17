@@ -25,14 +25,17 @@ const parse = () => {
     B: p.consumeCol(),
     T: p.consumeCol(),
     riders: p.reiteratedStruct("R", () => {
-      return {
+      const data = {
         start: { x: p.consumeCol(), y: p.consumeCol() },
         finish: { x: p.consumeCol(), y: p.consumeCol() },
         earliestStart: p.consumeCol(),
-        latestFinish: p.consumeCol(),
-        dist: {},
-        latestStart: {}
+        latestFinish: p.consumeCol()
       }
+
+      data.dist = Math.abs(data.finish.x - data.start.x + data.finish.y - data.start.y)
+      data.latestStart = data.latestFinish - 1 - data.dist
+
+      return data
     })
   }
 
