@@ -33,7 +33,7 @@ const parse = () => {
         latestFinish: p.consumeCol()
       }
 
-      data.dist = Math.abs(data.finish.x - data.start.x + data.finish.y - data.start.y)
+      data.dist = Math.abs(data.finish.x - data.start.x) + Math.abs(data.finish.y - data.start.y)
       data.latestStart = data.latestFinish - 1 - data.dist
 
       return data
