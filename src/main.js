@@ -45,7 +45,7 @@ rides.forEach((rideA, a) => {
 rides.forEach((ride, i) => {
   const distOrigRide = getDistance({ x: 0, y:0 }, ride.start)
   if (distOrigRide <= ride.latestStart) { //&& Math.abs(distOrigRide - ride.earliestStart) < magia) {
-    g.addEdge(new jsgraphs.Edge(N, i, 1 / ride.dist))
+    g.addEdge(new jsgraphs.Edge(N, i, ride.dist !== 0 ? 1 / ride.dist : 0))
   }
 })
 
@@ -76,10 +76,10 @@ for (let f = 0; f < F; f++) {
   out.push(data)
   let l = 0
   for (let s = 0; s < minSolution.length; s++) {
-    l += 1/minSolution[s].weight +
+    l += (minSolution[s].weight !== 0 ? (1 / minSolution[s].weight) : 0) + Math.max(getDistance(rides[minSolution[s].from].finish, rides[minSolution[s].to].start), rides[minSolution[s].to].earliestStart)
     data.push({
       rideId: minSolution[s],
-      started: ""
+      started: l
     })
   }
 }
