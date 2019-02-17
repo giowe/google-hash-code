@@ -74,7 +74,7 @@ for (let f = 0; f < F; f++) {
       }
 
       const distanceTo = dijkstra.distanceTo(v)
-      log("=====distance: " + distanceTo + "=========")
+      //log("=====distance: " + distanceTo + "=========")
       if (minScore > distanceTo) {
         minScore = distanceTo
         minSolution = dijkstra.pathTo(v)
@@ -91,6 +91,7 @@ for (let f = 0; f < F; f++) {
 
     l += (minSolution[s].weight !== 0 ? (1 / minSolution[s].weight) : 0) + Math.max(getDistance(point, rides[minSolution[s].to()].start), rides[minSolution[s].to()].earliestStart)
     log("dist", getDistance(point, rides[minSolution[s].to()].start))
+    log(rides[minSolution[s].to()].earliestStart)
     exploredRides[minSolution[s].to()] = true
     log(exploredRides)
     data.push({
