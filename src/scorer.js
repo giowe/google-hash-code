@@ -1,6 +1,3 @@
-const h = require("./helpers")
-const u = require("./modules/utils")
-
 module.exports = (parsedIn, out) => {
   let score = 0
 
@@ -14,6 +11,7 @@ module.exports = (parsedIn, out) => {
       ride = parsedIn.rides[rideId]
 
       if (assignedRides.includes(rideId)) throw `scoring ride ${rideId} twice`
+      if (started < ride.earliestStart) throw `starting ride ${rideId} at T ${started} but earliest start is ${ride.earliestStart}`
       if (started < lastRideFinish) throw `ride ${rideId} for car ${carId} starting at ${started} but last ride (${lastRideId}) finished at ${lastRideFinish}`
       if (started + ride.dist > parsedIn.T) throw `ride ${rideId} finishes at T ${started + ride.dist} but limit is ${parsedIn.T}`
 
