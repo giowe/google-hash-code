@@ -51,22 +51,12 @@ class InParser {
   }
 
   static validateOverModel(model, candidate) {
-    console.log({model, candidate})
     try {
       expect(candidate).toEqual(model)
       logSuccess("TEST PASSED!")
     } catch (e) {
-
-      log("\n-------------------------------MODEL-------------------------------\n")
-      logJson(e.expected, "green")
-      log("\n-----------------------------CANDIDATE-----------------------------\n")
-      logJson(e.actual, "red")
-
-      log("\n------------------------------DIFFING------------------------------\n")
-      logJson(diff(candidate, model), "green")
-      log()
-      logJson(diff(model, candidate), "red")
-      logFail("\nTEST FAILED!")
+      log(e.message)
+      process.exit()
     }
   }
 }

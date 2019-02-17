@@ -70,28 +70,6 @@ e.debug = (level, ...args) => {
 
 e.getDistance = (p1, p2) => m.ceil(m.norm([p1.x - p2.x, p1.y - p2.y]))
 
-e.isEmptyObject = function(obj) {
-  for (const name in obj) return false
-  return true
-}
-
-e.diff = (obj1, obj2) => {
-  const result = {}
-  let change
-  for (const key in obj1) {
-    if (typeof obj2[key] == "object" && typeof obj1[key] == "object") {
-      change = e.diff(obj1[key], obj2[key])
-      if (e.isEmptyObject(change) === false) {
-        result[key] = change
-      }
-    }
-    else if (obj2[key] != obj1[key]) {
-      result[key] = obj2[key]
-    }
-  }
-  return result
-}
-
 e.getSelectedFileName = (trimExtension = true) => {
   try {
     const fileName = e.getInFilesList()[_[0]]
