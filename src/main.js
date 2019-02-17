@@ -3,8 +3,7 @@ const path = require("path")
 const u = require("./modules/utils")
 const m = require("mathjs")
 const h = require("./helpers")
-const s3Uploader = require("./modules/s3Uploader")
-const leftpad = require("left-pad")
+const s3Uploader = require("./modules/state")
 const initialState = require("./parsedIn")
 const sampleOut = require("./samples/output")
 const validation = require("./validation")
@@ -196,7 +195,7 @@ const files = fs.readdirSync(inputFolderPath)
 const inputFileName = files[argv._[0]] ? path.parse(files[argv._[0]]).name : "test"
 const outFolderPath = u.getOutputFilesFolder(inputFileName)
 const finalScore = scorer(initialState, out)
-const filename = leftpad(finalScore, 10, "0").toString() + ".out"
+const filename = finalScore.toString().padStart(10, "0") + ".out"
 console.log(filename)
 try { fs.mkdirSync("./outFiles") } catch(ignore) {  }
 try { fs.mkdirSync(outFolderPath) } catch(ignore) {  }
