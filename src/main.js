@@ -35,6 +35,8 @@ const exploredRides = {}
 
 for (let f = 0; f < F; f++) {
   const g = new jsgraphs.WeightedDiGraph(N + 1)
+  console.log(`${f}/${F}`)
+
   rides.forEach((rideA, a) => {
     if (exploredRides[a]) {
       return
@@ -89,15 +91,19 @@ for (let f = 0; f < F; f++) {
   for (let s = 0; s < minSolution.length; s++) {
     const point = s === 0 ? { x: 0, y: 0 } : rides[minSolution[s].from()].finish
 
-    l += (minSolution[s].weight !== 0 ? (1 / minSolution[s].weight) : 0) + Math.max(getDistance(point, rides[minSolution[s].to()].start), rides[minSolution[s].to()].earliestStart)
-    log("dist", getDistance(point, rides[minSolution[s].to()].start))
-    log(rides[minSolution[s].to()].earliestStart)
+    l += Math.max(
+      getDistance(point, rides[minSolution[s].to()].start),
+      rides[minSolution[s].to()].earliestStart
+    )
+
     exploredRides[minSolution[s].to()] = true
-    log(exploredRides)
+
     data.push({
       rideId: minSolution[s].to(),
       started: l
     })
+
+    l += minSolution[s].weight !== 0 ? (1 / minSolution[s].weight) : 0
   }
 }
 
@@ -115,7 +121,7 @@ const inputFolderPath = getInputFilesFolder()
 const files = fs.readdirSync(inputFolderPath)
 const inputFileName = files[_[0]] ? path.parse(files[_[0]]).name : "test"
 const outFolderPath = getOutputFilesFolder(inputFileName)
-const finalScore = scorer(initialState, out)
+const finalScore = scorer(initialState.parsedIn, out)
 const filename = `${finalScore.padStart(10, "0")}.out`
 
 log(filename)
