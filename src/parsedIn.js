@@ -24,7 +24,7 @@ const parse = () => {
     N: p.consumeCol(),
     B: p.consumeCol(),
     T: p.consumeCol(),
-    riders: p.reiteratedStruct("R", () => {
+    ridesx: p.reiteratedStruct("R", () => {
       const data = {
         start: { x: p.consumeCol(), y: p.consumeCol() },
         finish: { x: p.consumeCol(), y: p.consumeCol() },
