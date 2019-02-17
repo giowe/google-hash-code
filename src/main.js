@@ -27,7 +27,7 @@ const {
 const out = mock ? require("./samples/output.js") : []
 
 //**************************** PROCESS HELPERS ****************************
-const magia = 50
+const magia = 10000
 log({ N })
 
 //**************************** PROCESS OPERATIONS ****************************
@@ -49,7 +49,7 @@ for (let f = 0; f < F; f++) {
     for (let b = 0; b < ridesLen; b++) {
       const rideB = rides[b]
       travelAB = getDistance(rideA.finish, rideB.start)
-      if (!exploredRides[b] && rideA.latestStart + rideA.dist + travelAB <= rideB.latestStart) {// && Math.abs(rideA.earliestStart + rideA.dist + distFinalAStartB - rideB.earliestStart) < magia) {
+      if (!exploredRides[b] && rideA.latestStart + rideA.dist + travelAB <= rideB.latestStart && Math.abs(rideA.latestStart + rideA.dist + travelAB - rideB.earliestStart) < magia) {
         g.addEdge(new jsgraphs.Edge(a, b, 1 / rideB.dist))
       }
     }
@@ -61,16 +61,16 @@ for (let f = 0; f < F; f++) {
       continue
     }
     const distOrigRide = getDistance({ x: 0, y:0 }, ride.start)
-    if (distOrigRide <= ride.latestStart) { //&& Math.abs(distOrigRide - ride.earliestStart) < magia) {
+    if (distOrigRide <= ride.latestStart && Math.abs(distOrigRide - ride.earliestStart) < magia) {
       g.addEdge(new jsgraphs.Edge(N, i, ride.dist !== 0 ? 1 / ride.dist : 0))
     }
   }
-  
+
   console.timeEnd("sgrufolo")
 
   const dijkstra = new jsgraphs.Dijkstra(g, N)
 
-  let minScore = 999999999
+  let minScore = 9999999999999999999
   let minSolution
 
   console.time("daedra")
