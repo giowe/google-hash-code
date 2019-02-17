@@ -4,6 +4,7 @@ const { logSuccess, getSelectedFileName } = require("./modules/utils")
 const parsedInDirPath = path.join(__dirname, "./../parsedInFiles/")
 const parsedInFilePath = path.join(parsedInDirPath, `${getSelectedFileName()}.json`)
 const Parser = require("./modules/InParser")
+const { noCache, pretty, validate } = require("simple-argv")
 
 const e = module.exports
 
@@ -16,40 +17,60 @@ const parse = () => {
     autoCast: "parseInt"
   })
 
-  //const parsedInput = {}
-
-  //SAMPLE
   const parsedInput = {
-    V: p.consumeCol(),
-    E: p.consumeCol("E"),
     R: p.consumeCol("R"),
     C: p.consumeCol(),
-    X: p.consumeCol(),
-    videos: p.consumeRow(),
-    endpoints: p.reiteratedStruct("E", () => {
+    F: p.consumeCol(),
+    N: p.consumeCol(),
+    B: p.consumeCol(),
+    T: p.consumeCol(),
+    riders: p.reiteratedStruct("R", () => {
       return {
-        latency: p.consumeCol(),
-        cachesLength: p.consumeCol("cachesLength"),
-        cacheLatencies: p.reiteratedStruct("cachesLength", () => {
-          return {
-            cacheId: p.consumeCol(),
-            latency: p.consumeCol()
-          }
-        })
-      }
-    }),
-    requests: p.reiteratedStruct("R", () => {
-      return {
-        videoId: p.consumeCol(),
-        endpointId: p.consumeCol(),
-        requestsCount: p.consumeCol()
+        start: { x: p.consumeCol(), y: p.consumeCol() },
+        finish: { x: p.consumeCol(), y: p.consumeCol() },
+        earliestStart: p.consumeCol(),
+        latestFinish: p.consumeCol(),
+        dist: {},
+        latestStart: {}
       }
     })
   }
 
-  writeFileSync(parsedInFilePath, JSON.stringify(parsedInput))
+  //SAMPLE
+  // const parsedInput = {
+  //   V: p.consumeCol(),
+  //   E: p.consumeCol("E"),
+  //   R: p.consumeCol("R"),
+  //   C: p.consumeCol(),
+  //   X: p.consumeCol(),
+  //   videos: p.consumeRow(),
+  //   endpoints: p.reiteratedStruct("E", () => {
+  //     return {
+  //       latency: p.consumeCol(),
+  //       cachesLength: p.consumeCol("cachesLength"),
+  //       cacheLatencies: p.reiteratedStruct("cachesLength", () => {
+  //         return {
+  //           cacheId: p.consumeCol(),
+  //           latency: p.consumeCol()
+  //         }
+  //       })
+  //     }
+  //   }),
+  //   requests: p.reiteratedStruct("R", () => {
+  //     return {
+  //       videoId: p.consumeCol(),
+  //       endpointId: p.consumeCol(),
+  //       requestsCount: p.consumeCol()
+  //     }
+  //   })
+  // }
+
+  writeFileSync(parsedInFilePath, JSON.stringify(parsedInput, null, pretty ? 2 : null))
   logSuccess("PARSED FILE SAVED")
 
+  if (validate) {
+    Parser.validateOverModel(sampleInput, parsedInput)
+  }
   return parsedInput
 }
 
@@ -58,9 +79,12 @@ try {
     mkdirSync(parsedInDirPath)
   } catch(ignore) {}
 
-  e.parsedIn = require(parsedInFilePath)
-  logSuccess("LOADED FROM CACHE")
+  if (!noCache) {
+    e.parsedIn = require(parsedInFilePath)
+    logSuccess("LOADED FROM CACHE")
+  } else {
+    e.parsedIn = parse()
+  }
 } catch(ignore) {
   e.parsedIn = parse()
 }
-//Parser.validateOverModel(sampleInput, parsedInput);
