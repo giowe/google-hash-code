@@ -1,32 +1,35 @@
 const sampleInput = {
-  V: 5,
-  E: 2,
-  R: 4,
-  C: 3,
-  X: 100,
-  videos: [50, 50, 80, 30, 110],
-  endpoints: [  //E
+  "R": 3,
+  "C": 4,
+  "F": 2,
+  "N": 3,
+  "B": 2,
+  "T": 10,
+  "rides": [
     {
-      latency: 1000,
-      cachesLength: 3,
-      cacheLatencies: [
-        { cacheId: 0, latency: 100 },
-        { cacheId: 2, latency: 200 },
-        { cacheId: 1, latency: 300 }
-      ]
+      "start": { "x": 0, "y": 0 },
+      "finish": { "x": 1, "y": 3 },
+      "earliestStart": 2,
+      "latestFinish": 9,
+      "dist": 4,
+      "latestStart": 4
     },
-
     {
-      latency: 500,
-      cachesLength: 0,
-      cacheLatencies: []
+      "start": { "x": 1, "y": 2 },
+      "finish": { "x": 1, "y": 0 },
+      "earliestStart": 0,
+      "latestFinish": 9,
+      "dist": 2,
+      "latestStart": 6
+    },
+    {
+      "start": { "x": 2, "y": 0 },
+      "finish": { "x": 2, "y": 2 },
+      "earliestStart": 0,
+      "latestFinish": 9,
+      "dist": 2,
+      "latestStart": 6
     }
-  ],
-  requests: [ //R
-    { videoId: 3, endpointId: 0, requestsCount: 1500 },
-    { videoId: 0, endpointId: 1, requestsCount: 1000 },
-    { videoId: 4, endpointId: 0, requestsCount: 500 },
-    { videoId: 1, endpointId: 0, requestsCount: 1000 }
   ]
 }
 
