@@ -67,7 +67,8 @@ for (let f = 0; f < F; f++) {
       }
 
       const distanceTo = dijkstra.distanceTo(v)
-      //log("=====distance: " + distanceTo + "=========")
+
+      log("=====distance: " + distanceTo + "=========")
       if (minScore > distanceTo) {
         minScore = distanceTo
         minSolution = dijkstra.pathTo(v)
