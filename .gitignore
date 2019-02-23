@@ -21,3 +21,5 @@ temp
 *.out
 !robaDaInviare/*.out
 credentials.json
+venv/
+./src/temp_out.json
