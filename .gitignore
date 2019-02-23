@@ -22,4 +22,4 @@ temp
 !robaDaInviare/*.out
 credentials.json
 venv/
-./src/temp_out.json
+./src/process/temp_out.json
