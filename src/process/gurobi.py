@@ -1,8 +1,7 @@
 import os
 import sys
 import json
-import networkx as nx
-from networkx.algorithms.shortest_paths import has_path, single_source_dijkstra_path, single_source_d
+from gurobipy import *
 
 th = os.path.dirname(os.path.realpath(__file__))
 (process_path, input_path, output_path) = sys.argv
