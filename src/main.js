@@ -22,7 +22,7 @@ const out = mock ? require("./samples/output.js") : []
 
 const [program, ...args] = p.split(" ")
 
-const tempFilePath = path.join(__dirname, "temp_out.json")
+const tempFilePath = path.join(__dirname, "process", "temp_out.json")
 fs.writeFileSync(tempFilePath)
 const proc = spawn(program, [...args, initialState.parsedInFilePath, tempFilePath], { cwd: __dirname, stdio: ["inherit", "inherit", "pipe"] })
 
