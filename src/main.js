@@ -1,10 +1,10 @@
 const { spawn } = require("child_process")
-const { s3, _, mock, p } = require("simple-argv")
+const { s3, _, mock, p = process.env.HASHCODE_PROCESS } = require("simple-argv")
 const fs = require("fs")
 const path = require("path")
 const {
   log, logJson, logFail, logSuccess, logColor,
-  getOutputFilesFolder, getInputFilesFolder,
+  getOutputFilesFolder, getInputFilesFolder
 } = require("./modules/utils")
 
 const { uploadScore } = require("./modules/state")
