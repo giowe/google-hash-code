@@ -8,33 +8,42 @@ const {
 } = require("./modules/utils")
 
 const { uploadScore } = require("./modules/state")
-const initialState = mock ? require("./samples/input.js") : require("./parsedIn")
-const sampleOut = require("./samples/output")
+const { parsedIn, parsedInFilePath } = require("./parsedIn")
 
 const scorer = require("./scorer")
 const outParser = require("./outParser")
-const out = mock ? require("./samples/output.js") : []
 
+if (!mock) {
 //**************************** CALL EXTERNAL PROCESS ****************************
 
-const [program, ...args] = p.split(" ")
+  const [program, ...args] = p.split(" ")
 
-const tempFilePath = path.join(__dirname, "process", "temp_out.json")
-fs.writeFileSync(tempFilePath)
-const proc = spawn(program, [...args, initialState.parsedInFilePath, tempFilePath], { cwd: __dirname, stdio: ["inherit", "inherit", "pipe"] })
+  const tempFilePath = path.join(__dirname, "process", "temp_out.json")
+  fs.writeFileSync(tempFilePath)
+  const proc = spawn(program, [...args, parsedInFilePath, tempFilePath], {
+    cwd: __dirname,
+    stdio: ["inherit", "inherit", "pipe"]
+  })
 
-proc.stderr.on("data", data => {
-  logFail(data.toString())
-  process.exit(1)
-})
+  proc.stderr.on("data", data => {
+    logFail(data.toString())
+    process.exit(1)
+  })
 
-proc.on("close", () => {
-  const out = require(tempFilePath)
+  proc.on("close", () => {
+    const out = require(tempFilePath)
+    scoreNsave(parsedIn, out)
+  })
+} else {
+  scoreNsave(require("./samples/input.js"), require("./samples/output.js"))
+}
+
+function scoreNsave(input, out) {
   const inputFolderPath = getInputFilesFolder()
   const files = fs.readdirSync(inputFolderPath)
   const inputFileName = files[_[0]] ? path.parse(files[_[0]]).name : "test"
   const outFolderPath = getOutputFilesFolder(inputFileName)
-  const finalScore = scorer(initialState.parsedIn, out)
+  const finalScore = scorer(input, out)
   const filename = `${finalScore.padStart(10, "0")}.out`
 
   log(filename)
@@ -49,4 +58,4 @@ proc.on("close", () => {
   if (s3) {
     uploadScore(filename, output)
   }
-})
+}
