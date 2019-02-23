@@ -78,6 +78,7 @@ const parse = () => {
   return parsedInput
 }
 
+e.parsedInFilePath = parsedInFilePath
 try {
   try {
     mkdirSync(parsedInDirPath)
