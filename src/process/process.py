@@ -1,8 +1,7 @@
 import os
 import sys
 import json
-
-from tqdm import tqdm
+from random import randint
 import networkx as nx
 from networkx import DiGraph, read_gpickle, write_gpickle
 from networkx.algorithms.shortest_paths import has_path, single_source_dijkstra
@@ -52,23 +51,45 @@ except:
 
     write_gpickle(G, input_path + "graph.gpickle")
 
+
+def rnd_node(G, N):
+    while True:
+        r = randint(0, N)
+        if G.has_node(r):
+            return r
+
+
 for f in range(F):
+    rideOut = []
+    out.append(rideOut)
     print("{}/{}".format(f + 1, F))
 
-    tree = nx.dfs_tree(G, N)
-    print(list(tree))
-    # minScore = 9999999999999999999
-    # for v in range(N):
-    #     if has_path(G, N, v):
-    #         print("has path")
-    #         distance, path = single_source_dijkstra(G, N, v)
-    #         if distance < minScore:
-    #             minScore = distance
-    #             minSol = path
+    minScore = 9999999999999999999
+    source = N
+    for xxx in range(10):
+        v = rnd_node(G, N)
+        if has_path(G, source, v):
+            print("has path")
+            distance, path = single_source_dijkstra(G, source, v)
 
-    # for nodeIndex in minSol:
-    #     if nodeIndex != N:
-    #         G.remove_node(nodeIndex)
+            simulation_time = 0
+            print(path)
+            for i in range(len(path)-1):
+                if path[i] != N:
+                    rideOut.append({"rideId": path[i], "started": simulation_time})
+                    simulation_time += get_distance(rides[path[i]]["finish"], rides[path[i+1]]["start"])
+                else:
+                    simulation_time += get_distance({"x": 0, "y": 0}, rides[path[i+1]]["start"])
+
+                simulation_time += rides[path[i + 1]]["dist"]
+
+                if path[i] != N:
+                    G.remove_node(path[i])
+
+            print('sim time', simulation_time)
+            source = path[-1]
+
+    G.remove_node(source)
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
