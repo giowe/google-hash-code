@@ -29,6 +29,7 @@ magia = 10000
 
 try:
     G = read_gpickle(input_path + "graph.gpickle")
+    print("graph loaded from cache")
 except:
     G = DiGraph()
     G.add_nodes_from(range(N + 1))
@@ -54,9 +55,8 @@ except:
 for f in range(F):
     print("{}/{}".format(f + 1, F))
 
-    tree = nx.edge_dfs(G, N, "original")
-    print(tree)
-
+    tree = nx.dfs_tree(G, N)
+    print(list(tree))
     # minScore = 9999999999999999999
     # for v in range(N):
     #     if has_path(G, N, v):
