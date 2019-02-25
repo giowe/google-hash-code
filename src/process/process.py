@@ -1,8 +1,11 @@
 import os
 import sys
 import json
+
+from tqdm import tqdm
 import networkx as nx
-from networkx.algorithms.shortest_paths import has_path, single_source_dijkstra_path, single_source_d
+from networkx import DiGraph, read_gpickle, write_gpickle
+from networkx.algorithms.shortest_paths import has_path, single_source_dijkstra
 
 
 def get_distance(p1, p2):
@@ -23,38 +26,49 @@ N = initialState["N"]
 F = initialState["F"]
 rides = initialState["rides"]
 magia = 10000
-G = nx.path_graph(N - 1)
 
-for f in range(F):
-    print("{}/{}".format(f + 1, F))
+try:
+    G = read_gpickle(input_path + "graph.gpickle")
+except:
+    G = DiGraph()
+    G.add_nodes_from(range(N + 1))
 
-    ridesLen = len(rides)
-    for a in range(ridesLen):
+    print(G.number_of_nodes())
+
+    for a in range(N):
         rideA = rides[a]
-
-        for b in range(ridesLen):
+        print("{}/{}".format(a, N))
+        for b in range(N):
             rideB = rides[b]
             travelAB = get_distance(rideA["finish"], rideB["start"])
 
             if rideA["latestStart"] + rideA["dist"] + travelAB <= rideB["latestStart"] and abs(rideA["latestStart"] + rideA["dist"] + travelAB - rideB["earliestStart"]) < magia:
-                G.add_edge(a, b, weight=1/rideB.dist)
+                G.add_edge(a, b, weight=1/rideB["dist"])
 
-    for i in range(ridesLen):
-        ride = rides[i]
-        distOrigRide = get_distance({ "x": 0, "y": 0}, ride["start"])
-        if distOrigRide <= ride["latestStart"] and abs(distOrigRide - ride["earliestStart"]) < magia:
-            G.add_edge(N, i, weight=0 if ride["dist"] == 0 else 1 / ride["dist"])
+        distOrigRide = get_distance({"x": 0, "y": 0}, rideA["start"])
+        if distOrigRide <= rideA["latestStart"] and abs(distOrigRide - rideA["earliestStart"]) < magia:
+            G.add_edge(N, a, weight=1 / rideA["dist"])
 
-    minScore = 9999999999999999999
-    for v in range(1, N):
-        if has_path(G, N, v):
-            path = single_source_dijkstra_path(G, N, v)
+    write_gpickle(G, input_path + "graph.gpickle")
 
-            # distance_to = shortest_path_length(G, N, v)
-            print(path)
+for f in range(F):
+    print("{}/{}".format(f + 1, F))
 
+    tree = nx.edge_dfs(G, N, "original")
+    print(tree)
 
+    # minScore = 9999999999999999999
+    # for v in range(N):
+    #     if has_path(G, N, v):
+    #         print("has path")
+    #         distance, path = single_source_dijkstra(G, N, v)
+    #         if distance < minScore:
+    #             minScore = distance
+    #             minSol = path
 
+    # for nodeIndex in minSol:
+    #     if nodeIndex != N:
+    #         G.remove_node(nodeIndex)
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
