@@ -86,10 +86,10 @@ for f in range(F):
                 if path[i] != N:
                     G.remove_node(path[i])
 
-            print('sim time', simulation_time)
             source = path[-1]
 
     G.remove_node(source)
 
+print(out)
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
