@@ -104,22 +104,29 @@ I, S = generate_matrix()
 deg = np.sum(I, axis=1)
 sort_deg = np.argsort(deg)
 
-for i in range(len(sort_deg)):
-    s = sort_deg[i]
-    if deg[s] != 0:
-        s_max = np.argmax(S[:,s])
-        if photos[s_max]["used"] or s_max == s:
-            continue
+i = -1
+s = sort_deg[i]
+print(sort_deg)
 
-        photos[s_max]["used"] = True
-        photos[s]["used"] = True
-        S[s_max, s] = 0
-        S[s, s_max] = 0
+for x in range(int(H + V/2)):
+    s_max = np.argmax(S[:,s])
 
-        if photos[s]["orientation"] == "VV":
-            out.append([photos[s]["id1"], photos["id2"]])
-        else:
-            out.append([int(s)])
+    if photos[s_max]["used"] or s_max == s:
+        i -= 1
+        s = sort_deg[i]
+        continue
+
+    photos[s_max]["used"] = True
+    photos[s]["used"] = True
+    S[s_max, s] = 0
+    S[s, s_max] = 0
+
+    if photos[s]["orientation"] == "VV":
+        out.append([photos[s]["id1"], photos["id2"]])
+    else:
+        out.append([int(s)])
+
+    s = s_max
 
 print(out)
 
