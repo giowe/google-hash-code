@@ -28,7 +28,7 @@ hList = initialState["hList"]
 def generate_tags_structure():
     pickle_path = PurePath(dir_path).parent.parent.joinpath("parsedInFiles").joinpath("tags_structure_{}.pickle".format(str(PurePath(input_path).stem)))
 
-    if os.path.isfile(pickle_path):
+    if os.path.isfile(str(pickle_path)):
         with open(pickle_path, 'rb') as f:
             tags_structure = pickle.load(f)
     else:
