@@ -47,30 +47,32 @@ def generate_tags_structure():
 
 
 def get_score(index1, index2):
-    photo1_tags = photos[index1]["tags"][:]
-    photo2_tags = photos[index2]["tags"][:]
-    common = []
-    first = []
+    if index1 != index2:
+        photo1_tags = photos[index1]["tags"][:]
+        photo2_tags = photos[index2]["tags"][:]
+        common = []
+        first = []
 
-    for t in photo1_tags:
-        if t in photo2_tags:
-            common.append(t)
-            photo2_tags.pop()
-        else:
-            first.append(t)
+        for t in photo1_tags:
+            if t in photo2_tags:
+                common.append(t)
+                photo2_tags.pop()
+            else:
+                first.append(t)
 
-    return min([len(common), len(first), len(photo2_tags)])
+        return min([len(common), len(first), len(photo2_tags)])
+    else:
+        return 0
 
 
 def generate_matrix():
     size = len(photos)
-    half_size = int(size/2)
     I = np.zeros(shape=(size, size))
     S = np.zeros(shape=(size, size))
 
     for y in range(size):
         if photos[y]["orientation"] != "V":
-            for x in range(half_size):
+            for x in range(y, size):
                 if photos[x]["orientation"] != "V":
                     score = get_score(x, y)
                     I[x, y] = bool(score)
@@ -96,7 +98,8 @@ def generate_vv(tags_structure):
             "orientation": "VV",
             "tags": merged_tags,
             "id1": id1,
-            "id2": id2
+            "id2": id2,
+            "used": False
         })
 
         for t in merged_tags:
@@ -116,27 +119,31 @@ i = -1
 s = sort_deg[i]
 print(sort_deg)
 
+print(S)
+
 for x in range(int(H + V/2)):
     s_max = np.argmax(S[:,s])
-
     if photos[s_max]["used"] or s_max == s:
         i -= 1
         s = sort_deg[i]
         continue
 
-    photos[s_max]["used"] = True
     photos[s]["used"] = True
     S[s_max, s] = 0
     S[s, s_max] = 0
 
     if photos[s]["orientation"] == "VV":
-        out.append([photos[s]["id1"], photos["id2"]])
+        out.append([photos[s]["id1"], photos[s]["id2"]])
     else:
         out.append([int(s)])
 
     s = s_max
 
-print(out)
+if photos[s]["orientation"] == "VV":
+    out.append([photos[s]["id1"], photos["id2"]])
+else:
+    out.append([int(s)])
+
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
