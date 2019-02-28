@@ -142,14 +142,12 @@ for x in range(int(H + V/2)):
 
     s = s_max
 
-# if photos[s]["orientation"] == "VV":
-#     out.append([photos[s]["id1"], photos[s]["id2"]])
-#     photos[photos[s]["id1"]]["used"] = True
-#     photos[photos[s]["id2"]]["used"] = True
-# else:
-#     out.append([int(s)])
-
-print(out)
+if photos[s_max]["orientation"] == "VV":
+    out.append([photos[s_max]["id1"], photos[s_max]["id2"]])
+    photos[photos[s_max]["id1"]]["used"] = True
+    photos[photos[s_max]["id2"]]["used"] = True
+else:
+    out.append([int(s_max)])
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
