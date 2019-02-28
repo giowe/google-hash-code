@@ -90,7 +90,8 @@ def generate_vv(tags_structure):
             "orientation": "VV",
             "tags": merged_tags,
             "id1": id1,
-            "id2": id2
+            "id2": id2,
+            "used": False
         })
 
         for t in merged_tags:
