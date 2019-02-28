@@ -117,9 +117,6 @@ sort_deg = np.argsort(deg)
 
 i = -1
 s = sort_deg[i]
-print(sort_deg)
-
-print(S)
 
 for x in range(int(H + V/2)):
     s_max = np.argmax(S[:,s])
