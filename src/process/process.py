@@ -15,8 +15,12 @@ with open(input_path) as f:
 
 out = []
 
+photos = initialState["photos"]
 
-print(json.dumps(initialState, indent=4))
+for e in photos:
+    print(e)
+
+
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
