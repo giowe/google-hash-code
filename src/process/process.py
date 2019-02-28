@@ -16,10 +16,17 @@ with open(input_path) as f:
 out = []
 
 photos = initialState["photos"]
+tags_structure = {}
 
-for e in photos:
-    print(e)
+for i in range(len(photos)):
+    photo = photos[i]
+    for tag in photo["tags"]:
+        if tag in tags_structure:
+            tags_structure[tag][i] = True
+        else:
+            tags_structure[tag] = {i: True}
 
+print(tags_structure)
 
 
 with open(output_path, "w") as f:
