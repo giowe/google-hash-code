@@ -7,28 +7,28 @@ from networkx import DiGraph, read_gpickle, write_gpickle
 from networkx.algorithms.shortest_paths import has_path, single_source_dijkstra
 
 
-def get_distance(p1, p2):
-    return abs(p1["x"] - p2["x"]) + abs(p1["y"] - p2["y"])
-
-
 dir_path = os.path.dirname(os.path.realpath(__file__))
 (process_path, input_path, output_path) = sys.argv
-
-out = []
 
 with open(input_path) as f:
     initialState = json.load(f)
 
-print(json.dumps(initialState, indent=4))
+out = []
 
-'''
-try:
-    G = read_gpickle(input_path + "graph.gpickle")
-    print("graph loaded from cache")
-except:
-    G = DiGraph()
-    G.add_nodes_from(range(N + 1))
-'''
+photos = initialState["photos"]
+
+# todo per Valce: dumpami questa struttura in un file
+tags_structure = {}
+for i in range(len(photos)):
+    photo = photos[i]
+    for tag in photo["tags"]:
+        if tag in tags_structure:
+            tags_structure[tag][i] = False
+        else:
+            tags_structure[tag] = {i: False}
+# todo fine struttura da dumpare. se trova il  file usa quello se no ricalcola
+
+print(tags_structure)
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
