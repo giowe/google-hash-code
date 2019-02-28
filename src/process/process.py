@@ -120,7 +120,6 @@ for x in range(int(H + V/2)):
         s = sort_deg[i]
         continue
 
-    photos[s_max]["used"] = True
     photos[s]["used"] = True
     S[s_max, s] = 0
     S[s, s_max] = 0
