@@ -19,83 +19,16 @@ out = []
 with open(input_path) as f:
     initialState = json.load(f)
 
-# print(json.dumps(initialState, indent=4))
+print(json.dumps(initialState, indent=4))
 
-N = initialState["N"]
-F = initialState["F"]
-T = initialState["T"]
-rides = initialState["rides"]
-
-magia = 10000
-alchimia = 100
-
+'''
 try:
     G = read_gpickle(input_path + "graph.gpickle")
     print("graph loaded from cache")
 except:
     G = DiGraph()
     G.add_nodes_from(range(N + 1))
-
-    print(G.number_of_nodes())
-
-    for a in range(N):
-        rideA = rides[a]
-        print("{}/{}".format(a, N))
-        for b in range(N):
-            rideB = rides[b]
-            travelAB = get_distance(rideA["finish"], rideB["start"])
-
-            if rideA["latestStart"] + rideA["dist"] + travelAB <= rideB["latestStart"] and abs(rideA["latestStart"] + rideA["dist"] + travelAB - rideB["earliestStart"]) < magia:
-                G.add_edge(a, b, weight=1/rideB["dist"])
-
-        distOrigRide = get_distance({"x": 0, "y": 0}, rideA["start"])
-        if distOrigRide <= rideA["latestStart"] and abs(distOrigRide - rideA["earliestStart"]) < magia:
-            G.add_edge(N, a, weight=1 / rideA["dist"])
-
-    write_gpickle(G, input_path + "graph.gpickle")
-    print("graph saved")
-
-
-def rnd_node(G, N):
-    while True:
-        r = randint(0, N - 1)
-        if G.has_node(r):
-            return r
-
-
-for f in range(F):
-    rideOut = []
-    out.append(rideOut)
-    #print("{}/{}".format(f + 1, F))
-
-    minScore = 9999999999999999999
-    source = N
-    simulation_time = 0
-    for xxx in range(alchimia):
-        v = rnd_node(G, N)
-        if has_path(G, source, v) and simulation_time < T:
-            distance, path = single_source_dijkstra(G, source, v)
-
-            for i in range(len(path)-1):
-                if path[i] != N:
-                    rideOut.append({"rideId": path[i], "started": simulation_time})
-                    simulation_time += max([rides[path[i+1]]["earliestStart"], get_distance(rides[path[i]]["finish"], rides[path[i+1]]["start"])])
-                else:
-                    simulation_time += max([rides[path[i+1]]["earliestStart"], get_distance({"x": 0, "y": 0}, rides[path[i+1]]["start"])])
-
-                simulation_time += rides[path[i + 1]]["dist"]
-                if simulation_time >= T:
-                    rideOut.pop()
-                    break
-
-                if path[i] != N:
-                    G.remove_node(path[i])
-
-            source = path[-1]
-
-    if source != N and simulation_time < T:
-        rideOut.append({"rideId": source, "started": simulation_time - rides[source]["dist"]})
-        G.remove_node(source)
+'''
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
