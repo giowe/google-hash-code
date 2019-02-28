@@ -114,8 +114,6 @@ print(S)
 
 for x in range(int(H + V/2)):
     s_max = np.argmax(S[:,s])
-    print(s, s_max)
-    print(photos[s_max])
     if photos[s_max]["used"] or s_max == s:
         i -= 1
         s = sort_deg[i]
@@ -138,7 +136,6 @@ if photos[s]["orientation"] == "VV":
 else:
     out.append([int(s)])
 
-print(out)
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
