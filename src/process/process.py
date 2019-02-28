@@ -28,6 +28,28 @@ for i in range(len(photos)):
             tags_structure[tag] = {i: False}
 # todo fine struttura da dumpare. se trova il  file usa quello se no ricalcola
 
+
+def score(index1, index2):
+    photo1_tags = photos[index1]["tags"][:]
+    photo2_tags = photos[index2]["tags"][:]
+
+    common = []
+    first = []
+
+    for t in photo1_tags:
+        if tag in photo2_tags:
+            common.append(t)
+            photo2_tags.pop()
+        else:
+            first.append(t)
+
+    print(len(common), len(first), len(photo2_tags))
+
+    return min([len(common), len(first), len(photo2_tags)])
+
+
+print(score(0, 1))
+
 print(tags_structure)
 
 with open(output_path, "w") as f:
