@@ -126,7 +126,7 @@ for x in range(int(H + V/2)):
     S[s, s_max] = 0
 
     if photos[s]["orientation"] == "VV":
-        out.append([photos[s]["id1"], photos["id2"]])
+        out.append([photos[s]["id1"], photos[s]["id2"]])
     else:
         out.append([int(s)])
 
