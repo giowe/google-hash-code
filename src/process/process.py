@@ -16,8 +16,9 @@ with open(input_path) as f:
 out = []
 
 photos = initialState["photos"]
-tags_structure = {}
 
+# todo per Valce: dumpami questa struttura in un file
+tags_structure = {}
 for i in range(len(photos)):
     photo = photos[i]
     for tag in photo["tags"]:
@@ -25,9 +26,9 @@ for i in range(len(photos)):
             tags_structure[tag][i] = True
         else:
             tags_structure[tag] = {i: True}
+# todo fine struttura da dumpare. se trova il  file usa quello se no ricalcola
 
 print(tags_structure)
-
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
