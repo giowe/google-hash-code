@@ -46,7 +46,7 @@ class InParser {
   reiteratedStruct(iterationNumber, struct) {
     const count = typeof iterationNumber === "string" ? this.variables[iterationNumber] : iterationNumber
     const out = []
-    for (let i = 0; i < count; i++) out.push(struct())
+    for (let i = 0; i < count; i++) out.push(struct(i))
     return out
   }
 
