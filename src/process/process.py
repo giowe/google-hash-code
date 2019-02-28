@@ -19,7 +19,7 @@ out = []
 with open(input_path) as f:
     initialState = json.load(f)
 
-print(json.dumps(initialState, indent=4))
+#print(json.dumps(initialState, indent=4))
 
 '''
 try:
