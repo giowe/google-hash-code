@@ -14,11 +14,11 @@ const parse = () => {
   const p = new Parser({
     rowSeparator: "\n",
     colSeparator: " ",
-    autoCast: "parseInt"
+    autoCast: null//"parseInt"
   })
 
   const parsedInput = {
-    N: p.consumeCol("N"),
+    N: Number.parseInt(p.consumeCol("N")),
 
     photos: p.reiteratedStruct("N", () => {
       const data = {
@@ -26,7 +26,7 @@ const parse = () => {
         tagsCount: null,
         tags: []
       }
-      data.tagsCount = p.consumeCol()
+      data.tagsCount = Number.parseInt(p.consumeCol())
       for (let i = 0; i < data.tagsCount; i++) {
         data.tags.push(p.consumeCol())
       }
