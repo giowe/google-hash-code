@@ -3,6 +3,11 @@ module.exports = (parsedIn, out) => {
 
   let score = 0
 
+  if (out.length < 2) {
+    console.log("Warning: output has only 1 slide")
+    return score.toString()
+  }
+
   const parsedPhotos = []
 
   for (let i = 1; i < out.length; i++) {
