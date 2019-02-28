@@ -1,6 +1,8 @@
 import os
 import sys
 import json
+import pickle
+from pathlib import Path, PurePath
 import numpy as np
 from random import randint
 import networkx as nx
@@ -22,20 +24,26 @@ V = initialState["V"]
 vList = initialState["vList"]
 hList = initialState["hList"]
 
-# todo per Valce: dumpami questa struttura in un file
-
 
 def generate_tags_structure():
-    tags_structure = {}
-    for i in range(len(photos)):
-        photo = photos[i]
-        for tag in photo["tags"]:
-            if tag in tags_structure:
-                tags_structure[tag][i] = False
-            else:
-                tags_structure[tag] = {i: False}
+    pickle_path = PurePath(dir_path).parent.parent.joinpath("parsedInFiles").joinpath("tags_structure_{}.pickle".format(str(PurePath(input_path).stem)))
+
+    if os.path.isfile(pickle_path):
+        with open(pickle_path, 'rb') as f:
+            tags_structure = pickle.load(f)
+    else:
+        tags_structure = {}
+        for i in range(len(photos)):
+            photo = photos[i]
+            for tag in photo["tags"]:
+                if tag in tags_structure:
+                    tags_structure[tag][i] = False
+                else:
+                    tags_structure[tag] = {i: False}
+        with open(pickle_path, 'wb') as f:
+            pickle.dump(tags_structure, f, protocol=pickle.HIGHEST_PROTOCOL)
+
     return tags_structure
-# todo fine struttura da dumpare. se trova il  file usa quello se no ricalcola
 
 
 def get_score(index1, index2):
