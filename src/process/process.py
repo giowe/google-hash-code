@@ -23,9 +23,9 @@ for i in range(len(photos)):
     photo = photos[i]
     for tag in photo["tags"]:
         if tag in tags_structure:
-            tags_structure[tag][i] = True
+            tags_structure[tag][i] = False
         else:
-            tags_structure[tag] = {i: True}
+            tags_structure[tag] = {i: False}
 # todo fine struttura da dumpare. se trova il  file usa quello se no ricalcola
 
 print(tags_structure)
