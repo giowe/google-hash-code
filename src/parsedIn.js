@@ -18,24 +18,18 @@ const parse = () => {
   })
 
   const parsedInput = {
-    R: p.consumeCol(),
-    C: p.consumeCol(),
-    F: p.consumeCol(),
-    N: p.consumeCol("R"),
-    B: p.consumeCol(),
-    T: p.consumeCol(),
+    N: p.consumeCol("N"),
 
-    rides: p.reiteratedStruct("R", () => {
+    photos: p.reiteratedStruct("N", () => {
       const data = {
-        start: { x: p.consumeCol(), y: p.consumeCol() },
-        finish: { x: p.consumeCol(), y: p.consumeCol() },
-        earliestStart: p.consumeCol(),
-        latestFinish: p.consumeCol()
+        orientation: p.consumeCol(),
+        tagsCount: null,
+        tags: []
       }
-
-      data.dist = Math.abs(data.finish.x - data.start.x) + Math.abs(data.finish.y - data.start.y)
-      data.latestStart = data.latestFinish - 1 - data.dist
-
+      data.tagsCount = p.consumeCol()
+      for (let i = 0; i < data.tagsCount; i++) {
+        data.tags.push(p.consumeCol())
+      }
       return data
     })
   }
