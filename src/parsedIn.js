@@ -19,9 +19,14 @@ const parse = () => {
 
   let H = 0
   let V = 0
+  const hList = []
+  const vList = []
+
   const parsedInput = {
     N: Number.parseInt(p.consumeCol("N")),
-    photos: p.reiteratedStruct("N", () => {
+    hList,
+    vList,
+    photos: p.reiteratedStruct("N", (i) => {
       const data = {
         orientation: p.consumeCol(),
         tagsCount: null,
@@ -30,8 +35,10 @@ const parse = () => {
 
       if (data.orientation === "H") {
         H++
+        hList.push(i)
       } else {
         V++
+        vList.push(i)
       }
 
       data.tagsCount = Number.parseInt(p.consumeCol())
