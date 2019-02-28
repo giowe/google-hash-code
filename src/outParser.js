@@ -1,13 +1,16 @@
 const { writeFileSync } = require("fs")
 
 const produceOutput = (filename, output) => {
-  const out = output.reduce((acc, e) => {
 
-    return acc
-  }, "")
+  let buffer = `${output.length}\n`
 
-  writeFileSync(filename, out)
-  return out
+  for (const slide of output) {
+    buffer = buffer + slide.join(" ") + "\n"
+  }
+
+
+  writeFileSync(filename, buffer)
+  return buffer
 }
 
 module.exports = { produceOutput }
