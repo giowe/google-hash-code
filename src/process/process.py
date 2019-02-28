@@ -110,12 +110,16 @@ sort_deg = np.argsort(deg)
 i = -1
 s = sort_deg[i]
 
+print(S)
 for x in range(int(H + V/2)):
     s_max = np.argmax(S[:,s])
-    if photos[s_max]["used"] or s_max == s:
+    print(S)
+    print(s, s_max)
+    if photos[s_max]["used"] or s_max == s or photos[s_max]["orientation"] == "V" or photos[s]["orientation"] == "V":
         i -= 1
         s = sort_deg[i]
-        continue
+        s = s_max
+        break
 
     photos[s]["used"] = True
     S[s_max, s] = 0
@@ -123,16 +127,21 @@ for x in range(int(H + V/2)):
 
     if photos[s]["orientation"] == "VV":
         out.append([photos[s]["id1"], photos[s]["id2"]])
+        photos[photos[s]["id1"]]["used"] = True
+        photos[photos[s]["id2"]]["used"] = True
     else:
         out.append([int(s)])
 
     s = s_max
 
 if photos[s]["orientation"] == "VV":
-    out.append([photos[s]["id1"], photos["id2"]])
+    out.append([photos[s]["id1"], photos[s]["id2"]])
+    photos[photos[s]["id1"]]["used"] = True
+    photos[photos[s]["id2"]]["used"] = True
 else:
     out.append([int(s)])
 
+print(out)
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
