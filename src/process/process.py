@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import numpy as np
+from random import randint
 import networkx as nx
 from networkx import DiGraph, read_gpickle, write_gpickle
 from networkx.algorithms.shortest_paths import has_path, single_source_dijkstra
@@ -18,6 +19,8 @@ out = []
 photos = initialState["photos"]
 H = initialState["H"]
 V = initialState["V"]
+vList = initialState["vList"]
+hList = initialState["hList"]
 
 # todo per Valce: dumpami questa struttura in un file
 tags_structure = {}
@@ -65,12 +68,33 @@ def generate_matrix():
     return I, S
 
 
-def genearate_VV():
-    pass
+def generate_vv():
+    while len(vList) != 0:
+        l = len(vList)
+        r1, r2 = randint(0, l - 1), randint(0, l - 1)
+        if r1 == r2:
+            continue
 
-I, S = generate_matrix()
-print(I)
-print(S)
+        id1, id2 = vList[r1], vList[r2]
+        photo1, photo2 = photos[id1], photos[id2]
+        tags1, tags2 = photo1["tags"], photo2["tags"]
+        merged_tags = list(set(tags1 + tags2))
+
+        photos.append({
+            "orientation": "VV",
+            "tags": merged_tags,
+            "id1": id1,
+            "id2": id2
+        })
+
+        for t in merged_tags:
+            tags_structure[t][len(photos) - 1] = False
+
+        vList.pop(r1)
+        vList.pop(r2 - 1)
+
+generate_vv()
+print(photos)
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
