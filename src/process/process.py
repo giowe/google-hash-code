@@ -97,8 +97,8 @@ def generate_vv(tags_structure):
         for t in merged_tags:
             tags_structure[t][len(photos) - 1] = False
 
-        vList.pop(r1)
-        vList.pop(r2 - 1)
+        vList.remove(id1)
+        vList.remove(id2)
 
 
 tags_structure = generate_tags_structure()
@@ -110,16 +110,15 @@ sort_deg = np.argsort(deg)
 i = -1
 s = sort_deg[i]
 
-print(S)
+
 for x in range(int(H + V/2)):
     s_max = np.argmax(S[:,s])
-    print(S)
-    print(s, s_max)
-    if photos[s_max]["used"] or s_max == s or photos[s_max]["orientation"] == "V" or photos[s]["orientation"] == "V":
+
+    if photos[s]["used"] or photos[s_max]["used"] or s_max == s or photos[s_max]["orientation"] == "V" or photos[s]["orientation"] == "V":
         i -= 1
         s = sort_deg[i]
-        s = s_max
-        break
+
+        continue
 
     photos[s]["used"] = True
     S[s_max, s] = 0
@@ -134,12 +133,12 @@ for x in range(int(H + V/2)):
 
     s = s_max
 
-if photos[s]["orientation"] == "VV":
-    out.append([photos[s]["id1"], photos[s]["id2"]])
-    photos[photos[s]["id1"]]["used"] = True
-    photos[photos[s]["id2"]]["used"] = True
-else:
-    out.append([int(s)])
+# if photos[s]["orientation"] == "VV":
+#     out.append([photos[s]["id1"], photos[s]["id2"]])
+#     photos[photos[s]["id1"]]["used"] = True
+#     photos[photos[s]["id2"]]["used"] = True
+# else:
+#     out.append([int(s)])
 
 print(out)
 
