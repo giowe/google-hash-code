@@ -30,7 +30,8 @@ const parse = () => {
       const data = {
         orientation: p.consumeCol(),
         tagsCount: null,
-        tags: []
+        tags: [],
+        used: false
       }
 
       if (data.orientation === "H") {

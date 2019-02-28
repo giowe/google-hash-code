@@ -23,14 +23,18 @@ vList = initialState["vList"]
 hList = initialState["hList"]
 
 # todo per Valce: dumpami questa struttura in un file
-tags_structure = {}
-for i in range(len(photos)):
-    photo = photos[i]
-    for tag in photo["tags"]:
-        if tag in tags_structure:
-            tags_structure[tag][i] = False
-        else:
-            tags_structure[tag] = {i: False}
+
+
+def generate_tags_structure():
+    tags_structure = {}
+    for i in range(len(photos)):
+        photo = photos[i]
+        for tag in photo["tags"]:
+            if tag in tags_structure:
+                tags_structure[tag][i] = False
+            else:
+                tags_structure[tag] = {i: False}
+    return tags_structure
 # todo fine struttura da dumpare. se trova il  file usa quello se no ricalcola
 
 
@@ -51,7 +55,7 @@ def get_score(index1, index2):
 
 
 def generate_matrix():
-    size = int(H + V)
+    size = len(photos)
     half_size = int(size/2)
     I = np.zeros(shape=(size, size))
     S = np.zeros(shape=(size, size))
@@ -68,7 +72,7 @@ def generate_matrix():
     return I, S
 
 
-def generate_vv():
+def generate_vv(tags_structure):
     while len(vList) != 0:
         l = len(vList)
         r1, r2 = randint(0, l - 1), randint(0, l - 1)
@@ -93,8 +97,31 @@ def generate_vv():
         vList.pop(r1)
         vList.pop(r2 - 1)
 
-generate_vv()
-print(photos)
+
+tags_structure = generate_tags_structure()
+generate_vv(tags_structure)
+I, S = generate_matrix()
+deg = np.sum(I, axis=1)
+sort_deg = np.argsort(deg)
+
+for i in range(len(sort_deg)):
+    s = sort_deg[i]
+    if deg[s] != 0:
+        s_max = np.argmax(S[:,s])
+        if photos[s_max]["used"] or s_max == s:
+            continue
+
+        photos[s_max]["used"] = True
+        photos[s]["used"] = True
+        S[s_max, s] = 0
+        S[s, s_max] = 0
+
+        if photos[s]["orientation"] == "VV":
+            out.append([photos[s]["id1"], photos["id2"]])
+        else:
+            out.append([int(s)])
+
+print(out)
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
