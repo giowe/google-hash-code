@@ -110,7 +110,8 @@ def generate_vv(tags_structure):
 
 
 tags_structure = generate_tags_structure()
-generate_vv(tags_structure)
+if V != 0:
+    generate_vv(tags_structure)
 I, S = generate_matrix()
 deg = np.sum(I, axis=1)
 sort_deg = np.argsort(deg)
