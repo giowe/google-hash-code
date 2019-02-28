@@ -17,15 +17,23 @@ const parse = () => {
     autoCast: null//"parseInt"
   })
 
+  let H = 0
+  let V = 0
   const parsedInput = {
     N: Number.parseInt(p.consumeCol("N")),
-
     photos: p.reiteratedStruct("N", () => {
       const data = {
         orientation: p.consumeCol(),
         tagsCount: null,
         tags: []
       }
+
+      if (data.orientation === "H") {
+        H++
+      } else {
+        V++
+      }
+
       data.tagsCount = Number.parseInt(p.consumeCol())
       for (let i = 0; i < data.tagsCount; i++) {
         data.tags.push(p.consumeCol())
@@ -33,7 +41,8 @@ const parse = () => {
       return data
     })
   }
-
+  parsedInput.H = H
+  parsedInput.V = V
   //SAMPLE
   // const parsedInput = {
   //   V: p.consumeCol(),
