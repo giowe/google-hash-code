@@ -1,16 +1,9 @@
+from pathlib import Path, PurePath
 import os
 import sys
-import json
 import pickle
-from pathlib import Path, PurePath
-import numpy as np
-from random import randint
-import networkx as nx
-from networkx import DiGraph, read_gpickle, write_gpickle
-from networkx.algorithms.shortest_paths import has_path, single_source_dijkstra
+import json
 
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
 (process_path, input_path, output_path) = sys.argv
 
 with open(input_path) as f:
@@ -18,138 +11,140 @@ with open(input_path) as f:
 
 out = []
 
-photos = initialState["photos"]
+limit = None
+
+if limit:
+    photos = initialState["photos"][:limit]
+else:
+    photos = initialState["photos"]
 H = initialState["H"]
 V = initialState["V"]
-vList = initialState["vList"]
-hList = initialState["hList"]
 
 
-def generate_tags_structure():
-    pickle_path = PurePath(dir_path).parent.parent.joinpath("parsedInFiles").joinpath("tags_structure_{}.pickle".format(str(PurePath(input_path).stem)))
-
-    if os.path.isfile(str(pickle_path)):
-        with open(str(pickle_path), 'rb') as f:
-            tags_structure = pickle.load(f)
-    else:
-        tags_structure = {}
-        for i in range(len(photos)):
-            photo = photos[i]
-            for tag in photo["tags"]:
-                if tag in tags_structure:
-                    tags_structure[tag][i] = False
-                else:
-                    tags_structure[tag] = {i: False}
-        with open(str(pickle_path), 'wb') as f:
-            pickle.dump(tags_structure, f, protocol=pickle.HIGHEST_PROTOCOL)
-
-    return tags_structure
-
-
-def get_score(index1, index2):
-    if index1 != index2:
-        photo1_tags = photos[index1]["tags"][:]
-        photo2_tags = photos[index2]["tags"][:]
-        common = []
-        first = []
-
-        for t in photo1_tags:
-            if t in photo2_tags:
-                common.append(t)
-                photo2_tags.pop()
+# Utility
+def get_match_score(A, B):
+    common = 0
+    not_in_a = 0
+    not_in_b = 0
+    for idx, bit_b in enumerate(A["tags_index"]):
+        bit_a = B["tags_index"][idx]
+        if bit_a or bit_b:
+            if bit_a and bit_b:
+                common = common + 1
+            elif not bit_a and bit_b:
+                not_in_a = not_in_a + 1
             else:
-                first.append(t)
+                not_in_b = not_in_b + 1
+    return min(common, not_in_a, not_in_b)
 
-        return min([len(common), len(first), len(photo2_tags)])
-    else:
-        return 0
-
-
-def generate_matrix():
-    size = len(photos)
-    I = np.zeros(shape=(size, size))
-    S = np.zeros(shape=(size, size))
-
-    for y in range(size):
-        if photos[y]["orientation"] != "V":
-            for x in range(y, size):
-                if photos[x]["orientation"] != "V":
-                    score = get_score(x, y)
-                    I[x, y] = bool(score)
-                    S[x, y] = score
-                    I[y, x] = bool(score)
-                    S[y, x] = score
-    return I, S
+def get_common_tags(A, B):
+    common_count = 0
+    merged_list = []
+    for idx, bit_b in enumerate(A["tags_index"]):
+        bit_a = B["tags_index"][idx]
+        if bit_a and bit_b:
+            common_count = common_count + 1
+            merged_list.append(1)
+        elif bit_a or bit_b:
+            merged_list.append(1)
+        else:
+            merged_list.append(0)
+    return [common_count, merged_list]
 
 
-def generate_vv(tags_structure):
-    while len(vList) != 0:
-        l = len(vList)
-        r1, r2 = randint(0, l - 1), randint(0, l - 1)
-        if r1 == r2:
-            continue
-
-        id1, id2 = vList[r1], vList[r2]
-        photo1, photo2 = photos[id1], photos[id2]
-        tags1, tags2 = photo1["tags"], photo2["tags"]
-        merged_tags = list(set(tags1 + tags2))
-
-        photos.append({
-            "orientation": "VV",
-            "tags": merged_tags,
-            "id1": id1,
-            "id2": id2,
-            "used": False
-        })
-
-        for t in merged_tags:
-            tags_structure[t][len(photos) - 1] = False
-
-        vList.remove(id1)
-        vList.remove(id2)
+# Create tags list and tags bitmask for each photo,
+# add horizontal photos to unsorted list of slides
+# create unsorted list of vertical photos
+tags = []
+unsorted_slides = []
+vertical_photos = []
 
 
-tags_structure = generate_tags_structure()
-if V != 0:
-    generate_vv(tags_structure)
-I, S = generate_matrix()
-deg = np.sum(I, axis=1)
-sort_deg = np.argsort(deg)
+# Load photos pickle with tags bitmask if exists, otherwise create and save
+pickle_path = PurePath(input_path).parent.joinpath("photos_{}.pickle".format(PurePath(input_path).stem))
 
-i = -1
-s = sort_deg[i]
+if os.path.isfile(pickle_path):
+    print("Loading photos from file")
+    with open(pickle_path, "rb") as f:
+        (photos, unsorted_slides, vertical_photos) = pickle.load(f)
+
+else:
+    print("Creating tags bitmask")
+    for idx, photo in enumerate(photos):
+        print("{}/{}".format(idx, len(photos)))
+        photo["idx"] = idx
+        photo["tags_index"] = []
+        photo["tags_index"].extend([0] * len(tags))
+        for tag in photo["tags"]:
+            try:
+                index = tags.index(tag)
+                photo["tags_index"][index] = 1
+            except:
+                tags.append(tag)
+                photo["tags_index"].append(1)
+
+    print("Filling partial bitmasks")
+    for photo in photos:
+        if len(photo["tags_index"]) < len(tags):
+            photo["tags_index"].extend([0] * (len(tags) - len(photo["tags_index"])))
+        if photo["orientation"] is "H":
+            unsorted_slides.append({"photos": [photo["idx"]], "tags_index": photo["tags_index"]})
+        else:
+            vertical_photos.append(photo)
+        print("Saving photos with tags bitmask to file")
+        with open(pickle_path, "wb") as f:
+            pickle.dump([photos, unsorted_slides, vertical_photos], f)
 
 
-for x in range(int(H + V/2)):
-    s_max = np.argmax(S[:,s])
+# Add similarily matched vertical photos to list of unsorted slides
+print("Matching vertical photos:")
+for idx_a, photo_a in enumerate(vertical_photos):
+    print("{}/{}".format(idx_a, len(vertical_photos)))
+    if photo_a is not None:
+        slide = {}
+        slide["photos"] = [photo_a["idx"]]
+        best_score = 0
+        best_match = None
+        best_match_idx = None
+        best_merged_list = None
+        for idx_b, photo_b in enumerate(vertical_photos):
+            if photo_b is not None and idx_a != idx_b:
+                (cur_score, merged_list) = get_common_tags(photo_a, photo_b)
+                if cur_score > best_score or best_match == None:
+                    best_score = cur_score
+                    best_match = photo_b
+                    best_match_idx = idx_b
+                    best_merged_list = merged_list
+        if best_match is not None:
+            slide["photos"].append(best_match["idx"])
+            slide["tags_index"] = merged_list
+            vertical_photos[idx_a] = None
+            vertical_photos[best_match_idx] = None
+        if len(slide["photos"]) == 2:
+            unsorted_slides.append(slide)
 
-    if photos[s]["used"] or photos[s_max]["used"] or s_max == s or photos[s_max]["orientation"] == "V" or photos[s]["orientation"] == "V":
-        i -= 1
-        s = sort_deg[i]
 
-        continue
+# Sort slides
+print("Sorting slides")
+for idx_a, slide_a in enumerate(unsorted_slides):
+    print("{}/{}".format(idx_a, len(unsorted_slides)))
+    if slide_a is not None:
+        out.append(slide_a["photos"])
+        best_score = 0
+        best_match = None
+        best_match_idx = None
+        for idx_b, slide_b in enumerate(unsorted_slides):
+            if slide_b is not None and idx_a != idx_b:
+                cur_score = get_match_score(slide_a, slide_b)
+                if cur_score > best_score or best_match == None:
+                    best_score = cur_score
+                    best_match = slide_b
+                    best_match_idx = idx_b
+        if best_match is not None:
+            out.append(best_match["photos"])
+            unsorted_slides[idx_a] = None
+            unsorted_slides[best_match_idx] = None
 
-    photos[s]["used"] = True
-    S[s_max, s] = 0
-    S[s, s_max] = 0
-
-    if photos[s]["orientation"] == "VV":
-        out.append([photos[s]["id1"], photos[s]["id2"]])
-        photos[photos[s]["id1"]]["used"] = True
-        photos[photos[s]["id2"]]["used"] = True
-    else:
-        out.append([int(s)])
-
-    s = s_max
-
-# if photos[s]["orientation"] == "VV":
-#     out.append([photos[s]["id1"], photos[s]["id2"]])
-#     photos[photos[s]["id1"]]["used"] = True
-#     photos[photos[s]["id2"]]["used"] = True
-# else:
-#     out.append([int(s)])
-
-print(out)
 
 with open(output_path, "w") as f:
     json.dump(out, f, indent=4)
