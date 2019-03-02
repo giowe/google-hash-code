@@ -61,7 +61,7 @@ vertical_photos = []
 
 
 # Load photos pickle with tags bitmask if exists, otherwise create and save
-pickle_path = PurePath(input_path).parent.joinpath("photos_{}.pickle".format(PurePath(input_path).stem))
+pickle_path = str(PurePath(input_path).parent.joinpath("photos_{}.pickle".format(PurePath(input_path).stem)))
 
 if os.path.isfile(pickle_path):
     print("Loading photos from file")
@@ -91,9 +91,10 @@ else:
             unsorted_slides.append({"photos": [photo["idx"]], "tags_index": photo["tags_index"]})
         else:
             vertical_photos.append(photo)
-        print("Saving photos with tags bitmask to file")
-        with open(pickle_path, "wb") as f:
-            pickle.dump([photos, unsorted_slides, vertical_photos], f)
+
+    print("Saving photos with tags bitmask to file")
+    with open(pickle_path, "wb") as f:
+        pickle.dump([photos, unsorted_slides, vertical_photos], f)
 
 
 # Add similarily matched vertical photos to list of unsorted slides
