@@ -6,11 +6,10 @@ from pathlib import Path, PurePath
 import numpy as np
 from random import randint
 import networkx as nx
-from networkx import DiGraph, read_gpickle, write_gpickle
-from networkx.algorithms.shortest_paths import has_path, single_source_dijkstra
 import math
 import random
 import copy
+from tqdm import tqdm
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 (process_path, input_path, output_path) = sys.argv
@@ -54,54 +53,35 @@ def generate_tags_structure():
 
 
 def get_score(index1, index2):
-    if index1 != index2:
-        photo1_tags = photos[index1]["tags"][:]
-        photo2_tags = photos[index2]["tags"][:]
+    t1 = photos[index1]["tags"][:]
+    t2 = photos[index2]["tags"][:]
 
-        count_first = 0 
-        count_common = 0
+    common_tags = len(list(set(t1).intersection(t2)))
 
-        for t in photo1_tags:
-            if t in photo2_tags:
-                count_common += 1
-            else:
-                count_first +=1
+    return min([ len(t1) - common_tags, common_tags, len(t2) - common_tags])
 
-        return min([count_first, count_common, len(photo2_tags) - count_common])
-    else:
-        return 0
+def max_score( photo ):
+	return math.floor( photo["tagsCount"] / 2 )
 
-def get_score3(i1, i2, i3):
-	return get_score(i1, i2) + get_score(i2, i3)
+# if the ratio is 1.0 the tags are the same, if the ratio is 0 there are no tag in common
+def tag_ratio( id1, id2 ):
+	t1 = photos[id1]["tags"][:]
+	t2 = photos[id2]["tags"][:]
 
-# def generate_matrix():
-#     size = len(photos)
-#     I = np.zeros(shape=(size, size))
-#     S = np.zeros(shape=(size, size))
+	total_tags = len(list(set(t1 + t2)))
+	common_tags = len(list(set(t1).intersection(t2)))
 
-#     for y in range(size):
-#         if photos[y]["orientation"] != "V":
-#             for x in range(y, size):
-#                 if photos[x]["orientation"] != "V":
-#                     score = get_score(x, y)
-#                     I[x, y] = bool(score)
-#                     S[x, y] = score
-#                     I[y, x] = bool(score)
-#                     S[y, x] = score
-#     return I, S
-
+	return   common_tags - total_tags 
 
 def generate_vv():
 	
-	while len(vList) != 0:
+	random.shuffle(vList)
 
-		# select random photos from V set 
-		l = len(vList)
-		r1, r2 = randint(0, l - 1), randint(0, l - 1)
-		if r1 == r2:
-			continue
+	for i in tqdm( range(0, len(vList), 2), file=sys.stdout, ncols=100, desc="pairing v"):
+	
+		id1 = vList[i]
+		id2 = vList[i + 1]
 
-		id1, id2 = vList[r1], vList[r2]
 		photo1, photo2 = photos[id1], photos[id2]
 		tags1, tags2 = photo1["tags"], photo2["tags"]
 		merged_tags = list(set(tags1 + tags2))
@@ -115,35 +95,55 @@ def generate_vv():
 			"used": False
 		})
 
-		# index = len(photos) - 1
-		# for t in merged_tags:
-		# 	if t in tags_structure:
-		# 		tags_structure[t][index] = False
-		# 	else:
-		# 		tags_structure[t] = { index : False}
+def generate_vv_smart():
+	
+	random.shuffle(vList)
 
-		vList.remove(id1)
-		vList.remove(id2)
+	to_be_eval = vList 
+	
+	pbar = tqdm(total=len(vList), ncols=100, file=sys.stdout, desc="pairing v smart")
+
+	while to_be_eval:
+	
+		pbar.update(2)
+
+		cid = to_be_eval.pop()
+
+		best_id = 0
+		best_ratio = -math.inf
+
+		for nid in random.sample( to_be_eval, min(200, len(to_be_eval)) ):
+			ratio = tag_ratio( cid, nid )
+			if ratio >= best_ratio:
+				best_ratio = ratio
+				best_id = nid
+
+		to_be_eval.remove( best_id )
+
+		id1 = cid
+		id2 = best_id
+
+		photo1, photo2 = photos[id1], photos[id2]
+		tags1, tags2 = photo1["tags"], photo2["tags"]
+		merged_tags = list(set(tags1 + tags2))
+
+		photos.append({
+			"orientation": "VV",
+			"tags": merged_tags,
+			"tagsCount" : len(merged_tags),
+			"id1": id1,
+			"id2": id2,
+			"used": False
+		})
 
 # print("Generating tags")
 # tags_db = generate_tags_structure()
+print("problem data --- ")
+print("H: ", H)
+print("V: ", V)
+generate_vv_smart()
 
-print("Generating VV pairs")
-generate_vv()
-
-# ##########
-# PARAMETERS
-# ##########
-P_NUMB = 6
-MAX_ITERS = 10
-MUTATION_RATE = 1.0
-PERTURBATION_RATE = randint(0, 5) / 100.0
-
-print("Using perturbation rate of ", PERTURBATION_RATE)
-
-pop = [] # sorted population vector
-best_score = 0
-
+# remove vertical photos indices
 evaluated_complete= list(range(len(photos)))
 evaluated = []
 
@@ -151,70 +151,39 @@ for e in evaluated_complete:
 	if photos[e]["orientation"] != "V":
 		evaluated.append( e )
 
-print("Starting optimization: ")
+sol = []
+SN = 1000
+sol.append( evaluated[0] )
+evaluated.pop(0)
 
-# return a structure as out
-# solution is in the form [ [12], [1], [4], ..., [5] ]
-def random_solution():
-	sol = []
-	random.shuffle(evaluated)
-	return copy.deepcopy(evaluated)
+L = len(evaluated) # solution lenght
 
-# return a solution searching in the tag space
-def semirandom_solution( ):
-	sol = []
-	random.shuffle(evaluated)
-	search_len = 100
+for i in tqdm( range(L), ncols = 100, desc="processing", file=sys.stdout ):
+		
+	max_score_l = max_score( photos[ sol[-1] ] )
+	max_profit = -math.inf
+	max_profit_index = 0
+	found = False
 
-	sol.append( evaluated[0] )
+	for e2 in range( 0, min(SN, len(evaluated)) ):
 
-	for x in range( 1, len(evaluated) ):
-		max_score = -1
-		best_match = -1
-		curr_score = 0
+		max_score_r = max_score( photos[evaluated[e2]] ) 
+		score = get_score( sol[-1], evaluated[e2] )
+		profit = score - 0.0 * abs(max_score_r - max_score_l)
 
-		for e in evaluated[x:(x+search_len) ]:
+		if score == max_score_r == max_score_l: # find a very good match
+			sol.append( evaluated[e2] )
+			evaluated.pop( e2 )
+			found = True
+			break
+		else: # otherwise choose the match with best profit
+			if max_profit < profit :
+				max_profit = profit
+				max_profit_index = e2
 
-			if e in sol[-search_len:]:
-				continue
-			
-			curr_score = get_score( sol[-1], e )
-
-			if curr_score > max_score:
-				best_match = e
-				max_score = curr_score
-
-		if best_match != -1:
-			sol.append( best_match )
-
-	return sol
-
-# return a solution searching in the tag space
-def random_rotated_solution( ):
-	random.shuffle(evaluated)
-	for i in range( 1, len(evaluated) - 1 ):
-		if get_score3( evaluated[i-1], evaluated[i], evaluated[i+1] ) < get_score3( evaluated[i+1], evaluated[i], evaluated[i-1] ):
-			evaluated[i-1], evaluated[i+1] = evaluated[i+1], evaluated[i-1]
-
-	return   copy.deepcopy(evaluated)
-
-# return a structure as out
-def mutate( sol ):
-	index_to_mutate = math.ceil( PERTURBATION_RATE * randint(0, len(sol)-1) )
-
-	res = copy.deepcopy( sol )
-
-	# rotate
-	for x in range(index_to_mutate):
-		i = randint( 0, len(res) - 2 )
-		res[i], res[i+1] = res[i+1], res[i]
-
-	for x in range(index_to_mutate):
-		[i1, i2] = random.sample( range(0, len(res) - 1 ), 2 )
-		res[i1], res[i2] = res[i2], res[i1]
-	
-
-	return res
+	if not found:
+		sol.append( evaluated[max_profit_index] )
+		evaluated.pop( max_profit_index )
 
 def scorer( sol ):
 	score = 0
@@ -235,37 +204,10 @@ def generate_out( sol ):
 
 	return res
 
-counter = 0
-while counter < MAX_ITERS:
-
-	print(".", end="", flush=True)
-	# Generate new solutions
-	new_sol = semirandom_solution( )
-
-	# print("Generating new sol")
-	pop.append( {"score" : scorer(new_sol), "solution" : new_sol } )
-
-	# Mutate the best solutions 
-	if len(pop) >= P_NUMB:
-		for j in range( math.ceil(P_NUMB * MUTATION_RATE) ):
-			mutation = mutate( pop[j]["solution"] )
-			pop.append( {"score" : scorer(mutation), "solution" : mutation } )
 
 
-	pop.sort( key=lambda x : x["score"], reverse=True)
-	pop = pop[0:P_NUMB]
-	
-	# print(pop)
-
-	if best_score < pop[0]["score"]:
-		best_score = pop[0]["score"] 
-		counter = 0
-		print(" - new best solution found - score: ", best_score, " current population: ", len(pop) )
-
-	counter += 1
-
-print( pop[0]["solution"] )
-out = generate_out( pop[0]["solution"] )
+print("score: ", scorer(sol) )
+out = generate_out( sol )
 
 with open(output_path, "w") as f:
     json.dump( out, f, indent=4)
