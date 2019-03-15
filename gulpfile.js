@@ -29,6 +29,7 @@ e.test = () => require("./src/test")
 e.getScores = () => {
   del.sync("outFilesS3", { force: true })
   return downloadTopScores()
+    .then(() => console.log("done"))
 }
 
 e.default = () => e.dist()
