@@ -28,8 +28,22 @@ const parse = () => {
         y: p.consumeCol(),
         points: p.consumeCol()
       }
-    })
+    }),
+    MAP: p.input.slice(0, p.input.length - 1).map(e => e[0]),
   }
+
+  Object.assign(
+    parsedInput, parsedInput.MAP.reduce((acc, e) => {
+      const s = e.split("")
+      acc.mountains += s.filter(e => e === "#").length
+      acc.free += s.filter(e => e === "_").length
+      return acc
+    }, { mountains: 0, free: 0, total: parsedInput.M *  parsedInput.N })
+  )
+
+  parsedInput.mountainsPerc = parsedInput.mountains / parsedInput.total
+  parsedInput.freePerc = parsedInput.free / parsedInput.total
+  //console.log(data)
 
   //SAMPLE
   // const parsedInput = {
