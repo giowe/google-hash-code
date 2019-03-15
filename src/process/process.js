@@ -8,7 +8,7 @@ const {
 const { writeFileSync } = require("fs")
 const jsgraphs = require("js-graph-algorithms")
 
-const { N, photos } = require(infile)
+const {} = require(infile)
 const out = []
 
 //**************************** PROCESS HELPERS ****************************
