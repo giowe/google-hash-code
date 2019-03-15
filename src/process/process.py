@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-import
+import scipy
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 (process_path, input_path, output_path) = sys.argv
