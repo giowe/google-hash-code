@@ -59,6 +59,18 @@ const done = () => {
       R
     })
     if (usedOff === R || remainingCO.length === 0 || maxIterations <= iterationCount) {
+      const uniqueHq = Object.keys(out.reduce((acc, { hq }) => {
+        const k = hq.join("")
+        if (!acc[k]) {
+          acc[k] = true
+        }
+        return acc
+      }, {})).length
+
+      console.log({ uniqueHq, l: out.length })
+      if (out.length > uniqueHq) {
+        console.log("ERRORE")
+      }
       writeFileSync(outfile, JSON.stringify(out))
     } else {
       iterationCount++
