@@ -34,10 +34,22 @@ module.exports = (parsedIn, out) => {
       return lookupCost(acc[1], cur)
     }, [0, [hq.o[0], hq.o[1]]])
 
-
+    // Calculate rewards
     const reward = rewardMax - costTotal[0]
-
     score = score + reward
+  }
+  // Calculate bonus
+  const bonus = parsedIn.CO.reduce((acc, cur) => acc + cur.points, 0)
+
+  let hqsToVisit = parsedIn.CO.slice()
+
+  for (const hq of out) {
+    const index = parsedIn.CO.findIndex(element => element.x === hq.hq[0] && element.y === hq.hq[1])
+    hqsToVisit[index] = null
+  }
+
+  if (hqsToVisit.every(hq => hq === null)) {
+    score = score + bonus
   }
 
   return score.toString()
