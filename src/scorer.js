@@ -59,5 +59,5 @@ module.exports = (parsedIn, out) => {
     score = score + bonus
   }
 
-  return score.toString()
+  return Math.max(score, 0).toString()
 }
