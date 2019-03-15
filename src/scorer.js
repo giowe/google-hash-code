@@ -1,7 +1,9 @@
 module.exports = (parsedIn, out) => {
+  let score = 0
+
+  /*
   const { photos } = parsedIn
 
-  let score = 0
 
   if (out.length < 2) {
     console.log("Warning: output has only 1 slide")
@@ -56,6 +58,7 @@ module.exports = (parsedIn, out) => {
   if (B.length === 2) {
       if (parsedIn.photos[B[0]].orientation !== "V" || parsedIn.photos[B[1]].orientation !== "V") throw `photos ${B} are together in their slide but one or both of them are not vertical`
   }
+  */
 
   return score.toString()
 }
