@@ -20,7 +20,9 @@ const tiles = [
   800, 200, 150, 120, 100, 70, 50
 ]
 easystar.setAcceptableTiles(tiles)
-tiles.forEach(e => easystar.setTileCost(e, e))
+tiles.forEach(e => {
+  easystar.setTileCost(e, e)
+})
 
 const remainingCO = CO.slice()
 const ratio = Math.ceil(C / R)
@@ -40,9 +42,18 @@ const getDirections = data => {
   return out
 }
 
+const getPathW = data => {
+  let w = 0
+  for (let i = 1; i < data.length; i++) {
+    const { x, y } = data[i]
+    w += W_MAP[y][x]
+  }
+  return w
+}
+
 let pathCounter = 0
 let pathCalculated = 0
-const maxIterations = 10
+const maxIterations = 10000
 let iterationCount = 1
 const done = () => {
   if (pathCalculated === pathCounter) {
@@ -72,6 +83,7 @@ const done = () => {
         console.log("ERRORE")
       }
       writeFileSync(outfile, JSON.stringify(out))
+      console.log(out)
     } else {
       iterationCount++
       console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -89,7 +101,7 @@ const execute = (usedOff = 0) => {
     do {
       x = random.int(0, N - 1)
       y = random.int(0, M - 1)
-    } while (zeroUnoGrid[y][x] !== 1 || CO.some(({x: coX, y: coY}) => x === coX && y === coY))
+    } while (zeroUnoGrid[y][x] !== 1 || CO.some(({ x: coX, y: coY }) => x === coX && y === coY))
 
     for (let l = 0; l < ratio; l++) {
       const i = random.int(0, remainingCO.length - 1)
@@ -99,7 +111,7 @@ const execute = (usedOff = 0) => {
         pathCounter += 1
         easystar.findPath(x, y, co.x, co.y, path => {
           pathCalculated += 1
-          if (path) {
+          if (path && getPathW(path) < co.points) {
             const result = {
               o: [x, y],
               hq: [co.x, co.y],
@@ -118,6 +130,7 @@ const execute = (usedOff = 0) => {
       }
     }
   }
+
   easystar.calculate()
 }
 
