@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/main",
   "scripts": {
-    "multi": "node src/runmulti"
+    "multi": "node src/runmulti",
+    "all": "node . 1 -p='node process/process.js' && node . 2 -p='node process/process.js' && node . 3 -p='node process/process.js'&& node . 4 -p='node process/process.js'&& node . 5 -p='node process/process.js'"
   },
   "repository": {
     "type": "git",

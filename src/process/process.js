@@ -44,40 +44,66 @@ let pathCounter = 0
 let pathCalculated = 0
 const done = () => {
   if (pathCalculated === pathCounter) {
-    writeFileSync(outfile, JSON.stringify(out))
-    console.log("ho finito")
-  } else {
-    console.log("non ho ancora finito")
-  }
-}
-
-for (let r = 0; r < R; r++) {
-  let y
-  let x
-  do {
-    x = random.int(0, N - 1)
-    y = random.int(0, M - 1)
-  } while (zeroUnoGrid[y][x] !== 1 || CO.some(({ x: coX, y: coY }) => x === coX && y === coY))
-
-  for (let l = 0; l < ratio; l++) {
-    const i = random.int(0, remainingCO.length - 1)
-    const co = remainingCO.pop(i)
-
-    pathCounter += 1
-    easystar.findPath(x, y, co.x, co.y, path => {
-      pathCalculated += 1
-      if (path) {
-        const result = {
-          o: [x, y],
-          hq: [co.x, co.y],
-          p: getDirections(path)
-        }
-
-        out.push(result)
-        done()
+    const usedOff = Object.keys(out.reduce((acc, { o }) => {
+      const k = o.join("")
+      if (!acc[k]) {
+        acc[k] = true
       }
+      return acc
+    }, {})).length
+
+    console.log({
+      usedOff,
+      R
     })
+    if (usedOff === R || remainingCO.length === 0) {
+      writeFileSync(outfile, JSON.stringify(out))
+    } else {
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+      pathCounter = 0
+      pathCalculated = 0
+      execute(usedOff)
+    }
   }
 }
 
-easystar.calculate()
+const execute = (usedOff = 0) => {
+  for (let r = 0; r < R - usedOff; r++) {
+    let y
+    let x
+    do {
+      x = random.int(0, N - 1)
+      y = random.int(0, M - 1)
+    } while (zeroUnoGrid[y][x] !== 1 || CO.some(({x: coX, y: coY}) => x === coX && y === coY))
+
+    for (let l = 0; l < ratio; l++) {
+      const i = random.int(0, remainingCO.length - 1)
+      if (remainingCO.length) {
+        const co = remainingCO.pop(i)
+
+        pathCounter += 1
+        easystar.findPath(x, y, co.x, co.y, path => {
+          pathCalculated += 1
+          if (path) {
+            const result = {
+              o: [x, y],
+              hq: [co.x, co.y],
+              p: getDirections(path)
+            }
+
+            out.push(result)
+          } else {
+            remainingCO.push(co)
+          }
+
+          done()
+        })
+      } else {
+        break
+      }
+    }
+  }
+  easystar.calculate()
+}
+
+execute()
