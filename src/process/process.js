@@ -13,12 +13,6 @@ const out = []
 
 //**************************** PROCESS HELPERS ****************************
 
-const { V } = photos.reduce((acc, { orientation }) => {
-  acc[orientation] += 1
-  return acc
-}, { V: 0, H: 0 })
-
-console.log(`${V}/${N}`)
 
 //**************************** PROCESS OPERATIONS ****************************
 

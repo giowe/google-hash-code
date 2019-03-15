@@ -14,43 +14,10 @@ const parse = () => {
   const p = new Parser({
     rowSeparator: "\n",
     colSeparator: " ",
-    autoCast: null//"parseInt"
+    autoCast: "parseInt"
   })
 
-  let H = 0
-  let V = 0
-  const hList = []
-  const vList = []
-
-  const parsedInput = {
-    N: Number.parseInt(p.consumeCol("N")),
-    hList,
-    vList,
-    photos: p.reiteratedStruct("N", (i) => {
-      const data = {
-        orientation: p.consumeCol(),
-        tagsCount: null,
-        tags: [],
-        used: false
-      }
-
-      if (data.orientation === "H") {
-        H++
-        hList.push(i)
-      } else {
-        V++
-        vList.push(i)
-      }
-
-      data.tagsCount = Number.parseInt(p.consumeCol())
-      for (let i = 0; i < data.tagsCount; i++) {
-        data.tags.push(p.consumeCol())
-      }
-      return data
-    })
-  }
-  parsedInput.H = H
-  parsedInput.V = V
+  const parsedInput = {}
   //SAMPLE
   // const parsedInput = {
   //   V: p.consumeCol(),
