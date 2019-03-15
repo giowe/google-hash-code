@@ -17,7 +17,20 @@ const parse = () => {
     autoCast: "parseInt"
   })
 
-  const parsedInput = {}
+  const parsedInput = {
+    N: p.consumeCol("N"),
+    M: p.consumeCol("M"),
+    C: p.consumeCol("C"),
+    R: p.consumeCol("R"),
+    CO: p.reiteratedStruct("C", () => {
+      return {
+        x: p.consumeCol(),
+        y: p.consumeCol(),
+        points: p.consumeCol()
+      }
+    })
+  }
+
   //SAMPLE
   // const parsedInput = {
   //   V: p.consumeCol(),
