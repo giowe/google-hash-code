@@ -43,6 +43,25 @@ const parse = () => {
 
   parsedInput.mountainsPerc = parsedInput.mountains / parsedInput.total
   parsedInput.freePerc = parsedInput.free / parsedInput.total
+  parsedInput.W_MAP = parsedInput.MAP.reduce((acc, e) => {
+    const data = e.split("").map(e => {
+      switch (e) {
+        case "#": return null
+        case "~": return 800
+        case "*": return 200
+        case "+": return 150
+        case "X": return 120
+        case "_": return 100
+        case "H": return 70
+        case "T": return 50
+        default: return "NA"
+      }
+    }).filter(e => e !== "NA")
+
+    acc.push(data)
+    return acc
+  }, [])
+
   //console.log(data)
 
   //SAMPLE
