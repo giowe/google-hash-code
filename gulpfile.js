@@ -20,7 +20,7 @@ e.dist = () => {
         .pipe(rename(path => path.dirname = join("app", path.dirname)))
         .pipe(f.restore)
         .pipe(zip("dist.zip"))
-        .pipe(gulp.dest("./"))
+        .pipe(gulp.dest(["./outFiles", "./outFilesS3"]))
     })
 }
 
