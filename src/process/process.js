@@ -1,8 +1,7 @@
 const { _: [infile, outfile] } = require("simple-argv")
 
 const {
-  log, logJson, logFail, logSuccess, logColor,
-  getDistance
+  log, logJson, logFail, logSuccess, logColor
 } = require("../modules/utils")
 
 const random = require("random")
@@ -24,6 +23,33 @@ easystar.setAcceptableTiles(tiles)
 tiles.forEach(e => easystar.setTileCost(e, e))
 
 const remainingCO = CO.slice()
+const ratio = Math.ceil(C / R)
+
+const getDirections = data => {
+  let out = ""
+  for (let i = 0; i < data.length - 1; i++) {
+    const { x, y } = data[i]
+    const { x: nextX, y: nextY } = data[i + 1]
+
+    if (x > nextX) out += "L"
+    else if (x < nextX) out += "R"
+    else if (y > nextY) out += "U"
+    else if (y < nextY) out += "D"
+  }
+
+  return out
+}
+
+let pathCounter = 0
+let pathCalculated = 0
+const done = () => {
+  if (pathCalculated === pathCounter) {
+    writeFileSync(outfile, JSON.stringify(out))
+    console.log("ho finito")
+  } else {
+    console.log("non ho ancora finito")
+  }
+}
 
 for (let r = 0; r < R; r++) {
   let y
@@ -33,14 +59,25 @@ for (let r = 0; r < R; r++) {
     y = random.int(0, M - 1)
   } while (zeroUnoGrid[y][x] !== 1 || CO.some(({ x: coX, y: coY }) => x === coX && y === coY))
 
-  const ratio = Math.ceil(C / R)
-  const i = random.int(0, remainingCO.length - 1)
-  const co = remainingCO.pop(i)
+  for (let l = 0; l < ratio; l++) {
+    const i = random.int(0, remainingCO.length - 1)
+    const co = remainingCO.pop(i)
 
-  easystar.findPath(x, y, co.x, co.y, (data) => {
-    console.log("ciao", data)
-  })
+    pathCounter += 1
+    easystar.findPath(x, y, co.x, co.y, path => {
+      pathCalculated += 1
+      if (path) {
+        const result = {
+          o: [x, y],
+          hq: [co.x, co.y],
+          p: getDirections(path)
+        }
+
+        out.push(result)
+        done()
+      }
+    })
+  }
 }
-easystar.calculate()
 
-writeFileSync(outfile, JSON.stringify(out))
+easystar.calculate()
