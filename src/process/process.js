@@ -51,6 +51,20 @@ const getPathW = data => {
   return w
 }
 
+const getOfficeLocation = ({ x, y }, l) => {
+  let chosenX
+  let chosenY
+
+
+  do {
+    chosenX = random.int(Math.max(x - l, 0), Math.min(x + l, N - 1))
+    chosenY = random.int(Math.max(y - l, 0), Math.min(y + l, M - 1))
+  } while((chosenX === x && chosenY === y) || W_MAP[chosenY][chosenX] === null)
+
+
+  return [chosenX, chosenY]
+}
+
 let pathCounter = 0
 let pathCalculated = 0
 const maxIterations = 10000
@@ -89,18 +103,19 @@ const done = () => {
       console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       pathCounter = 0
       pathCalculated = 0
-      execute(usedOff)
+      execute(usedOff, iterationCount * 2)
     }
   }
 }
 
-const execute = (usedOff = 0) => {
+const execute = (usedOff = 0, l = 1) => {
   for (let r = 0; r < R - usedOff; r++) {
     let y
     let x
     do {
-      x = random.int(0, N - 1)
-      y = random.int(0, M - 1)
+      const data = getOfficeLocation(CO[random.int(0, CO.length - 1)], l)
+      x = data[0]
+      y = data[1]
     } while (zeroUnoGrid[y][x] !== 1 || CO.some(({ x: coX, y: coY }) => x === coX && y === coY))
 
     for (let l = 0; l < ratio; l++) {
