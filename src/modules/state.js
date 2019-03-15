@@ -24,8 +24,8 @@ const listAllKeys = (params, out = []) => new Promise((resolve, reject) => {
 e.listScores = testName => {
   return listAllKeys({
     Bucket: "google-hash-code",
-    Prefix: testName
-  }).then(({ Contents }) => {
+    Prefix: `${testName}/`
+  }).then((Contents) => {
     if (!Contents) {
       return []
     }
@@ -84,7 +84,9 @@ e.getTopScore = testName => {
 e.downloadTopScores = () => {
   log("DOWNLOADING TOP SCORES FROM S3...")
 
-  return Promise.all(getInFilesList(true).map(testName => e.getTopScore(testName)))
+  return Promise.all(getInFilesList(true).map(testName => {
+    return e.getTopScore(testName)
+  }))
     .then(results => {
       const finalDir = join(__dirname, "./../../outFilesS3")
       try {

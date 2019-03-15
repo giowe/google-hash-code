@@ -20,7 +20,7 @@ e.dist = () => {
         .pipe(rename(path => path.dirname = join("app", path.dirname)))
         .pipe(f.restore)
         .pipe(zip("dist.zip"))
-        .pipe(gulp.dest("./"))
+        .pipe(gulp.dest("./outFilesS3"))
     })
 }
 
@@ -29,6 +29,7 @@ e.test = () => require("./src/test")
 e.getScores = () => {
   del.sync("outFilesS3", { force: true })
   return downloadTopScores()
+    .then(() => console.log("done"))
 }
 
 e.default = () => e.dist()
