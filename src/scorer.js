@@ -28,7 +28,8 @@ module.exports = (parsedIn, out) => {
   let score = 0
 
   for (const hq of out) {
-    const rewardMax = parsedIn.CO.find(customer => hq.hq[0] === customer.x && hq.hq[1] === customer.y).points
+    const hqInInput = parsedIn.CO.find(customer => hq.hq[0] === customer.x && hq.hq[1] === customer.y)
+    const rewardMax = hqInInput.points
 
     const costTotal = hq.p.split("").reduce((acc, cur, idx, arr) => {
       [cost, nextTile] = lookupCost(acc[1], cur)
@@ -37,7 +38,7 @@ module.exports = (parsedIn, out) => {
           throw `current path does not end at expected HQ`
         }
       }
-      return [cost, nextTile]
+      return [cost + acc[0], nextTile]
     }, [0, [hq.o[0], hq.o[1]]])
 
     // Calculate rewards
