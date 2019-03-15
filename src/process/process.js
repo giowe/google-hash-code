@@ -69,6 +69,7 @@ let pathCounter = 0
 let pathCalculated = 0
 const maxIterations = 10000
 let iterationCount = 1
+const lStart = 25
 const done = () => {
   if (pathCalculated === pathCounter) {
     const usedOff = Object.keys(out.reduce((acc, { o }) => {
@@ -93,12 +94,12 @@ const done = () => {
       iterationCount++
       pathCounter = 0
       pathCalculated = 0
-      execute(usedOff, iterationCount * 2)
+      execute(usedOff, iterationCount * lStart)
     }
   }
 }
 
-const execute = (usedOff = 0, l = 1) => {
+const execute = (usedOff = 0, l = lStart) => {
   for (let r = 0; r < R - usedOff; r++) {
     let y
     let x
