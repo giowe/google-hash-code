@@ -42,6 +42,8 @@ const getDirections = data => {
 
 let pathCounter = 0
 let pathCalculated = 0
+const maxIterations = 10
+let iterationCount = 1
 const done = () => {
   if (pathCalculated === pathCounter) {
     const usedOff = Object.keys(out.reduce((acc, { o }) => {
@@ -56,9 +58,10 @@ const done = () => {
       usedOff,
       R
     })
-    if (usedOff === R || remainingCO.length === 0) {
+    if (usedOff === R || remainingCO.length === 0 || maxIterations <= iterationCount) {
       writeFileSync(outfile, JSON.stringify(out))
     } else {
+      iterationCount++
       console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       pathCounter = 0
       pathCalculated = 0
