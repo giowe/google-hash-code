@@ -47,7 +47,6 @@ module.exports = (parsedIn, out) => {
   }
   // Calculate bonus
   const bonus = parsedIn.CO.reduce((acc, cur) => acc + cur.points, 0)
-  console.log({ bonus })
   let hqsToVisit = parsedIn.CO.slice()
 
   for (const hq of out) {
