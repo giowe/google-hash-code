@@ -1,6 +1,5 @@
 const fs = require("fs")
 const path = require("path")
-const leftpad = require("left-pad")
 const argv = require("simple-argv")
 const sampleInput = require("./samples/input.js")
 const sampleOutput = require("./samples/output.js")
@@ -19,7 +18,7 @@ const files = fs.readdirSync(inputFolderPath)
 const inputFileName = files[argv._[0]] ? path.parse(files[argv._[0]]).name : "test"
 const outFolderPath = u.getOutputFilesFolder(inputFileName)
 const finalScore = scorer(sampleInput, sampleOutput)
-const filename = leftpad(finalScore, 10, "0").toString() + ".out"
+const filename = finalScore.padStart(10, "0") + ".out"
 
 try { fs.mkdirSync("./outFiles") } catch(ignore) {  }
 try { fs.mkdirSync(outFolderPath) } catch(ignore) {  }

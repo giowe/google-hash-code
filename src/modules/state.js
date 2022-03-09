@@ -1,4 +1,7 @@
 const AWS = require("aws-sdk")
+const { config } = require("dotenv")
+config()
+const Bucket = process.env.S3_BUCKET
 
 let credentials = {}
 try {
@@ -23,7 +26,7 @@ const listAllKeys = (params, out = []) => new Promise((resolve, reject) => {
 
 e.listScores = testName => {
   return listAllKeys({
-    Bucket: "google-hash-code",
+    Bucket,
     Prefix: testName
   }).then(({ Contents }) => {
     if (!Contents) {
@@ -49,7 +52,7 @@ e.uploadScore = (title, body) => {
     logSuccess("SAVING CURRENT RESULT ON S3...")
 
     return s3.putObject({
-      Bucket: "google-hash-code",
+      Bucket,
       Key: `${testName}/${title}`,
       Body: body
     }).promise()
@@ -67,7 +70,7 @@ e.getTopScore = testName => {
       const [maxScoreKey] = scores
 
       return s3.getObject({
-        Bucket: "google-hash-code",
+        Bucket,
         Key: maxScoreKey
       }).promise().then(({ Body }) => {
         const { base, dir } = parse(maxScoreKey)
