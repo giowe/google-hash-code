@@ -7,7 +7,8 @@
     "multi": "node src/runmulti",
     "dist": "zip -r dist2.zip ./src ./.gitignore ./package.json ./.editorconfig ./.eslintrc",
     "downloadTopScores": "node ./npm_scripts/downloadTopScores.js",
-    "test": "node ./src/test"
+    "sample": "node . 0 --mock",
+    "validateParser": "node . 0 --validate --noCache"
   },
   "repository": {
     "type": "git",

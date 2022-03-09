@@ -1,5 +1,7 @@
 const { spawn } = require("child_process")
-const { s3, _, mock, p = process.env.HASHCODE_PROCESS } = require("simple-argv")
+const { config } = require("dotenv")
+config()
+const { s3, _, mock, p = process.env.MAIN_PROCESS } = require("simple-argv")
 const fs = require("fs")
 const path = require("path")
 const {
@@ -19,7 +21,7 @@ if (!mock) {
   const [program, ...args] = p.split(" ")
 
   const tempFilePath = path.join(__dirname, "process", "temp_out.json")
-  fs.writeFileSync(tempFilePath)
+
   const proc = spawn(program, [...args, parsedInFilePath, tempFilePath], {
     cwd: __dirname,
     stdio: ["inherit", "inherit", "pipe"]

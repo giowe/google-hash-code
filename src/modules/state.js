@@ -15,25 +15,27 @@ const { mkdirSync, writeFileSync } = require("fs")
 
 const e = module.exports
 
-const listAllKeys = (params, out = []) => new Promise((resolve, reject) => {
-  s3.listObjectsV2(params).promise()
-    .then(({ Contents, IsTruncated, NextContinuationToken }) => {
-      out.push(...Contents)
-      !IsTruncated ? resolve(out) : resolve(listAllKeys(Object.assign(params, { ContinuationToken: NextContinuationToken }), out))
-    })
-    .catch(reject)
-})
+const listAllKeys = async (params, out = []) => {
+  const { Contents, IsTruncated, NextContinuationToken } = await s3.listObjectsV2(params).promise()
+  out.push(...Contents)
+  if (!IsTruncated) {
+    return out
+  } else {
+    return listAllKeys(Object.assign(params, { ContinuationToken: NextContinuationToken }), out)
+  }
+}
 
-e.listScores = testName => {
-  return listAllKeys({
+e.listScores = async testName => {
+  const data = await listAllKeys({
     Bucket,
     Prefix: testName
-  }).then(({ Contents }) => {
-    if (!Contents) {
-      return []
-    }
-    return Contents.map(e => e.Key).sort((a, b) => a < b)
   })
+
+  if (!data) {
+    return []
+  }
+
+  return data.map(e => e.Key).sort((a, b) => a < b)
 }
 
 e.uploadScore = (title, body) => {

@@ -4,7 +4,7 @@ const { logSuccess, getSelectedFileName } = require("./modules/utils")
 const parsedInDirPath = path.join(__dirname, "./../parsedInFiles/")
 const parsedInFilePath = path.join(parsedInDirPath, `${getSelectedFileName()}.json`)
 const Parser = require("./modules/InParser")
-const { noCache, pretty, validate } = require("simple-argv")
+const { noCache, pretty, validate, mock } = require("simple-argv")
 
 const e = module.exports
 
@@ -79,6 +79,11 @@ const parse = () => {
 }
 
 e.parsedInFilePath = parsedInFilePath
+
+// if (mock) {
+//   return
+// }
+
 try {
   try {
     mkdirSync(parsedInDirPath)
